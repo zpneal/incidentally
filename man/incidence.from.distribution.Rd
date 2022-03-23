@@ -26,9 +26,12 @@ incidence.from.distribution(
 
 \item{class}{string: the class of the returned backbone graph, one of c("matrix", "Matrix", "igraph", "network")}
 }
+\value{
+An incidence matrix of class matrix or \code{\link{Matrix}}, or a bipartite graph of class {\link{igraph}}, or \code{\link{network}}.
+}
 \description{
-\code{incidence.from.distribution} returns an incidence matrix, as an object of the requested class,
-with row and column sums that approximately follow beta distributions with given parameters.
+\code{incidence.from.distribution} generates a random incidence matrix with row and column
+sums that approximately follow beta distributions with given parameters.
 }
 \examples{
 I <- incidence.from.distribution(R = 100, C = 100, P = 0.1,

@@ -17,9 +17,12 @@ incidence.from.probability(R, C, P = 0, constrain = TRUE, class = "matrix")
 
 \item{class}{string: the class of the returned backbone graph, one of c("matrix", "Matrix", "igraph", "network").}
 }
+\value{
+An incidence matrix of class matrix or \code{\link{Matrix}}, or a bipartite graph of class {\link{igraph}}, or \code{\link{network}}.
+}
 \description{
-\code{incidence.from.probability} returns an incidence matrix, as an object of the requested class,
-in which each cell is filled with a 1 with a given probability.
+\code{incidence.from.probability} generates a random incidence matrix in which each cell is filled
+with a 1 with a given probability.
 }
 \examples{
 I <- incidence.from.probability(R = 10, C = 10)

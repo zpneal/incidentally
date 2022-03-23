@@ -1,7 +1,7 @@
 #' Generates an incidence matrix with row and column sums that follow given distributions
 #'
-#' `incidence.from.distribution` returns an incidence matrix, as an object of the requested class,
-#' with row and column sums that approximately follow beta distributions with given parameters.
+#' `incidence.from.distribution` generates a random incidence matrix with row and column
+#'     sums that approximately follow beta distributions with given parameters.
 #'
 #' @param R integer: number of rows
 #' @param C integer: number of columns
@@ -10,6 +10,9 @@
 #' @param coldist vector length 2: Column marginals will approximately follow a Beta(a,b) distribution
 #' @param class string: the class of the returned backbone graph, one of c("matrix", "Matrix", "igraph", "network")
 #'
+#' @return
+#' An incidence matrix of class matrix or \code{\link{Matrix}}, or a bipartite graph of class {\link{igraph}}, or \code{\link{network}}.
+#' 
 #' @export
 #'
 #' @examples

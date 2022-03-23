@@ -1,13 +1,16 @@
 #' Generates an incidence matrix with a given cell-filling probability
 #'
-#' `incidence.from.probability` returns an incidence matrix, as an object of the requested class,
-#'  in which each cell is filled with a 1 with a given probability.
+#' `incidence.from.probability` generates a random incidence matrix in which each cell is filled
+#'    with a 1 with a given probability.
 #'
 #' @param R integer: number of rows
 #' @param C integer: number of columns
 #' @param P numeric: probability that a cell contains a 1; if P = 0 a probability will be chosen randomly
 #' @param constrain boolean: ensure that no rows or columns sum to 0 (i.e., contain all 0s) or to 1 (i.e., contain all 1s)
 #' @param class string: the class of the returned backbone graph, one of c("matrix", "Matrix", "igraph", "network").
+#'
+#' @return
+#' An incidence matrix of class matrix or \code{\link{Matrix}}, or a bipartite graph of class {\link{igraph}}, or \code{\link{network}}.
 #'
 #' @export
 #'

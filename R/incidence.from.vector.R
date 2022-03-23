@@ -1,11 +1,13 @@
 #' Generates an incidence matrix with given row and column marginal sums
 #'
-#' `incidence.from.vector` returns an incidence matrix, as an object of the requested class,
-#'  with given row and column sums
+#' `incidence.from.vector` generates a random incidence matrix with given row and column sums
 #'
 #' @param R numeric vector: row marginal sums
 #' @param C numeric vector: column marginal sums
 #' @param class string: the class of the returned backbone graph, one of c("matrix", "Matrix", "igraph", "network")
+#'
+#' @return
+#' An incidence matrix of class matrix or \code{\link{Matrix}}, or a bipartite graph of class {\link{igraph}}, or \code{\link{network}}.
 #'
 #' @export
 #'

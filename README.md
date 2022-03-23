@@ -8,4 +8,4 @@
 <!-- badges: end -->
 
 ## Welcome
-Thank you for your interest in the `incidentally` package\! The incidentally package implements methods to generate incidence matrices, which can represent bipartite (aka two-mode, affiliation) networks.
+Thank you for your interest in the `incidentally` package\! The incidentally package implements methods to generate incidence matrices, which can represent bipartite (aka two-mode, affiliation) networks. It is currently *under development* but the existing functions should mostly work.

@@ -18,7 +18,7 @@ incidence.from.probability(R, C, P = 0, constrain = TRUE, class = "matrix")
 \item{class}{string: the class of the returned backbone graph, one of c("matrix", "Matrix", "igraph", "network").}
 }
 \value{
-An incidence matrix of class matrix or \code{\link{Matrix}}, or a bipartite graph of class {\link{igraph}}, or \code{\link{network}}.
+An incidence matrix of class \code{matrix}, or a bipartite graph of class {\link{igraph}}, or \code{\link{network}}.
 }
 \description{
 \code{incidence.from.probability} generates a random incidence matrix in which each cell is filled

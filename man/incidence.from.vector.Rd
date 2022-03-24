@@ -14,7 +14,7 @@ incidence.from.vector(R, C, class = "matrix")
 \item{class}{string: the class of the returned backbone graph, one of c("matrix", "Matrix", "igraph", "network")}
 }
 \value{
-An incidence matrix of class matrix or \code{\link{Matrix}}, or a bipartite graph of class {\link{igraph}}, or \code{\link{network}}.
+An incidence matrix of class \code{matrix}, or a bipartite graph of class {\link{igraph}}, or \code{\link{network}}.
 }
 \description{
 \code{incidence.from.vector} generates a random incidence matrix with given row and column sums

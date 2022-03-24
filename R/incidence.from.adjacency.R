@@ -58,14 +58,17 @@ incidence.from.adjacency <- function(G, k = 1, p = 1, d = 2, model = "team", cla
     if (igraph::is_directed(G)) {stop("G must be undirected")}
     if (igraph::is_weighted(G)) {stop("G must be unweighted")}
     if (igraph::is_bipartite(G)) {stop("G must be unipartite")}
+    if (!is.null(V(G)$name)) {nodes <- igraph::V(G)$name} else {nodes <- 1:(igraph::gorder(G))}
   }
   if (methods::is(G, "matrix")) {
     if (!isSymmetric(G)) {stop("G must be symmetric")}
     if (!all(G %in% c(0,1))) {stop("G must be binary")}
+    if (!is.null(rownames(G))) {nodes <- rownames(G)} else {nodes <- 1:nrow(G)}
     G <- igraph::graph_from_adjacency_matrix(G,mode="undirected")
     }
   if (methods::is(G, "network")) {
     if (network::is.directed(G)) {stop("G must be undirected")}
+    nodes <- network::get.vertex.attribute(G, "vertex.names")
     G <- network::as.sociomatrix(G)
     G <- igraph::graph_from_adjacency_matrix(G,mode="undirected")
   }
@@ -74,8 +77,7 @@ incidence.from.adjacency <- function(G, k = 1, p = 1, d = 2, model = "team", cla
 
   #### Team model (Guimera et al., 2005) ####
   if (model == "team") {
-    nodes <- 1:(igraph::gorder(G))        #List of all nodes
-    cliques <- igraph::cliques(G, min=2)  #List of all cliques
+    cliques <- igraph::cliques(G, min=2)  #List of all cliques  [THIS IS TOO SLOW FOR LARGE GRAPHS]
 
     for (i in 1:k) {                              #For each new team i:
       clique <- sample(1:length(cliques),1)       #Pick a prior team

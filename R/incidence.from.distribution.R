@@ -11,7 +11,7 @@
 #' @param class string: the class of the returned backbone graph, one of c("matrix", "Matrix", "igraph", "network")
 #'
 #' @return
-#' An incidence matrix of class matrix or \code{\link{Matrix}}, or a bipartite graph of class {\link{igraph}}, or \code{\link{network}}.
+#' An incidence matrix of class `matrix`, or a bipartite graph of class {\link{igraph}}, or \code{\link{network}}.
 #' 
 #' @export
 #'
@@ -57,15 +57,9 @@ incidence.from.distribution <- function(R, C, P, rowdist = c(1,1), coldist = c(1
   C <- integers(C,ones,coldist[1],coldist[2])  #Create a vector of artifact degrees; if not possible, error
   I <- incidence.from.vector(R,C)  #Create incidence matrix
 
-  #for (i in 1:10000) {  #Attempt up to 10000 times
-  #  B <- bipartite.from.vector(R,C)  #Create incidence matrix
-  #  if (all.equal(R,rowSums(B)) == TRUE | all.equal(C,colSums(B)) == TRUE) {break}  #Stop when conditions are achieved
-  #}
-
   #Verify, randomize, and return
   if (all.equal(R,rowSums(I)) == TRUE | all.equal(C,colSums(I)) == TRUE) {
     I <- curveball(I)
-    if (class == "Matrix"){I <- Matrix::Matrix(I)}
     if (class == "network"){I <- network::network(I, bipartite = TRUE)}
     if (class == "igraph"){I <- igraph::graph_from_incidence_matrix(I)}
     return(I)

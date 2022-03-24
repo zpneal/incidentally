@@ -10,7 +10,7 @@
 #' @param class string: the class of the returned backbone graph, one of c("matrix", "Matrix", "igraph", "network").
 #'
 #' @return
-#' An incidence matrix of class matrix or \code{\link{Matrix}}, or a bipartite graph of class {\link{igraph}}, or \code{\link{network}}.
+#' An incidence matrix of class `matrix`, or a bipartite graph of class {\link{igraph}}, or \code{\link{network}}.
 #'
 #' @export
 #'
@@ -42,7 +42,6 @@ incidence.from.probability <- function(R, C, P=0, constrain = TRUE, class="matri
   }
 
   #Convert to desired class and return
-  if (class == "Matrix"){I <- Matrix::Matrix(I)}
   if (class == "network"){I <- network::network(I, bipartite = TRUE)}
   if (class == "igraph"){I <- igraph::graph_from_incidence_matrix(I)}
   return(I)

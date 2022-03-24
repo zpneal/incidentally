@@ -1,0 +1,158 @@
+#' Generates an incidence matrix from an adjacency matrix
+#'
+#' @description
+#' `incidence.from.adjacency` generates an incidence matrix from an adjacency matrix or network using
+#'    a given generative model
+#'
+#' @param G A symmetric, binary adjacency matrix of class `matrix`,
+#'    or an undirected, unweighted unipartite graph of class {\link{igraph}} or \code{\link{network}}.
+#' @param k integer: Number of artifacts to generate
+#' @param p numeric: Tuning parameter for artifacts, 0 <= p <= 1
+#' @param d numeric: Number of dimensions in Blau space, d >= 2
+#' @param model string: Generative model, one of c("team", "group", "blau") (see details)
+#' @param class string: Class of the returned object, where the default is the class of `G`
+#'
+#' @return
+#' An incidence matrix of class `matrix`, or a bipartite graph of class {\link{igraph}} or \code{\link{network}}.
+#'
+#' @details
+#' Given a unipartite network composed of *i agents* (i.e. nodes) that can be represented by an *i x i* adjacency
+#'    matrix, `incidence.from.adjacency` generates a random *i x k* incidence matrix that indicates whether agent
+#'    *i* is associated with *artifact k*. Generative models differ in how they conceptualize artifacts and how
+#'    they associate agents with these artifacts.
+#'
+#' The **Team Model** (`model == "team"`) mirrors a team formation process, where each artifact represents a new team
+#'     formed from the incumbants of a prior team (with probability `p`) and newcomers (with probability 1-`p`).
+#'
+#' The **Group Model** (`model == "group"`) mirrors a social group formation process, where each artifact represents
+#'     a social group. Group members attempt to recruit non-member friends, who joins the group if it would have a
+#'     density of at least `p`.
+#'
+#' The **Blau Space Model** (`model == "blau"`) mirrors an organization (the artifact) recruiting members from social
+#'     space, where those within the organization's niche join with probability `p`, and those outside the niche join
+#'     with probability 1-`p`.
+#'
+#' @export
+#'
+#' @examples
+#' G <- igraph::erdos.renyi.game(10, .25)
+#' I <- incidence.from.adjacency(G, k = 1000, p = .95, model = "team", class = "matrix")
+incidence.from.adjacency <- function(G, k = 1, p = 1, d = 2, model = "team", class = "original") {
+
+  #### Sampling function, to allow sampling from a vector with one entry ####
+  sample.vec <- function(x, ...) x[sample(length(x), ...)]
+
+  #### Parameter checks ####
+  if (class == "original") {class <- class(G)[1]}
+  if (!is.numeric(k)) {stop("k must be numeric")}
+  if (!is.numeric(d)) {stop("d must be numeric")}
+  if (!is.numeric(p)) {stop("p must be numeric")}
+  if (d%%1!=0) {stop("d must be an integer")}
+  if (d < 2) {stop("d must be >= 2")}
+  if (p < 0 | p > 1) {stop("p must be between 0 and 1")}
+  if (!(model %in% c("team", "group", "blau"))) {stop("model must be one if c(\"team\", \"group\", \"blau\")")}
+  if (!(class %in% c("matrix", "igraph", "network"))) {stop("model must be one if c(\"matrix\", \"igraph\", \"network\")")}
+
+  #### Check input, convert to igraph ####
+  if (methods::is(G, "igraph")) {
+    if (igraph::is_directed(G)) {stop("G must be undirected")}
+    if (igraph::is_weighted(G)) {stop("G must be unweighted")}
+    if (igraph::is_bipartite(G)) {stop("G must be unipartite")}
+  }
+  if (methods::is(G, "matrix")) {
+    if (!isSymmetric(G)) {stop("G must be symmetric")}
+    if (!all(G %in% c(0,1))) {stop("G must be binary")}
+    G <- igraph::graph_from_adjacency_matrix(G,mode="undirected")
+    }
+  if (methods::is(G, "network")) {
+    if (network::is.directed(G)) {stop("G must be undirected")}
+    G <- network::as.sociomatrix(G)
+    G <- igraph::graph_from_adjacency_matrix(G,mode="undirected")
+  }
+
+  I <- as.matrix(1:(igraph::gorder(G)))  #Create empty incidence with numeric row labels
+
+  #### Team model (Guimera et al., 2005) ####
+  if (model == "team") {
+    nodes <- 1:(igraph::gorder(G))        #List of all nodes
+    cliques <- igraph::cliques(G, min=2)  #List of all cliques
+
+    for (i in 1:k) {                              #For each new team i:
+      clique <- sample(1:length(cliques),1)       #Pick a prior team
+      incumbent <- as.numeric(cliques[[clique]])  #List its members
+      newcomer <- nodes[!nodes %in% incumbent]    #List its nonmembers
+      size <- length(incumbent)                   #Find its size
+      members <- rep(0, times = size)             #Blank list of new team's members
+
+      for (j in 1:size) {                                  #For each position j on the new team:
+        members[j] <- ifelse(stats::runif(1) <= p,
+                             sample.vec(incumbent,1),      #With probability p, fill position j with a random incumbent
+                             sample.vec(newcomer,1))       #With probability p-1, fill position j with a random newcomer
+        incumbent <- incumbent[!incumbent %in% members]    #Update the list of remaining incumbents
+        newcomer <- newcomer[!newcomer %in% members]       #Update the list of remaining newcomers
+        }
+
+      I <- cbind(I,0)          #Add a blank artifact (team) to I
+      I[members, i + 1] <- 1   #Fill the artifact with the new team's members
+    }
+  }
+
+    #### Group model (Backstrom et al., 2006) ####
+    if (model == "group") {
+
+      dyads <- igraph::cliques(G, min=2, max = 2)   #List of all connected dyads
+
+      for (i in 1:k) {                                              #For each new group i:
+        members <- as.numeric(dyads[[sample(1:length(dyads),1)]])   #Sample a connected dyad
+        nonmembers <- which(!is.element(igraph::V(G), members))     #List non-members
+        density <- 1                                                #Set group's starting density
+        possible <- 1
+
+        while (length(possible)!= 0) {                                                              #While there are prospective members:
+          possible <- intersect(nonmembers,unique(unlist(igraph::adjacent_vertices(G, members))))   #Make list of prospective members (i.e. non-member friends of current members)
+          newmembers <- c(members, sample.vec(possible,1))                                          #Pick a random prospective member and add them to a prospective new group
+          nonmembers <- nonmembers[!nonmembers %in% newmembers]                                     #Remove the prospective new member from the list of non-members
+          possible <- possible[!possible %in% newmembers]                                           #Remove the prospective new member from the list of prospective members
+          density <- igraph::edge_density(igraph::induced_subgraph(G, newmembers))                  #Compute the density of the prospective new group
+          if (density >= p) {members <- newmembers}                                                 #If the new group has the required density, keep the new member, repeat for other prospective members
+        }
+
+        I <- cbind(I,0)          #Add a blank artifact (group) to I
+        I[members, i + 1] <- 1   #Fill the artifact with the new group's members
+      }
+    }
+
+  #### BlauSpace model (McPherson, 2004) ####
+  if (model == "blau") {
+
+    dist <- igraph::distances(G)                         #Compute geodesic distances
+    mds <- stats::cmdscale(dist, eig=TRUE, k=d)                 #Embed in d-dimensional Blau space
+    print(paste0("GOF = ", round(mds[["GOF"]][1],3)))    #Display goodness-of-fit
+    coords <- mds$points                                 #Extract coordinates
+    dist.quan <- stats::quantile(dist(coords), c(.05,.95))      #Compute 10% & 90% percentile of distances
+    radii <- stats::rexp(k)                                #Pick radii for `k` niches from an exponential distribution (most niches are small)
+    radii <- (((radii - min(radii)) * (dist.quan[2] - dist.quan[1])) / (max(radii) - min(radii))) + dist.quan[1]  #Rescale radii to range from 10th-90th percentile
+    dist <- as.matrix(dist(coords))                      #Compute distances between nodes in Blau Space
+
+    i <- 1
+    while (dim(I)[2] < (k + 1)) {                          #Until `k` organizations are created, for each organization i:
+      recruiter <- sample(1:igraph::gorder(G),1)           #Pick node to serve as niche center
+      dist.from <- dist[recruiter,]                        #Find each node's distcance from niche center
+      in.niche <- dist.from < radii[i]                     #Identify nodes inside the niche
+      p.in.niche <- ifelse(in.niche, p, 1-p)               #Probability of joining organization
+      member <- stats::rbinom(length(p.in.niche),1,p.in.niche)    #Nodes join organization with given probability
+      if (sum(member) > 1) {      #If more than one person joins organization i
+        I <- cbind(I, member)     #Add this organization's member list to I
+        i <- i + 1}               #Go to the next organization
+    }
+  }
+
+  # Clean up and return
+  I <- I[,-1]  #Remove placeholder ID column
+  rownames(I) <- igraph::V(G)$name  #Insert row names
+  colnames(I) <- c(paste0("k", 1:ncol(I)))  #Insert column names
+  if (class == "igraph") {I <- igraph::graph_from_incidence_matrix(I)}
+  if (class == "network") {I <- network::network(I, bipartite = TRUE)}
+  return(I)  #Return the bipartite graph with row labels
+}
+

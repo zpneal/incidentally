@@ -85,16 +85,15 @@ incidence.from.adjacency <- function(G, k = 1, p = 1, d = 2, model = "team", cla
       members <- rep(0, times = size)             #Blank list of new team's members
 
       for (j in 1:size) {
-        if (j == 1) {                                      #For the first position j = 1:
-          members[j] <- sample.vec(incumbent,1)            #Fill with a random incumbent
-          incumbent <- incumbent[!incumbent %in% members]  #Update the list of remaining incumbents
-        }
-        if (j > 1 & stats::runif(1) <= p) {                #For all remaining positions j > 1:
-          members[j] <- sample.vec(incumbent,1)            #With probability p, fill position j with a random incumbent
-          incumbent <- incumbent[!incumbent %in% members]  #Update the list of remaining incumbents
-          } else {
-          members[j] <- sample.vec(newcomer,1)             #With probability p-1, fill position j with a random newcomer
-          newcomer <- newcomer[!newcomer %in% members]     #Update the list of remaining newcomers
+        if (j == 1) {                                        #For the first position j = 1:
+          members[j] <- sample.vec(incumbent,1)              #Fill with a random incumbent
+          incumbent <- incumbent[!incumbent %in% members]    #Update the list of remaining incumbents
+        } else {if (stats::runif(1) <= p) {                  #For all remaining positions j > 1:
+            members[j] <- sample.vec(incumbent,1)            #With probability p, fill position j with a random incumbent
+            incumbent <- incumbent[!incumbent %in% members]  #Update the list of remaining incumbents
+            } else {
+            members[j] <- sample.vec(newcomer,1)             #With probability p-1, fill position j with a random newcomer
+            newcomer <- newcomer[!newcomer %in% members]     #Update the list of remaining newcomers
           }
         }
 

@@ -94,6 +94,7 @@ incidence.from.adjacency <- function(G, k = 1, p = 1, d = 2, model = "team", cla
             } else {
             members[j] <- sample.vec(newcomer,1)             #With probability p-1, fill position j with a random newcomer
             newcomer <- newcomer[!newcomer %in% members]     #Update the list of remaining newcomers
+            }
           }
         }
 

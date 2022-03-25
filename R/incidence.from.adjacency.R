@@ -4,8 +4,7 @@
 #' `incidence.from.adjacency` generates an incidence matrix from an adjacency matrix or network using
 #'    a given generative model
 #'
-#' @param G A symmetric, binary adjacency matrix of class `matrix`,
-#'    or an undirected, unweighted unipartite graph of class {\link{igraph}}.
+#' @param G A symmetric, binary adjacency matrix of class `matrix` or an undirected, unweighted unipartite graph of class {\link{igraph}}.
 #' @param k integer: Number of artifacts to generate
 #' @param p numeric: Tuning parameter for artifacts, 0 <= p <= 1
 #' @param d numeric: Number of dimensions in Blau space, d >= 2
@@ -36,7 +35,8 @@
 #'
 #' @examples
 #' G <- igraph::erdos.renyi.game(10, .25)
-#' I <- incidence.from.adjacency(G, k = 1000, p = .95, model = "team", class = "matrix")
+#' I <- incidence.from.adjacency(G, k = 1000, p = .95,
+#'                               model = "team")
 incidence.from.adjacency <- function(G, k = 1, p = 1, d = 2, model = "team", class = "original") {
 
   #### Sampling function, to allow sampling from a vector with one entry ####
@@ -47,13 +47,12 @@ incidence.from.adjacency <- function(G, k = 1, p = 1, d = 2, model = "team", cla
   if (!is.numeric(k)) {stop("k must be numeric")}
   if (!is.numeric(d)) {stop("d must be numeric")}
   if (!is.numeric(p)) {stop("p must be numeric")}
-  if (d%%1!=0) {stop("d must be an integer")}
-  if (d < 2) {stop("d must be >= 2")}
+  if (d%%1!=0 | d < 2) {stop("d must be an integer greater than 1")}
   if (p < 0 | p > 1) {stop("p must be between 0 and 1")}
   if (!(model %in% c("team", "group", "blau"))) {stop("model must be one if c(\"team\", \"group\", \"blau\")")}
   if (!(class %in% c("matrix", "igraph"))) {stop("model must be one if c(\"matrix\", \"igraph\"")}
 
-  #### Check input, convert to igraph ####
+  #### Check input, get names, convert to igraph ####
   if (methods::is(G, "igraph")) {
     if (igraph::is_directed(G)) {stop("G must be undirected")}
     if (igraph::is_weighted(G)) {stop("G must be unweighted")}
@@ -71,7 +70,12 @@ incidence.from.adjacency <- function(G, k = 1, p = 1, d = 2, model = "team", cla
 
   #### Team model (Guimera et al., 2005) ####
   if (model == "team") {
-    cliques <- igraph::cliques(G, min=2)  #List of all cliques  [THIS IS TOO SLOW FOR LARGE GRAPHS]
+
+    cliques <- igraph::cliques(G, min=2)  #List of all cliques
+    #This step will be slow for large/dense graphs. For these graphs, consider using this approximation
+    # - List all maximal cliques
+    # - In loop, sample one maximal clique
+    # - In loop, sample between 2 and N nodes from the maximal clique
 
     for (i in 1:k) {                              #For each new team i:
       clique <- sample(1:length(cliques),1)       #Pick a prior team
@@ -81,11 +85,13 @@ incidence.from.adjacency <- function(G, k = 1, p = 1, d = 2, model = "team", cla
       members <- rep(0, times = size)             #Blank list of new team's members
 
       for (j in 1:size) {                                  #For each position j on the new team:
-        members[j] <- ifelse(stats::runif(1) <= p,
-                             sample.vec(incumbent,1),      #With probability p, fill position j with a random incumbent
-                             sample.vec(newcomer,1))       #With probability p-1, fill position j with a random newcomer
-        incumbent <- incumbent[!incumbent %in% members]    #Update the list of remaining incumbents
-        newcomer <- newcomer[!newcomer %in% members]       #Update the list of remaining newcomers
+        if (stats::runif(1) <= p) {
+          members[j] <- sample.vec(incumbent,1)            #With probability p, fill position j with a random incumbent
+          incumbent <- incumbent[!incumbent %in% members]  #Update the list of remaining incumbents
+          } else {
+          members[j] <- sample.vec(newcomer,1)             #With probability p-1, fill position j with a random newcomer
+          newcomer <- newcomer[!newcomer %in% members]     #Update the list of remaining newcomers
+          }
         }
 
       I <- cbind(I,0)          #Add a blank artifact (team) to I

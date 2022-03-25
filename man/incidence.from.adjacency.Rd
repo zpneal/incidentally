@@ -14,8 +14,7 @@ incidence.from.adjacency(
 )
 }
 \arguments{
-\item{G}{A symmetric, binary adjacency matrix of class \code{matrix},
-or an undirected, unweighted unipartite graph of class {\link{igraph}}.}
+\item{G}{A symmetric, binary adjacency matrix of class \code{matrix} or an undirected, unweighted unipartite graph of class {\link{igraph}}.}
 
 \item{k}{integer: Number of artifacts to generate}
 
@@ -53,5 +52,6 @@ with probability 1-\code{p}.
 }
 \examples{
 G <- igraph::erdos.renyi.game(10, .25)
-I <- incidence.from.adjacency(G, k = 1000, p = .95, model = "team", class = "matrix")
+I <- incidence.from.adjacency(G, k = 1000, p = .95,
+                              model = "team")
 }

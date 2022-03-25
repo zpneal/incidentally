@@ -15,7 +15,7 @@ incidence.from.adjacency(
 }
 \arguments{
 \item{G}{A symmetric, binary adjacency matrix of class \code{matrix},
-or an undirected, unweighted unipartite graph of class {\link{igraph}} or \code{\link{network}}.}
+or an undirected, unweighted unipartite graph of class {\link{igraph}}.}
 
 \item{k}{integer: Number of artifacts to generate}
 
@@ -28,7 +28,7 @@ or an undirected, unweighted unipartite graph of class {\link{igraph}} or \code{
 \item{class}{string: Class of the returned object, where the default is the class of \code{G}}
 }
 \value{
-An incidence matrix of class \code{matrix}, or a bipartite graph of class {\link{igraph}} or \code{\link{network}}.
+An incidence matrix of class \code{matrix} or a bipartite graph of class {\link{igraph}}.
 }
 \description{
 \code{incidence.from.adjacency} generates an incidence matrix from an adjacency matrix or network using

@@ -5,7 +5,7 @@
 #'    a given generative model
 #'
 #' @param G A symmetric, binary adjacency matrix of class `matrix`,
-#'    or an undirected, unweighted unipartite graph of class {\link{igraph}} or \code{\link{network}}.
+#'    or an undirected, unweighted unipartite graph of class {\link{igraph}}.
 #' @param k integer: Number of artifacts to generate
 #' @param p numeric: Tuning parameter for artifacts, 0 <= p <= 1
 #' @param d numeric: Number of dimensions in Blau space, d >= 2
@@ -13,7 +13,7 @@
 #' @param class string: Class of the returned object, where the default is the class of `G`
 #'
 #' @return
-#' An incidence matrix of class `matrix`, or a bipartite graph of class {\link{igraph}} or \code{\link{network}}.
+#' An incidence matrix of class `matrix` or a bipartite graph of class {\link{igraph}}.
 #'
 #' @details
 #' Given a unipartite network composed of *i agents* (i.e. nodes) that can be represented by an *i x i* adjacency
@@ -51,14 +51,14 @@ incidence.from.adjacency <- function(G, k = 1, p = 1, d = 2, model = "team", cla
   if (d < 2) {stop("d must be >= 2")}
   if (p < 0 | p > 1) {stop("p must be between 0 and 1")}
   if (!(model %in% c("team", "group", "blau"))) {stop("model must be one if c(\"team\", \"group\", \"blau\")")}
-  if (!(class %in% c("matrix", "igraph", "network"))) {stop("model must be one if c(\"matrix\", \"igraph\", \"network\")")}
+  if (!(class %in% c("matrix", "igraph"))) {stop("model must be one if c(\"matrix\", \"igraph\"")}
 
   #### Check input, convert to igraph ####
   if (methods::is(G, "igraph")) {
     if (igraph::is_directed(G)) {stop("G must be undirected")}
     if (igraph::is_weighted(G)) {stop("G must be unweighted")}
     if (igraph::is_bipartite(G)) {stop("G must be unipartite")}
-    if (!is.null(V(G)$name)) {nodes <- igraph::V(G)$name} else {nodes <- 1:(igraph::gorder(G))}
+    if (!is.null(igraph::V(G)$name)) {nodes <- igraph::V(G)$name} else {nodes <- 1:(igraph::gorder(G))}
   }
   if (methods::is(G, "matrix")) {
     if (!isSymmetric(G)) {stop("G must be symmetric")}
@@ -66,12 +66,6 @@ incidence.from.adjacency <- function(G, k = 1, p = 1, d = 2, model = "team", cla
     if (!is.null(rownames(G))) {nodes <- rownames(G)} else {nodes <- 1:nrow(G)}
     G <- igraph::graph_from_adjacency_matrix(G,mode="undirected")
     }
-  if (methods::is(G, "network")) {
-    if (network::is.directed(G)) {stop("G must be undirected")}
-    nodes <- network::get.vertex.attribute(G, "vertex.names")
-    G <- network::as.sociomatrix(G)
-    G <- igraph::graph_from_adjacency_matrix(G,mode="undirected")
-  }
 
   I <- as.matrix(1:(igraph::gorder(G)))  #Create empty incidence with numeric row labels
 
@@ -154,7 +148,6 @@ incidence.from.adjacency <- function(G, k = 1, p = 1, d = 2, model = "team", cla
   rownames(I) <- igraph::V(G)$name  #Insert row names
   colnames(I) <- c(paste0("k", 1:ncol(I)))  #Insert column names
   if (class == "igraph") {I <- igraph::graph_from_incidence_matrix(I)}
-  if (class == "network") {I <- network::network(I, bipartite = TRUE)}
   return(I)  #Return the bipartite graph with row labels
 }
 

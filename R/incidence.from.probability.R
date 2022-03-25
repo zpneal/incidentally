@@ -7,10 +7,10 @@
 #' @param C integer: number of columns
 #' @param P numeric: probability that a cell contains a 1; if P = 0 a probability will be chosen randomly
 #' @param constrain boolean: ensure that no rows or columns sum to 0 (i.e., contain all 0s) or to 1 (i.e., contain all 1s)
-#' @param class string: the class of the returned backbone graph, one of c("matrix", "Matrix", "igraph", "network").
+#' @param class string: the class of the returned backbone graph, one of c("matrix", igraph").
 #'
 #' @return
-#' An incidence matrix of class `matrix`, or a bipartite graph of class {\link{igraph}}, or \code{\link{network}}.
+#' An incidence matrix of class `matrix` or a bipartite graph of class {\link{igraph}}.
 #'
 #' @export
 #'
@@ -42,7 +42,6 @@ incidence.from.probability <- function(R, C, P=0, constrain = TRUE, class="matri
   }
 
   #Convert to desired class and return
-  if (class == "network"){I <- network::network(I, bipartite = TRUE)}
   if (class == "igraph"){I <- igraph::graph_from_incidence_matrix(I)}
   return(I)
 }

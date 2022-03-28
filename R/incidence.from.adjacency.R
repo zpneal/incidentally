@@ -4,15 +4,14 @@
 #' `incidence.from.adjacency` generates an incidence matrix from an adjacency matrix or network using
 #'    a given generative model
 #'
-#' @param G A symmetric, binary adjacency matrix of class `matrix` or an undirected, unweighted unipartite graph of class {\link{igraph}}.
+#' @param G A symmetric, binary adjacency matrix of class `matrix` or `Matrix`, or an undirected, unweighted unipartite graph of class {\link{igraph}}.
 #' @param k integer: Number of artifacts to generate
 #' @param p numeric: Tuning parameter for artifacts, 0 <= p <= 1
 #' @param d numeric: Number of dimensions in Blau space, d >= 2
 #' @param model string: Generative model, one of c("team", "group", "blau") (see details)
-#' @param class string: Class of the returned object, where the default is the class of `G`
+#' @param class string: Class of the returned object, either `matrix` or `igraph`. If `NULL`, object is returned in the same class as `G`.
 #'
-#' @return
-#' An incidence matrix of class `matrix` or a bipartite graph of class {\link{igraph}}.
+#' @return An incidence matrix of class `matrix` or a bipartite graph of class {\link{igraph}}.
 #'
 #' @details
 #' Given a unipartite network composed of *i agents* (i.e. nodes) that can be represented by an *i x i* adjacency
@@ -37,13 +36,15 @@
 #' G <- igraph::erdos.renyi.game(10, .25)
 #' I <- incidence.from.adjacency(G, k = 1000, p = .95,
 #'                               model = "team")
-incidence.from.adjacency <- function(G, k = 1, p = 1, d = 2, model = "team", class = "original") {
+incidence.from.adjacency <- function(G, k = 1, p = 1, d = 2, model = "team", class = NULL) {
 
   #### Sampling function, to allow sampling from a vector with one entry ####
   sample.vec <- function(x, ...) x[sample(length(x), ...)]
 
   #### Parameter checks ####
-  if (class == "original") {class <- class(G)[1]}
+  if (is.null(class) & methods::is(G, "igraph")) {class <- "igraph"}
+  if (is.null(class) & methods::is(G, "matrix")) {class <- "matrix"}
+  if (is.null(class) & methods::is(G, "Matrix")) {class <- "matrix"}
   if (!is.numeric(k)) {stop("k must be numeric")}
   if (!is.numeric(d)) {stop("d must be numeric")}
   if (!is.numeric(p)) {stop("p must be numeric")}
@@ -64,7 +65,14 @@ incidence.from.adjacency <- function(G, k = 1, p = 1, d = 2, model = "team", cla
     if (!all(G %in% c(0,1))) {stop("G must be binary")}
     if (!is.null(rownames(G))) {nodes <- rownames(G)} else {nodes <- 1:nrow(G)}
     G <- igraph::graph_from_adjacency_matrix(G,mode="undirected")
-    }
+  }
+  if (methods::is(G, "Matrix")) {
+    G <- as.matrix(G)
+    if (!isSymmetric(G)) {stop("G must be symmetric")}
+    if (!all(G %in% c(0,1))) {stop("G must be binary")}
+    if (!is.null(rownames(G))) {nodes <- rownames(G)} else {nodes <- 1:nrow(G)}
+    G <- igraph::graph_from_adjacency_matrix(G,mode="undirected")
+  }
 
   I <- as.matrix(1:(igraph::gorder(G)))  #Create empty incidence with numeric row labels
 

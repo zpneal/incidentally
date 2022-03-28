@@ -36,7 +36,7 @@ The \strong{Team Model} (\code{model == "team"}) mirrors a team formation proces
 formed from the incumbants of a prior team (with probability \code{p}) and newcomers (with probability 1-\code{p}).
 
 The \strong{Group Model} (\code{model == "group"}) mirrors a social group formation process, where each artifact represents
-a social group. Group members attempt to recruit non-member friends, who joins the group if it would have a
+a social group. Group members attempt to recruit non-member friends, who join the group if it would have a
 density of at least \code{p}.
 
 The \strong{Blau Space Model} (\code{model == "blau"}) mirrors an organization (the artifact) recruiting members from social

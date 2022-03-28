@@ -23,7 +23,7 @@
 #'     formed from the incumbants of a prior team (with probability `p`) and newcomers (with probability 1-`p`).
 #'
 #' The **Group Model** (`model == "group"`) mirrors a social group formation process, where each artifact represents
-#'     a social group. Group members attempt to recruit non-member friends, who joins the group if it would have a
+#'     a social group. Group members attempt to recruit non-member friends, who join the group if it would have a
 #'     density of at least `p`.
 #'
 #' The **Blau Space Model** (`model == "blau"`) mirrors an organization (the artifact) recruiting members from social
@@ -85,7 +85,7 @@ incidence.from.adjacency <- function(G, k = 1, p = 1, d = 2, model = "team", cla
     # - In loop, sample one maximal clique
     # - In loop, sample between 2 and N nodes from the maximal clique
 
-    for (i in 1:k) {                              #For each new team i:
+    for (i in 1:k) {                              #For each new team k:
       clique <- sample(1:length(cliques),1)       #Pick a prior team
       incumbent <- as.numeric(cliques[[clique]])  #List its members
       newcomer <- nodes[!nodes %in% incumbent]    #List its nonmembers
@@ -114,21 +114,30 @@ incidence.from.adjacency <- function(G, k = 1, p = 1, d = 2, model = "team", cla
     #### Group model (Backstrom et al., 2006) ####
     if (model == "group") {
 
-      dyads <- igraph::cliques(G, min=2, max = 2)   #List of all connected dyads
+      ## Function to get candidates
+      get.candidates <- function(G, members, declined) {
+        candidates <- unique(unlist(igraph::adjacent_vertices(G, members)))  #All neighbors of members
+        candidates <- candidates[!candidates %in% members]  #Remove members
+        candidates <- candidates[!candidates %in% declined]  #Remove recruits who have declined
+        return(candidates)
+      }
+      
+      cliques <- igraph::cliques(G, min=2)  #List of all cliques
+      #This step will be slow for large/dense graphs. For these graphs, consider using this approximation
+      # - List all maximal cliques
+      # - In loop, sample one maximal clique
+      # - In loop, sample between 2 and N nodes from the maximal clique
 
-      for (i in 1:k) {                                              #For each new group i:
-        members <- as.numeric(dyads[[sample(1:length(dyads),1)]])   #Sample a connected dyad
-        nonmembers <- which(!is.element(igraph::V(G), members))     #List non-members
-        density <- 1                                                #Set group's starting density
-        possible <- 1
+      for (i in 1:k) {                                                  #For each new group k:
+        members <- as.numeric(cliques[[sample(1:length(cliques),1)]])   #Sample a clique (initial members)
+        declined <- NULL                                                #Recruits who declined membership
+        candidates <- get.candidates(G, members, declined)
 
-        while (length(possible)!= 0) {                                                              #While there are prospective members:
-          possible <- intersect(nonmembers,unique(unlist(igraph::adjacent_vertices(G, members))))   #Make list of prospective members (i.e. non-member friends of current members)
-          newmembers <- c(members, sample.vec(possible,1))                                          #Pick a random prospective member and add them to a prospective new group
-          nonmembers <- nonmembers[!nonmembers %in% newmembers]                                     #Remove the prospective new member from the list of non-members
-          possible <- possible[!possible %in% newmembers]                                           #Remove the prospective new member from the list of prospective members
-          density <- igraph::edge_density(igraph::induced_subgraph(G, newmembers))                  #Compute the density of the prospective new group
-          if (density >= p) {members <- newmembers}                                                 #If the new group has the required density, keep the new member, repeat for other prospective members
+        while (length(candidates)!= 0) {                                                               #While there are candidates
+          recruit <- sample.vec(candidates, 1)                                                         #Pick random recruit from candidates
+          density <- igraph::edge_density(igraph::induced_subgraph(G, c(members,recruit)))             #Compute prospective group's density
+          if (density >= p) {members <- c(members, recruit)} else {declined <- c(declined, recruit)}   #Join or decline
+          candidates <- get.candidates(G, members, declined)                                           #Update candidate list
         }
 
         I <- cbind(I,0)          #Add a blank artifact (group) to I

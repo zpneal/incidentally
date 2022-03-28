@@ -4,17 +4,10 @@
 \alias{incidence.from.adjacency}
 \title{Generates an incidence matrix from an adjacency matrix}
 \usage{
-incidence.from.adjacency(
-  G,
-  k = 1,
-  p = 1,
-  d = 2,
-  model = "team",
-  class = "original"
-)
+incidence.from.adjacency(G, k = 1, p = 1, d = 2, model = "team", class = NULL)
 }
 \arguments{
-\item{G}{A symmetric, binary adjacency matrix of class \code{matrix} or an undirected, unweighted unipartite graph of class {\link{igraph}}.}
+\item{G}{A symmetric, binary adjacency matrix of class \code{matrix} or \code{Matrix}, or an undirected, unweighted unipartite graph of class {\link{igraph}}.}
 
 \item{k}{integer: Number of artifacts to generate}
 
@@ -24,7 +17,7 @@ incidence.from.adjacency(
 
 \item{model}{string: Generative model, one of c("team", "group", "blau") (see details)}
 
-\item{class}{string: Class of the returned object, where the default is the class of \code{G}}
+\item{class}{string: Class of the returned object, either \code{matrix} or \code{igraph}. If \code{NULL}, object is returned in the same class as \code{G}.}
 }
 \value{
 An incidence matrix of class \code{matrix} or a bipartite graph of class {\link{igraph}}.

@@ -1,6 +1,6 @@
 #' Adds a block structure to an incidence matrix
 #'
-#' `add.blocks` shuffles an incidence matrix to have a block structure while preserving the row and column sums
+#' `add.blocks` shuffles an incidence matrix to have a block structure or planted partition while preserving the row and column sums
 #'
 #' @param I matrix: An incidence matrix
 #' @param blocks integer: number of blocks to add (between 2 and 26)
@@ -8,6 +8,11 @@
 #' @param max.tries numeric: number of ineligible re-wiring attempts before giving up
 #'
 #' @details
+#' Stochastic block and planted partition models generate graphs in which the probability that two nodes are connected
+#'    depends on whether they are members of the same or different blocks/partitions. Functions such as \link[igraph]{sample_sbm}
+#'    can randomly sample from stochastic block models with given probabilities. In contrast `add.blocks` attempts to
+#'    generate a block model that preserves the degree sequences (i.e., a matrix with preserved row and column sums).
+#' 
 #' Each row and each column node are randomly assigned to one of `blocks` number of groups. Then
 #'    checkerboard swaps are performed that increase the within-block density, until `density` is achieved.
 #'    Eligible swaps are identified randomly, so the re-wiring can be slow when `I` is large. The process

@@ -19,9 +19,14 @@ add.blocks(I, blocks = 2, density = 0.5, max.tries = 1e+05)
 matrix: An incidence matrix, row and column names begin with a letter indicating their block membership
 }
 \description{
-\code{add.blocks} shuffles an incidence matrix to have a block structure while preserving the row and column sums
+\code{add.blocks} shuffles an incidence matrix to have a block structure or planted partition while preserving the row and column sums
 }
 \details{
+Stochastic block and planted partition models generate graphs in which the probability that two nodes are connected
+depends on whether they are members of the same or different blocks/partitions. Functions such as \link[igraph]{sample_sbm}
+can randomly sample from stochastic block models with given probabilities. In contrast \code{add.blocks} attempts to
+generate a block model that preserves the degree sequences (i.e., a matrix with preserved row and column sums).
+
 Each row and each column node are randomly assigned to one of \code{blocks} number of groups. Then
 checkerboard swaps are performed that increase the within-block density, until \code{density} is achieved.
 Eligible swaps are identified randomly, so the re-wiring can be slow when \code{I} is large. The process

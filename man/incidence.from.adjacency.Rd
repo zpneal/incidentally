@@ -44,7 +44,7 @@ space, where those within the organization's niche join with probability \code{p
 with probability 1-\code{p}.
 }
 \examples{
-G <- igraph::erdos.renyi.game(10, .25)
+G <- igraph::erdos.renyi.game(10, .4)
 I <- incidence.from.adjacency(G, k = 1000, p = .95,
                               model = "team")
 }

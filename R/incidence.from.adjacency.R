@@ -33,7 +33,7 @@
 #' @export
 #'
 #' @examples
-#' G <- igraph::erdos.renyi.game(10, .25)
+#' G <- igraph::erdos.renyi.game(10, .4)
 #' I <- incidence.from.adjacency(G, k = 1000, p = .95,
 #'                               model = "team")
 incidence.from.adjacency <- function(G, k = 1, p = 1, d = 2, model = "team", class = NULL) {
@@ -121,7 +121,7 @@ incidence.from.adjacency <- function(G, k = 1, p = 1, d = 2, model = "team", cla
         candidates <- candidates[!candidates %in% declined]  #Remove recruits who have declined
         return(candidates)
       }
-      
+
       cliques <- igraph::cliques(G, min=2)  #List of all cliques
       #This step will be slow for large/dense graphs. For these graphs, consider using this approximation
       # - List all maximal cliques
@@ -148,25 +148,22 @@ incidence.from.adjacency <- function(G, k = 1, p = 1, d = 2, model = "team", cla
   #### BlauSpace model (McPherson, 2004) ####
   if (model == "blau") {
 
-    dist <- igraph::distances(G)                         #Compute geodesic distances
-    mds <- stats::cmdscale(dist, eig=TRUE, k=d)                 #Embed in d-dimensional Blau space
-    print(paste0("GOF = ", round(mds[["GOF"]][1],3)))    #Display goodness-of-fit
-    coords <- mds$points                                 #Extract coordinates
-    dist.quan <- stats::quantile(dist(coords), c(.05,.95))      #Compute 10% & 90% percentile of distances
-    radii <- stats::rexp(k)                                #Pick radii for `k` niches from an exponential distribution (most niches are small)
-    radii <- (((radii - min(radii)) * (dist.quan[2] - dist.quan[1])) / (max(radii) - min(radii))) + dist.quan[1]  #Rescale radii to range from 10th-90th percentile
-    dist <- as.matrix(dist(coords))                      #Compute distances between nodes in Blau Space
+    dist <- igraph::distances(G)          #Compute geodesic distances
+    if (any(dist==Inf)) {stop("the blau space mode requires that the network be connected")}
+    mds <- stats::cmdscale(dist, k=d)     #Embed in d-dimensional Blau space
+    D <- as.matrix(stats::dist(mds))      #Compute distances between nodes in Blau Space
+    diag(D) <- NA
 
     i <- 1
-    while (dim(I)[2] < (k + 1)) {                          #Until `k` organizations are created, for each organization i:
-      recruiter <- sample(1:igraph::gorder(G),1)           #Pick node to serve as niche center
-      dist.from <- dist[recruiter,]                        #Find each node's distcance from niche center
-      in.niche <- dist.from < radii[i]                     #Identify nodes inside the niche
-      p.in.niche <- ifelse(in.niche, p, 1-p)               #Probability of joining organization
-      member <- stats::rbinom(length(p.in.niche),1,p.in.niche)    #Nodes join organization with given probability
-      if (sum(member) > 1) {      #If more than one person joins organization i
-        I <- cbind(I, member)     #Add this organization's member list to I
-        i <- i + 1}               #Go to the next organization
+    while (dim(I)[2] < (k + 1)) {                    #Until `k` organizations are created, for each organization i:
+      leader <- sample(1:igraph::gorder(G),1)        #Pick node to serve as organization leader and niche center
+      R <- (stats::rbeta(1,2,5) * (max(D,na.rm=T) - min(D,na.rm=T))) + min(D,na.rm=T)  #Pick niche radius
+      prob <- ifelse(D[leader,] <= R, p, 1-p)        #Probability of joining, depending on whether inside or outside niche
+      prob[is.na(prob)] <- 1                         #Leader always joins
+      members <- stats::rbinom(length(prob),1,prob)  #Nodes join organization with given probability
+      if (sum(members) > 1) {      #If more than one person joins organization i
+        I <- cbind(I, members)     #Add this organization's member list to I
+        i <- i + 1}                #Go to the next organization
     }
   }
 

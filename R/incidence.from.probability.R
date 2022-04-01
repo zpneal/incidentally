@@ -34,7 +34,7 @@ incidence.from.probability <- function(R, C, P=0, constrain = TRUE, class="matri
   } else {if (P == 0) {P <- stats::runif(1)}}
 
   #Create an incidence matrix
-  I <- matrix(stats::rbinom(R*C,1,0),R,C)
+  I <- matrix(stats::rbinom(R*C,1,P),R,C)
 
   #Repeat until constraints are satisfied
   if (constrain) {

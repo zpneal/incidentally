@@ -169,8 +169,10 @@ incidence.from.adjacency <- function(G, k = 1, p = 1, d = 2, model = "team", cla
 
   # Clean up and return
   I <- I[,-1]  #Remove placeholder ID column
-  rownames(I) <- igraph::V(G)$name  #Insert row names
-  colnames(I) <- c(paste0("k", 1:ncol(I)))  #Insert column names
+  if (!is(I,"numeric")) {
+    rownames(I) <- igraph::V(G)$name  #Insert row names
+    colnames(I) <- c(paste0("k", 1:ncol(I)))  #Insert column names
+  }
   if (class == "igraph") {I <- igraph::graph_from_incidence_matrix(I)}
   return(I)  #Return the bipartite graph with row labels
 }

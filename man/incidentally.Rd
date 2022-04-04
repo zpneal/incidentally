@@ -15,5 +15,6 @@ Incidence matrices can be generated:
 \item ...with given marginals: \code{\link[=incidence.from.vector]{incidence.from.vector()}}.
 \item ...with marginals that follow given distributions: \code{\link[=incidence.from.distribution]{incidence.from.distribution()}}.
 \item ...from a network, by a social process mirroring team, group, or organization formation \code{\link[=incidence.from.adjacency]{incidence.from.adjacency()}}.
+\item ...with a block structure or planted partition: \code{\link[=add.blocks]{add.blocks()}}.
 }
 }

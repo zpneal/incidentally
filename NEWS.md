@@ -2,6 +2,6 @@
 title: "NEWS"
 output: html_document
 ---
-## incidentally 1.0.0
+## incidentally 0.9.0
 
 * initial release

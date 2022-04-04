@@ -40,6 +40,7 @@ library(igraph)
     a. [Teams model](#team)
     a. [Groups model](#group)
     a. [Blau Space model](#blau)
+4. [Block models](#block)
 
 # Introduction {#introduction}
 
@@ -80,6 +81,8 @@ The incidentally package offers multiple incidence matrix-generating functions t
 * [`incidence.from.distribution()`](#distribution) generates an incidence matrix in which the row and column marginals follow a given distribution.
 
 * [`incidence.from.adjacency()`](#adjacency) uses one of several generative models to create a bipartite network (in the form of an incidence matrix) from a unipartite network (in the form of an adjacency matrix).
+
+Once an incidence matrix is generated using one of these functions, the [`add.blocks()`](#block) function can be used to add a block structure or planted partition.
 
 ## Supported data formats {#formats}
 The incidentally package can return incidence matrices in several data formats that are useful for subsequent analysis in R:
@@ -195,6 +198,8 @@ plot(I, layout = layout_as_bipartite(I), main="New Teams")
 
 Notice that because the social network `G` is supplied as a `igraph` object, the generated incidence matrix `I` is returned as an `igraph` bipartite network, which facilitates subsequent plotting and analysis. In this example, team 16 is formed by 1, 8, 9, and 10. This team may have emerged from the prior 4-member team of 1, 6, 8, 10 (they are a clique in the social network). In this case, three positions on the new team are filled by incumbents from the original team (1, 8, and 10), while the final position is filled by a newcomer (9).
 
+[back to Table of Contents](#toc)
+
 ## Groups model {#group}
 The *groups* model mirrors a social group formation process [@backstrom2006group] in which current group members try to recruit their friends. To ensure a minimum level of group cohesion, potential recruits join the group only if doing so would yield a new group in which the members' social ties have a density of at least $p$. Each column in the incidence matrix records the members of a new social group.
 
@@ -210,6 +215,8 @@ plot(I, layout = layout_as_bipartite(I), main="New Groups")
 
 In this example, group 18 is joined by 2, 4, 6, and 13. This group may have formed when the initial dyad of 2 & 4 attempted to recruit their friend 6. Person 6 would join because doing so would create a new group with a density of 1 (because 2, 4, and 6 are all connected), which is greater than 0.75. Next, 6 recruits 13. Person 13 would join because doing so would create a new group with a density of 0.83, which is greater than 0.75. Next, 13 recruits 9. Person 9 *would not* join because doing so would create a new group with a density of 0.6, which is less than 0.75.
 
+[back to Table of Contents](#toc)
+
 ## Blau Space model {#blau}
 The *Blau Space* model mirrors an organizational recruitment process [@mcpherson1983ecology]. The given social network is embedded in a $d$ dimensional social space in which the dimensions are assumed to represent meaningful social distinctions, such that socially similar people are positioned nearby. Organizations recruit members from this space, recruiting people inside their niche with probability $p$, and outside their niche with probability $1-p$. Each column in the incidence matrix records the members of a new organization.
 
@@ -224,5 +231,24 @@ plot(I, layout = layout_as_bipartite(I), main="New Organizations")
 ```
 
 The social network is plotted using a Multidimensional Scaling layout, and therefore shows the nodes' positions in the abstract Blau Space from which organizations recruit members. In this example, organization 16 recruits 1, 3, 5, and 7 as members. This organization's niche is located near the top of the space. People 1, 3, and 5 were likely inside its niche and therefore readily recruited (here, with a 90% probability). Although person 7 is outside it's niche (i.e., quite different from the organization's typical member), they were also recruited.
+
+[back to Table of Contents](#toc)
+
+# Block models {#block}
+The `add.blocks()` function shuffles an incidence matrix to have a block structure or planted partition while preserving the row and column marginals. For example, after generating an incidence matrix with a density of .5, we can plant a two-group (`block = 2`) partition in which the within-group `density = 0.8`:
+```{r}
+I <- incidence.from.probability(10, 10, .3)
+I
+rowSums(I)
+colSums(I)
+I <- add.blocks(I, blocks = 2, density = .8)
+I
+rowSums(I)
+colSums(I)
+```
+
+In this example, the row objects are partitioned into two randomly-sized groups labeled `A` and `B`, and similarly the column objects are partitioned into two randomly-sized groups labeled `A` and `B`. There is a 0.8 probability of a 1 occuring between a row and column object belonging to the same group. Note that the row and column marginals are preserved.
+
+[back to Table of Contents](#toc)
 
 # References

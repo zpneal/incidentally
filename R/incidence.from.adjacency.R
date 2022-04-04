@@ -4,14 +4,16 @@
 #' `incidence.from.adjacency` generates an incidence matrix from an adjacency matrix or network using
 #'    a given generative model
 #'
-#' @param G A symmetric, binary adjacency matrix of class `matrix` or `Matrix`, or an undirected, unweighted unipartite graph of class {\link{igraph}}.
+#' @param G A symmetric, binary adjacency matrix of class `matrix` or `Matrix`,
+#'    a `data.frame` containing a symbolic edge list in the first two columns,
+#'    or an undirected, unweighted unipartite graph of class {\link{igraph}}.
 #' @param k integer: Number of artifacts to generate
 #' @param p numeric: Tuning parameter for artifacts, 0 <= p <= 1
 #' @param d numeric: Number of dimensions in Blau space, d >= 2
 #' @param model string: Generative model, one of c("team", "group", "blau") (see details)
-#' @param class string: Class of the returned object, either `matrix` or `igraph`. If `NULL`, object is returned in the same class as `G`.
+#' @param class string: Return object as `matrix`, `igraph`, or `edgelist`. If `NULL`, object is returned in the same class as `G`.
 #'
-#' @return An incidence matrix of class `matrix` or a bipartite graph of class {\link{igraph}}.
+#' @return An incidence matrix of class `matrix`, or a bipartite graph as an edgelist of {\link{igraph}} object.
 #'
 #' @details
 #' Given a unipartite network composed of *i agents* (i.e. nodes) that can be represented by an *i x i* adjacency
@@ -45,6 +47,7 @@ incidence.from.adjacency <- function(G, k = 1, p = 1, d = 2, model = "team", cla
   if (is.null(class) & methods::is(G, "igraph")) {class <- "igraph"}
   if (is.null(class) & methods::is(G, "matrix")) {class <- "matrix"}
   if (is.null(class) & methods::is(G, "Matrix")) {class <- "matrix"}
+  if (is.null(class) & methods::is(G, "data.frame")) {class <- "edgelist"}
   if (!is.numeric(k)) {stop("k must be numeric")}
   if (!is.numeric(d)) {stop("d must be numeric")}
   if (!is.numeric(p)) {stop("p must be numeric")}
@@ -72,6 +75,11 @@ incidence.from.adjacency <- function(G, k = 1, p = 1, d = 2, model = "team", cla
     if (!all(G %in% c(0,1))) {stop("G must be binary")}
     if (!is.null(rownames(G))) {nodes <- rownames(G)} else {nodes <- 1:nrow(G)}
     G <- igraph::graph_from_adjacency_matrix(G,mode="undirected")
+  }
+  if (methods::is(G, "data.frame")) {
+    if (ncol(G)!=2) {stop("the edgelist must have two columns")}
+    G <- igraph::graph_from_data_frame(G, directed = F)
+    if (!is.null(igraph::V(G)$name)) {nodes <- igraph::V(G)$name} else {nodes <- 1:(igraph::gorder(G))}
   }
 
   I <- as.matrix(1:(igraph::gorder(G)))  #Create empty incidence with numeric row labels
@@ -147,7 +155,7 @@ incidence.from.adjacency <- function(G, k = 1, p = 1, d = 2, model = "team", cla
 
   #### BlauSpace model (McPherson, 2004) ####
   if (model == "blau") {
-    
+
     if (!igraph::is.connected(G)) {stop("the blau space model requires that the network be connected")}
     coords <- igraph::layout_with_mds(G, dim = d)  #Get coordinates in Blau Space
     D <- as.matrix(stats::dist(coords))            #Compute distances between nodes in Blau Space
@@ -168,11 +176,12 @@ incidence.from.adjacency <- function(G, k = 1, p = 1, d = 2, model = "team", cla
 
   # Clean up and return
   I <- I[,-1]  #Remove placeholder ID column
-  if (!is(I,"numeric")) {
+  if (!methods::is(I,"numeric")) {
     rownames(I) <- igraph::V(G)$name  #Insert row names
     colnames(I) <- c(paste0("k", 1:ncol(I)))  #Insert column names
   }
   if (class == "igraph") {I <- igraph::graph_from_incidence_matrix(I)}
+  if (class == "edgelist") {I <- data.frame(igraph::as_edgelist(igraph::graph_from_incidence_matrix(I)))}
   return(I)  #Return the bipartite graph with row labels
 }
 

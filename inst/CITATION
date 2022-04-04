@@ -5,8 +5,8 @@ citEntry(
   title    = "{incidence}: Generates incidence matrices and bipartite graphs",
   author   = c(person("Zachary", "Neal")),
   year     = 2022,
-  note     = "R package version 1.0.0",
+  note     = "R package version 0.9.0",
   url      = "https://CRAN.R-project.org/package=incidentally",
-  textVersion = paste("Neal, Z. P. (2022). incidence: Generated incidence matrices and bipartite graphs. R package version 1.0.0. https://CRAN.R-project.org/package=incidentally"
+  textVersion = paste("Neal, Z. P. (2022). incidence: Generated incidence matrices and bipartite graphs. R package version 0.9.0. https://CRAN.R-project.org/package=incidentally"
   )
 )

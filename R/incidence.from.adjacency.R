@@ -147,11 +147,10 @@ incidence.from.adjacency <- function(G, k = 1, p = 1, d = 2, model = "team", cla
 
   #### BlauSpace model (McPherson, 2004) ####
   if (model == "blau") {
-
-    dist <- igraph::distances(G)          #Compute geodesic distances
-    if (any(dist==Inf)) {stop("the blau space mode requires that the network be connected")}
-    mds <- stats::cmdscale(dist, k=d)     #Embed in d-dimensional Blau space
-    D <- as.matrix(stats::dist(mds))      #Compute distances between nodes in Blau Space
+    
+    if (!igraph::is.connected(G)) {stop("the blau space model requires that the network be connected")}
+    coords <- igraph::layout_with_mds(G, dim = d)  #Get coordinates in Blau Space
+    D <- as.matrix(stats::dist(coords))            #Compute distances between nodes in Blau Space
     diag(D) <- NA
 
     i <- 1

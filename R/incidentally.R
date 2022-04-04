@@ -10,6 +10,7 @@
 #'    \item ...with given marginals: [incidence.from.vector()].
 #'    \item ...with marginals that follow given distributions: [incidence.from.distribution()].
 #'    \item ...from a network, by a social process mirroring team, group, or organization formation [incidence.from.adjacency()].
+#'    \item ...with a block structure or planted partition: [add.blocks()].
 #'    }
 #'
 #' @docType package

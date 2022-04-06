@@ -21,7 +21,7 @@ incidence.from.vector <- function(R,C,class="matrix"){
   #Parameter check
   if (sum(R)!=sum(C)) {stop("sum(R) must equal sum(C)")}
   if (!is.numeric(R) | !is.numeric(C)) {stop("R and C must be numeric")}
-  if (any(R%%1!=0) | (any(C%%1!=0)) | any(R<1) | any(C<1)) {stop("R and C must only contain positive integers")}
+  if (any(R%%1!=0) | (any(C%%1!=0)) | any(R<0) | any(C<0)) {stop("R and C must only contain non-negative integers")}
 
   #Set initial values
   r <- length(R) #number of rows

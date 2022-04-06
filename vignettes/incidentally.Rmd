@@ -20,6 +20,8 @@ knitr::opts_knit$set(global.par = TRUE)
 
 ```{r, echo = FALSE, message = FALSE}
 library(igraph)
+oldpar <- par(mar = c(0, 0, 1, 0))
+par(mar = c(0, 0, 1, 0))
 ```
 
 # Table of Contents {#toc}
@@ -187,7 +189,6 @@ The *teams* model mirrors a team formation process [@guimera2005team] that depen
 
 Given an initial social network among 15 people, we can simulate their formation of three (`k = 3`) new teams, where there is a `p = 0.75` probability that a prior team member joins the a new team:
 ```{r, fig.show="hold", out.width="40%"}
-par(mar = c(0, 0, 1, 0))
 G <- erdos.renyi.game(15, .5)  #A random social network of 15 people, as igraph
 I <- incidence.from.adjacency(G, k = 3, p = .75, model = "team")  #Teams model
 class(I)  #Incidence matrix returned as igraph object
@@ -205,7 +206,6 @@ The *groups* model mirrors a social group formation process [@backstrom2006group
 
 Given an initial social network among 15 people, we can simulate their formation of three (`k = 3`) new groups, where each group has a minimum density of `p = 0.75`:
 ```{r, fig.show="hold", out.width="40%"}
-par(mar = c(0, 0, 1, 0))
 G <- erdos.renyi.game(15, .33)  #A random social network of 15 people, as igraph
 I <- incidence.from.adjacency(G, k = 3, p = .75, model = "group")  #Groups model
 V(I)$shape <- ifelse(V(I)$type, "square", "circle")  #Add shapes
@@ -222,7 +222,6 @@ The *Blau Space* model mirrors an organizational recruitment process [@mcpherson
 
 Given a social network among 15 people, we can simulate their recruitment by three (`k = 3`) new organizations, where there is a `p = 0.9` probability that an individual inside an organization's two-dimensional (`d = 2`) niche becomes a member:
 ```{r, fig.show="hold", out.width="40%"}
-par(mar = c(0, 0, 1, 0))
 G <- erdos.renyi.game(15, .33)  #A random social network of 15 people, as igraph
 I <- incidence.from.adjacency(G, k = 3, d = 2, p = .90, model = "blau")  #Groups model
 V(I)$shape <- ifelse(V(I)$type, "square", "circle")  #Add shapes
@@ -250,5 +249,9 @@ colSums(I)
 In this example, the row objects are partitioned into two randomly-sized groups labeled `A` and `B`, and similarly the column objects are partitioned into two randomly-sized groups labeled `A` and `B`. There is a 0.8 probability of a 1 occuring between a row and column object belonging to the same group. Note that the row and column marginals are preserved.
 
 [back to Table of Contents](#toc)
+
+```{r, echo = FALSE, message = FALSE}
+par(oldpar) #Restore old parameters
+```
 
 # References

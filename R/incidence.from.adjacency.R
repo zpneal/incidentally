@@ -9,6 +9,7 @@
 #'    or an undirected, unweighted unipartite graph of class {\link{igraph}}.
 #' @param k integer: Number of artifacts to generate
 #' @param p numeric: Tuning parameter for artifacts, 0 <= p <= 1
+#' @param blau.param vector: Vector of parameters that control blau space (see details)
 #' @param d numeric: Number of dimensions in Blau space, d >= 2
 #' @param model string: Generative model, one of c("team", "group", "blau") (see details)
 #' @param class string: Return object as `matrix`, `igraph`, or `edgelist`. If `NULL`, object is returned in the same class as `G`.
@@ -30,7 +31,10 @@
 #'
 #' The **Blau Space Model** (`model == "blau"`) mirrors an organization (the artifact) recruiting members from social
 #'     space, where those within the organization's niche join with probability `p`, and those outside the niche join
-#'     with probability 1-`p`.
+#'     with probability 1-`p`. `blau.param` is a vector containing three values that control the characteristics of the
+#'     blau space. The first value is the space's dimensionality. The second two values are shape parameters of a Beta
+#'     distribution that describes niche sizes. The default is a two-dimensional blau space, with organization niche
+#'     sizes that are strongly positively skewed (i.e., many specialist organizations, few generalists).
 #'
 #' @export
 #'
@@ -38,7 +42,7 @@
 #' G <- igraph::erdos.renyi.game(10, .4)
 #' I <- incidence.from.adjacency(G, k = 1000, p = .95,
 #'                               model = "team")
-incidence.from.adjacency <- function(G, k = 1, p = 1, d = 2, model = "team", class = NULL) {
+incidence.from.adjacency <- function(G, k = 1, p = 1, d = 2, blau.param = c(2,.1,5), model = "team", class = NULL) {
 
   #### Sampling function, to allow sampling from a vector with one entry ####
   sample.vec <- function(x, ...) x[sample(length(x), ...)]
@@ -51,10 +55,11 @@ incidence.from.adjacency <- function(G, k = 1, p = 1, d = 2, model = "team", cla
   if (!is.numeric(k)) {stop("k must be numeric")}
   if (!is.numeric(d)) {stop("d must be numeric")}
   if (!is.numeric(p)) {stop("p must be numeric")}
-  if (d%%1!=0 | d < 2) {stop("d must be an integer greater than 1")}
   if (p < 0 | p > 1) {stop("p must be between 0 and 1")}
   if (!(model %in% c("team", "group", "blau"))) {stop("model must be one if c(\"team\", \"group\", \"blau\")")}
   if (!(class %in% c("matrix", "igraph"))) {stop("model must be one if c(\"matrix\", \"igraph\"")}
+  if (blau.param[1]%%1!=0 | blau.param[1]<2) {stop("The first blau.param must be an integer greater than 1")}
+  if (blau.param[2]<0 | blau.param[3]<0) {stop("The second and third blau.param must be positive")}
 
   #### Check input, get names, convert to igraph ####
   if (methods::is(G, "igraph")) {
@@ -157,14 +162,14 @@ incidence.from.adjacency <- function(G, k = 1, p = 1, d = 2, model = "team", cla
   if (model == "blau") {
 
     if (!igraph::is.connected(G)) {stop("the blau space model requires that the network be connected")}
-    coords <- igraph::layout_with_mds(G, dim = d)  #Get coordinates in Blau Space
+    coords <- igraph::layout_with_mds(G, dim = blau.param[1])  #Get coordinates in Blau Space
     D <- as.matrix(stats::dist(coords))            #Compute distances between nodes in Blau Space
     diag(D) <- NA
 
     i <- 1
     while (dim(I)[2] < (k + 1)) {                    #Until `k` organizations are created, for each organization i:
       leader <- sample(1:igraph::gorder(G),1)        #Pick node to serve as organization leader and niche center
-      R <- (stats::rbeta(1,2,5) * (max(D,na.rm=T) - min(D,na.rm=T))) + min(D,na.rm=T)  #Pick niche radius
+      R <- (stats::rbeta(1,blau.param[2],blau.param[3]) * (max(D,na.rm=T) - min(D,na.rm=T))) + min(D,na.rm=T)  #Pick niche radius
       prob <- ifelse(D[leader,] <= R, p, 1-p)        #Probability of joining, depending on whether inside or outside niche
       prob[is.na(prob)] <- 1                         #Leader always joins
       members <- stats::rbinom(length(prob),1,prob)  #Nodes join organization with given probability

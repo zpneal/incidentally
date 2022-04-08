@@ -4,7 +4,15 @@
 \alias{incidence.from.adjacency}
 \title{Generates an incidence matrix from an adjacency matrix}
 \usage{
-incidence.from.adjacency(G, k = 1, p = 1, d = 2, model = "team", class = NULL)
+incidence.from.adjacency(
+  G,
+  k = 1,
+  p = 1,
+  d = 2,
+  blau.param = c(2, 0.1, 5),
+  model = "team",
+  class = NULL
+)
 }
 \arguments{
 \item{G}{A symmetric, binary adjacency matrix of class \code{matrix} or \code{Matrix},
@@ -16,6 +24,8 @@ or an undirected, unweighted unipartite graph of class {\link{igraph}}.}
 \item{p}{numeric: Tuning parameter for artifacts, 0 <= p <= 1}
 
 \item{d}{numeric: Number of dimensions in Blau space, d >= 2}
+
+\item{blau.param}{vector: Vector of parameters that control blau space (see details)}
 
 \item{model}{string: Generative model, one of c("team", "group", "blau") (see details)}
 
@@ -43,7 +53,10 @@ density of at least \code{p}.
 
 The \strong{Blau Space Model} (\code{model == "blau"}) mirrors an organization (the artifact) recruiting members from social
 space, where those within the organization's niche join with probability \code{p}, and those outside the niche join
-with probability 1-\code{p}.
+with probability 1-\code{p}. \code{blau.param} is a vector containing three values that control the characteristics of the
+blau space. The first value is the space's dimensionality. The second two values are shape parameters of a Beta
+distribution that describes niche sizes. The default is a two-dimensional blau space, with organization niche
+sizes that are strongly positively skewed (i.e., many specialist organizations, few generalists).
 }
 \examples{
 G <- igraph::erdos.renyi.game(10, .4)

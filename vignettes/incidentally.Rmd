@@ -129,7 +129,7 @@ colSums(I)  #Column marginals
 ## Marginal distributions {#distributions}
 The `incidence.from.distributions()` function generates an incidence matrix in which the row marginals approximately follow a given Beta distribution, and the column marginals approximately follow a given Beta distribution, described by two shape parameters. Beta distributions are used because they can flexibly capture many different distributional shapes:
 
-A $100 \times 100$ incidence matrix with **uniformly distributed** row and column marginals:
+A $100 \times 100$ incidence matrix with *approximately* **uniformly distributed** row and column marginals:
 ```{r, fig.show="hold", out.width="33%"}
 I <- incidence.from.distribution(R = 100, C = 100, P = 0.2,
   rowdist = c(1,1), coldist = c(1,1))
@@ -137,7 +137,7 @@ hist(rowSums(I), main = "Row Marginals")
 hist(colSums(I), main = "Column Marginals")
 ```
 
-A $100 \times 100$ incidence matrix with **right-tail distributed** row and column marginals:
+A $100 \times 100$ incidence matrix with *approximately* **right-tail distributed** row and column marginals:
 ```{r, fig.show="hold", out.width="33%"}
 I <- incidence.from.distribution(R = 100, C = 100, P = 0.2,
   rowdist = c(1,10), coldist = c(1,10))
@@ -145,7 +145,7 @@ hist(rowSums(I), main = "Row Marginals")
 hist(colSums(I), main = "Column Marginals")
 ```
 
-A $100 \times 100$ incidence matrix with **left-tail distributed** row and column marginals:
+A $100 \times 100$ incidence matrix with *approximately* **left-tail distributed** row and column marginals:
 ```{r, fig.show="hold", out.width="33%"}
 I <- incidence.from.distribution(R = 100, C = 100, P = 0.2,
   rowdist = c(10,1), coldist = c(10,1))
@@ -153,7 +153,7 @@ hist(rowSums(I), main = "Row Marginals")
 hist(colSums(I), main = "Column Marginals")
 ```
 
-A $100 \times 100$ incidence matrix with **normally distributed** row and column marginals:
+A $100 \times 100$ incidence matrix with *approximately* **normally distributed** row and column marginals:
 ```{r, fig.show="hold", out.width="33%"}
 I <- incidence.from.distribution(R = 100, C = 100, P = 0.2,
   rowdist = c(10,10), coldist = c(10,10))
@@ -161,7 +161,7 @@ hist(rowSums(I), main = "Row Marginals")
 hist(colSums(I), main = "Column Marginals")
 ```
 
-A $100 \times 100$ incidence matrix with **constant** row and column marginals:
+A $100 \times 100$ incidence matrix with *approximately* **constant** row and column marginals:
 ```{r}
 I <- incidence.from.distribution(R = 100, C = 100, P = 0.2,
   rowdist = c(10000,10000), coldist = c(10000,10000))
@@ -169,7 +169,7 @@ rowSums(I)
 colSums(I)
 ```
 
-Of course, different types of Beta distributions can be combined. For example, we can generate a $100 \times 100$ incidence matrix in which the row marginals are **right-tailed**, but the column marginals are **left-tailed**:
+Of course, different types of Beta distributions can be combined. For example, we can generate a $100 \times 100$ incidence matrix in which the row marginals are *approximately* **right-tailed**, but the column marginals are *approximately* **left-tailed**:
 ```{r, fig.show="hold", out.width="33%"}
 I <- incidence.from.distribution(R = 100, C = 100, P = 0.2,
   rowdist = c(1,10), coldist = c(10,1))
@@ -234,13 +234,13 @@ The social network is plotted using a Multidimensional Scaling layout, and there
 [back to Table of Contents](#toc)
 
 # Block models {#block}
-The `add.blocks()` function shuffles an incidence matrix to have a block structure or planted partition while preserving the row and column marginals. For example, after generating an incidence matrix with a density of .5, we can plant a two-group (`block = 2`) partition in which the within-group `density = 0.8`:
+The `add.blocks()` function shuffles an incidence matrix to have a block structure or planted partition while preserving the row and column marginals. For example, after generating an incidence matrix with a density of .5, we can plant a two-group (`block = 2`) partition in which the within-group `density = 0.7`:
 ```{r}
-I <- incidence.from.probability(10, 10, .3)
+I <- incidence.from.probability(20, 20, .5)
 I
 rowSums(I)
 colSums(I)
-I <- add.blocks(I, blocks = 2, density = .8)
+I <- add.blocks(I, blocks = 2, density = .7)
 I
 rowSums(I)
 colSums(I)

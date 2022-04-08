@@ -229,7 +229,7 @@ plot(G, layout = layout_with_mds(G), main="Social Network")
 plot(I, layout = layout_as_bipartite(I), main="New Organizations")
 ```
 
-The social network is plotted using a Multidimensional Scaling layout, and therefore shows the nodes' positions in the abstract Blau Space from which organizations recruit members. In this example, organization 16 recruits 1, 3, 5, and 7 as members. This organization's niche is located near the top of the space. People 1, 3, and 5 were likely inside its niche and therefore readily recruited (here, with a 90% probability). Although person 7 is outside it's niche (i.e., quite different from the organization's typical member), they were also recruited.
+The social network is plotted using a Multidimensional Scaling layout, and therefore shows the nodes' positions in the abstract Blau Space from which organizations recruit members. In this example, organization 18 recruits 3, 6, and 12 as members. This organization's niche is located near the upper-left of the space. People 6 and 12 were likely inside its niche and therefore readily recruited (here, with a 90% probability). Although person 3 is outside it's niche (i.e., quite different from the organization's typical member), they were also recruited.
 
 [back to Table of Contents](#toc)
 

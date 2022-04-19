@@ -8,7 +8,6 @@ incidence.from.adjacency(
   G,
   k = 1,
   p = 1,
-  d = 2,
   blau.param = c(2, 0.1, 5),
   model = "team",
   class = NULL
@@ -22,8 +21,6 @@ or an undirected, unweighted unipartite graph of class {\link{igraph}}.}
 \item{k}{integer: Number of artifacts to generate}
 
 \item{p}{numeric: Tuning parameter for artifacts, 0 <= p <= 1}
-
-\item{d}{numeric: Number of dimensions in Blau space, d >= 2}
 
 \item{blau.param}{vector: Vector of parameters that control blau space (see details)}
 

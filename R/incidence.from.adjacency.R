@@ -10,7 +10,6 @@
 #' @param k integer: Number of artifacts to generate
 #' @param p numeric: Tuning parameter for artifacts, 0 <= p <= 1
 #' @param blau.param vector: Vector of parameters that control blau space (see details)
-#' @param d numeric: Number of dimensions in Blau space, d >= 2
 #' @param model string: Generative model, one of c("team", "group", "blau") (see details)
 #' @param class string: Return object as `matrix`, `igraph`, or `edgelist`. If `NULL`, object is returned in the same class as `G`.
 #'
@@ -42,7 +41,7 @@
 #' G <- igraph::erdos.renyi.game(10, .4)
 #' I <- incidence.from.adjacency(G, k = 1000, p = .95,
 #'                               model = "team")
-incidence.from.adjacency <- function(G, k = 1, p = 1, d = 2, blau.param = c(2,.1,5), model = "team", class = NULL) {
+incidence.from.adjacency <- function(G, k = 1, p = 1, blau.param = c(2,.1,5), model = "team", class = NULL) {
 
   #### Sampling function, to allow sampling from a vector with one entry ####
   sample.vec <- function(x, ...) x[sample(length(x), ...)]
@@ -53,7 +52,6 @@ incidence.from.adjacency <- function(G, k = 1, p = 1, d = 2, blau.param = c(2,.1
   if (is.null(class) & methods::is(G, "Matrix")) {class <- "matrix"}
   if (is.null(class) & methods::is(G, "data.frame")) {class <- "edgelist"}
   if (!is.numeric(k)) {stop("k must be numeric")}
-  if (!is.numeric(d)) {stop("d must be numeric")}
   if (!is.numeric(p)) {stop("p must be numeric")}
   if (p < 0 | p > 1) {stop("p must be between 0 and 1")}
   if (!(model %in% c("team", "group", "blau"))) {stop("model must be one if c(\"team\", \"group\", \"blau\")")}

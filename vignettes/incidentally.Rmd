@@ -220,10 +220,10 @@ In this example, group 18 is joined by 2, 4, 6, and 13. This group may have form
 ## Blau Space model {#blau}
 The *Blau Space* model mirrors an organizational recruitment process [@mcpherson1983ecology]. The given social network is embedded in a $d$ dimensional social space in which the dimensions are assumed to represent meaningful social distinctions, such that socially similar people are positioned nearby. Organizations recruit members from this space, recruiting people inside their niche with probability $p$, and outside their niche with probability $1-p$. Each column in the incidence matrix records the members of a new organization.
 
-Given a social network among 15 people, we can simulate their recruitment by three (`k = 3`) new organizations, where there is a `p = 0.9` probability that an individual inside an organization's two-dimensional (`d = 2`) niche becomes a member:
+Given a social network among 15 people, we can simulate their recruitment by three (`k = 3`) new organizations, where there is a `p = 0.9` probability that an individual inside an organization's niche becomes a member:
 ```{r, fig.show="hold", out.width="40%"}
 G <- erdos.renyi.game(15, .33)  #A random social network of 15 people, as igraph
-I <- incidence.from.adjacency(G, k = 3, d = 2, p = .90, model = "blau")  #Groups model
+I <- incidence.from.adjacency(G, k = 3, p = .90, model = "blau")  #Groups model
 V(I)$shape <- ifelse(V(I)$type, "square", "circle")  #Add shapes
 plot(G, layout = layout_with_mds(G), main="Social Network")
 plot(I, layout = layout_as_bipartite(I), main="New Organizations")

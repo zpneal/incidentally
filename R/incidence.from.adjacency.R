@@ -9,6 +9,7 @@
 #'    or an undirected, unweighted unipartite graph of class {\link{igraph}}.
 #' @param k integer: Number of artifacts to generate
 #' @param p numeric: Tuning parameter for artifacts, 0 <= p <= 1
+#' @param maximal boolean: Should teams/groups models be seeded with *maximal* cliques?
 #' @param blau.param vector: Vector of parameters that control blau space (see details)
 #' @param model string: Generative model, one of c("team", "group", "blau") (see details)
 #' @param class string: Return object as `matrix`, `igraph`, or `edgelist`. If `NULL`, object is returned in the same class as `G`.
@@ -41,7 +42,7 @@
 #' G <- igraph::erdos.renyi.game(10, .4)
 #' I <- incidence.from.adjacency(G, k = 1000, p = .95,
 #'                               model = "team")
-incidence.from.adjacency <- function(G, k = 1, p = 1, blau.param = c(2,1,5), model = "team", class = NULL) {
+incidence.from.adjacency <- function(G, k = 1, p = 1, blau.param = c(2,1,10), maximal = TRUE, model = "team", class = NULL) {
 
   #### Sampling function, to allow sampling from a vector with one entry ####
   sample.vec <- function(x, ...) x[sample(length(x), ...)]
@@ -90,11 +91,7 @@ incidence.from.adjacency <- function(G, k = 1, p = 1, blau.param = c(2,1,5), mod
   #### Team model (Guimera et al., 2005) ####
   if (model == "team") {
 
-    cliques <- igraph::cliques(G, min=2)  #List of all cliques
-    #This step will be slow for large/dense graphs. For these graphs, consider using this approximation
-    # - List all maximal cliques
-    # - In loop, sample one maximal clique
-    # - In loop, sample between 2 and N nodes from the maximal clique
+    if (maximal) {cliques <- igraph::max_cliques(G, min=2)} else {cliques <- igraph::cliques(G, min=2)}  #List all (maximal) cliques
 
     for (i in 1:k) {                              #For each new team k:
       clique <- sample(1:length(cliques),1)       #Pick a prior team
@@ -133,11 +130,7 @@ incidence.from.adjacency <- function(G, k = 1, p = 1, blau.param = c(2,1,5), mod
         return(candidates)
       }
 
-      cliques <- igraph::cliques(G, min=2)  #List of all cliques
-      #This step will be slow for large/dense graphs. For these graphs, consider using this approximation
-      # - List all maximal cliques
-      # - In loop, sample one maximal clique
-      # - In loop, sample between 2 and N nodes from the maximal clique
+      if (maximal) {cliques <- igraph::max_cliques(G, min=2)} else {cliques <- igraph::cliques(G, min=2)}  #List all (maximal) cliques
 
       for (i in 1:k) {                                                  #For each new group k:
         members <- as.numeric(cliques[[sample(1:length(cliques),1)]])   #Sample a clique (initial members)

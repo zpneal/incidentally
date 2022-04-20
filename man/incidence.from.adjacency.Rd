@@ -8,7 +8,7 @@ incidence.from.adjacency(
   G,
   k = 1,
   p = 1,
-  blau.param = c(2, 0.1, 5),
+  blau.param = c(2, 1, 5),
   model = "team",
   class = NULL
 )

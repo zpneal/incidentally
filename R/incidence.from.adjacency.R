@@ -41,7 +41,7 @@
 #' G <- igraph::erdos.renyi.game(10, .4)
 #' I <- incidence.from.adjacency(G, k = 1000, p = .95,
 #'                               model = "team")
-incidence.from.adjacency <- function(G, k = 1, p = 1, blau.param = c(2,.1,5), model = "team", class = NULL) {
+incidence.from.adjacency <- function(G, k = 1, p = 1, blau.param = c(2,1,5), model = "team", class = NULL) {
 
   #### Sampling function, to allow sampling from a vector with one entry ####
   sample.vec <- function(x, ...) x[sample(length(x), ...)]
@@ -162,18 +162,23 @@ incidence.from.adjacency <- function(G, k = 1, p = 1, blau.param = c(2,.1,5), mo
     if (!igraph::is.connected(G)) {stop("the blau space model requires that the network be connected")}
     coords <- igraph::layout_with_mds(G, dim = blau.param[1])  #Get coordinates in Blau Space
     D <- as.matrix(stats::dist(coords))            #Compute distances between nodes in Blau Space
-    diag(D) <- NA
 
     i <- 1
-    while (dim(I)[2] < (k + 1)) {                    #Until `k` organizations are created, for each organization i:
-      leader <- sample(1:igraph::gorder(G),1)        #Pick node to serve as organization leader and niche center
+    while (dim(I)[2] <= k) {                         #Until `k` organizations are created, for each organization i:
       R <- (stats::rbeta(1,blau.param[2],blau.param[3]) * (max(D,na.rm=T) - min(D,na.rm=T))) + min(D,na.rm=T)  #Pick niche radius
-      prob <- ifelse(D[leader,] <= R, p, 1-p)        #Probability of joining, depending on whether inside or outside niche
-      prob[is.na(prob)] <- 1                         #Leader always joins
-      members <- stats::rbinom(length(prob),1,prob)  #Nodes join organization with given probability
-      if (sum(members) > 1) {      #If more than one person joins organization i
-        I <- cbind(I, members)     #Add this organization's member list to I
-        i <- i + 1}                #Go to the next organization
+      center <- sample(1:igraph::gorder(G),1)        #Pick a node to serve as niche center
+      dat <- data.frame(dist = D[center,])           #Start dataframe, add nodes' distance from niche center
+      dat$inside <- dat$dist <= R                    #...add nodes' location inside or outside niche
+      dat$member <- NA                               #...add initial memberships in organization
+      dat$member[which(dat$inside)] <- stats::rbinom(sum(dat$inside),1,p)            #Each node inside niche joins with probability p
+      while (sum(dat$member,na.rm=T)<sum(dat$inside) & sum(is.na(dat$member))!=0) {  #While spaces & recruits are available...
+        recruit <- min(dat$dist[which(is.na(dat$member))])                           #...find recruit nearest to niche
+        dat$member[which(dat$dist==recruit)] <- stats::rbinom(1,1,1-p)               #...attempt to recruit
+      }
+      dat$member[which(is.na(dat$member))] <- 0  #Non-recruits are non-members
+      if (sum(dat$member) > 1) {   #If more than one person joins organization i...
+        I <- cbind(I, dat$member)  #...add this organization's member list to I
+        i <- i + 1}                #...go to the next organization
     }
   }
 

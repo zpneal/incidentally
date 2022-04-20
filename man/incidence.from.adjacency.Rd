@@ -8,7 +8,8 @@ incidence.from.adjacency(
   G,
   k = 1,
   p = 1,
-  blau.param = c(2, 1, 5),
+  blau.param = c(2, 1, 10),
+  maximal = TRUE,
   model = "team",
   class = NULL
 )
@@ -23,6 +24,8 @@ or an undirected, unweighted unipartite graph of class {\link{igraph}}.}
 \item{p}{numeric: Tuning parameter for artifacts, 0 <= p <= 1}
 
 \item{blau.param}{vector: Vector of parameters that control blau space (see details)}
+
+\item{maximal}{boolean: Should teams/groups models be seeded with \emph{maximal} cliques?}
 
 \item{model}{string: Generative model, one of c("team", "group", "blau") (see details)}
 

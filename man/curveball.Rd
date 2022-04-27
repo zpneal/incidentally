@@ -2,20 +2,22 @@
 % Please edit documentation in R/curveball.R
 \name{curveball}
 \alias{curveball}
-\title{Randomize a binary matrix using the curveball algorithm}
+\title{Randomize an incidence matrix or bipartite graph using the curveball algorithm}
 \usage{
-curveball(M, trades = 5 * nrow(M))
+curveball(M, trades = 5 * nrow(M), class = NULL)
 }
 \arguments{
-\item{M}{a binary matrix}
+\item{M}{a binary matrix of class \code{matrix} or \code{Matrix}, or a bipartite graph of class {\link{igraph}}.}
 
 \item{trades}{integer: number of trades; the default is 5 * nrow(M) (approx. mixing time)}
+
+\item{class}{string: Return object as \code{matrix}, \code{Matrix}, \code{igraph}. If \code{NULL}, object is returned in the same class as \code{M}.}
 }
 \value{
-A random binary matrix with same row sums and column sums as M
+An incidence matrix of class \code{matrix} or \code{Matrix}, or a bipartite graph of class {\link{igraph}}.
 }
 \description{
-\code{curveball} randomizes a binary matrix, preserving the row and column sums
+\code{curveball} randomizes an incidence matrix or bipartite graph, preserving the row and column sums
 }
 \details{
 Strona et al. (2014) provided an initial implementation of the Curveball algorithm in R. \code{curveball()} is a modified R

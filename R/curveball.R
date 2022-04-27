@@ -1,12 +1,13 @@
-#' Randomize a binary matrix using the curveball algorithm
+#' Randomize an incidence matrix or bipartite graph using the curveball algorithm
 #'
-#' `curveball` randomizes a binary matrix, preserving the row and column sums
+#' `curveball` randomizes an incidence matrix or bipartite graph, preserving the row and column sums
 #'
-#' @param M a binary matrix
+#' @param M a binary matrix of class `matrix` or `Matrix`, or a bipartite graph of class {\link{igraph}}.
 #' @param trades integer: number of trades; the default is 5 * nrow(M) (approx. mixing time)
+#' @param class string: Return object as `matrix`, `Matrix`, `igraph`. If `NULL`, object is returned in the same class as `M`.
 #'
 #' @return
-#' A random binary matrix with same row sums and column sums as M
+#' An incidence matrix of class `matrix` or `Matrix`, or a bipartite graph of class {\link{igraph}}.
 #'
 #' @details
 #' Strona et al. (2014) provided an initial implementation of the Curveball algorithm in R. `curveball()` is a modified R
@@ -21,10 +22,16 @@
 #' Mrand <- curveball(M)  #Random matrix with same row/col sums
 #' all.equal(rowSums(M), rowSums(curveball(M)))
 #' all.equal(colSums(M), colSums(curveball(M)))
-curveball <- function(M, trades = 5*nrow(M)) {
+curveball <- function(M, trades = 5*nrow(M), class = NULL) {
 
   #Parameter check
-  if (!methods::is(M, "matrix")) {stop("Input must be a matrix")}
+  if (is.null(class) & methods::is(M, "igraph")) {class <- "igraph"}
+  if (is.null(class) & methods::is(M, "matrix")) {class <- "matrix"}
+  if (is.null(class) & methods::is(M, "Matrix")) {class <- "Matrix"}
+  if (!(class %in% c("matrix", "Matrix", "igraph"))) {stop("class must be one if c(\"matrix\", \"Matrix\", \"igraph\")")}
+  if (!methods::is(M, "matrix") & !methods::is(M, "Matrix") & !methods::is(M, "igraph")) {stop("Input must be a matrix, Matrix, or igraph")}
+  if (methods::is(M,"Matrix")){M <- as.matrix(M)}
+  if (methods::is(M,"igraph")){M <- igraph::as_incidence_matrix(M)}
   if (any(M%%1!=0) | any(M<0)) {stop("Input matrix must contain only 0s and 1s")}
   if (!is.numeric(trades)) {stop("trades must be numeric")}
   if (trades%%1!=0 | trades < 1) {stop("trades must be a positive integer")}
@@ -53,5 +60,8 @@ curveball <- function(M, trades = 5*nrow(M)) {
     }
   rm=matrix(0,R,C)
   for (row in 1:R){rm[row,M[[row]]]=1}
-  rm
+
+  if (class == "igraph") {rm <- igraph::graph_from_incidence_matrix(rm)}
+  if (class == "Matrix"){rm <- Matrix::Matrix(rm)}
+  return(rm)
 }

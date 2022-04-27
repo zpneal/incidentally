@@ -56,7 +56,7 @@ incidence.from.adjacency <- function(G, k = 1, p = 1, blau.param = c(2,1,10), ma
   if (!is.numeric(p)) {stop("p must be numeric")}
   if (p < 0 | p > 1) {stop("p must be between 0 and 1")}
   if (!(model %in% c("team", "group", "blau"))) {stop("model must be one if c(\"team\", \"group\", \"blau\")")}
-  if (!(class %in% c("matrix", "igraph"))) {stop("class must be one if c(\"matrix\", \"Matrix\", \"edgelist\",  \"igraph\")")}
+  if (!(class %in% c("matrix", "Matrix", "edgelist", "igraph"))) {stop("class must be one if c(\"matrix\", \"Matrix\", \"edgelist\",  \"igraph\")")}
   if (blau.param[1]%%1!=0 | blau.param[1]<2) {stop("The first blau.param must be an integer greater than 1")}
   if (blau.param[2]<0 | blau.param[3]<0) {stop("The second and third blau.param must be positive")}
 

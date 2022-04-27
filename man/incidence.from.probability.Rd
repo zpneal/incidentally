@@ -15,10 +15,10 @@ incidence.from.probability(R, C, P = 0, constrain = TRUE, class = "matrix")
 
 \item{constrain}{boolean: ensure that no rows or columns sum to 0 (i.e., contain all 0s) or to 1 (i.e., contain all 1s)}
 
-\item{class}{string: the class of the returned backbone graph, one of c("matrix", igraph").}
+\item{class}{string: the class of the returned backbone graph, one of c("matrix", "Matrix", "igraph").}
 }
 \value{
-An incidence matrix of class \code{matrix} or a bipartite graph of class {\link{igraph}}.
+An incidence matrix of class \code{matrix} or \code{Matrix}, or a bipartite graph of class {\link{igraph}}.
 }
 \description{
 \code{incidence.from.probability} generates a random incidence matrix in which each cell is filled

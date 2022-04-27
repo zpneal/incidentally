@@ -11,10 +11,10 @@ incidence.from.vector(R, C, class = "matrix")
 
 \item{C}{numeric vector: column marginal sums}
 
-\item{class}{string: the class of the returned backbone graph, one of c("matrix", "igraph")}
+\item{class}{string: the class of the returned backbone graph, one of c("matrix", "Matrix", "igraph").}
 }
 \value{
-An incidence matrix of class \code{matrix} or a bipartite graph of class {\link{igraph}}.
+An incidence matrix of class \code{matrix} or \code{Matrix}, or a bipartite graph of class {\link{igraph}}.
 }
 \description{
 \code{incidence.from.vector} generates a random incidence matrix with given row and column sums

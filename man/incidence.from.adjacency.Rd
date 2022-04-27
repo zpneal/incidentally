@@ -29,10 +29,10 @@ or an undirected, unweighted unipartite graph of class {\link{igraph}}.}
 
 \item{model}{string: Generative model, one of c("team", "group", "blau") (see details)}
 
-\item{class}{string: Return object as \code{matrix}, \code{igraph}, or \code{edgelist}. If \code{NULL}, object is returned in the same class as \code{G}.}
+\item{class}{string: Return object as \code{matrix}, \code{matrix}, \code{igraph}, or \code{edgelist}. If \code{NULL}, object is returned in the same class as \code{G}.}
 }
 \value{
-An incidence matrix of class \code{matrix}, or a bipartite graph as an edgelist of {\link{igraph}} object.
+An incidence matrix of class \code{matrix} or \code{matrix}, an edgelist of class \code{data.frame}, or a bipartite graph of class {\link{igraph}}.
 }
 \description{
 \code{incidence.from.adjacency} generates an incidence matrix from an adjacency matrix or network using

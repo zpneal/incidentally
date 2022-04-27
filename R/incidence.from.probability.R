@@ -8,6 +8,7 @@
 #' @param P numeric: probability that a cell contains a 1; if P = 0 a probability will be chosen randomly
 #' @param constrain boolean: ensure that no rows or columns sum to 0 (i.e., contain all 0s) or to 1 (i.e., contain all 1s)
 #' @param class string: the class of the returned backbone graph, one of c("matrix", "Matrix", "igraph").
+#' @param narrative boolean: TRUE if suggested text & citations should be displayed.
 #'
 #' @return
 #' An incidence matrix of class `matrix` or `Matrix`, or a bipartite graph of class {\link{igraph}}.
@@ -17,8 +18,9 @@
 #' @examples
 #' I <- incidence.from.probability(R = 10, C = 10)
 #' I <- incidence.from.probability(R = 10, C = 10, P = .5)
-#' I <- incidence.from.probability(R = 10, C = 10, P = .5, class = "igraph")
-incidence.from.probability <- function(R, C, P=0, constrain = TRUE, class="matrix") {
+#' I <- incidence.from.probability(R = 10, C = 10, P = .5,
+#'      class = "igraph", narrative = TRUE)
+incidence.from.probability <- function(R, C, P=0, constrain = TRUE, class="matrix", narrative = FALSE) {
 
   #Parameter check
   if (!is.numeric(R) | !is.numeric(C) | !is.numeric(P)) {stop("R, C, and P must be numeric")}
@@ -44,5 +46,18 @@ incidence.from.probability <- function(R, C, P=0, constrain = TRUE, class="matri
   #Convert to desired class and return
   if (class == "igraph"){I <- igraph::graph_from_incidence_matrix(I)}
   if (class == "Matrix"){I <- Matrix::Matrix(I)}
+
+  #Display narrative if requested
+  if (narrative) {
+    version <- utils::packageVersion("incidentally")
+    if (class == "igraph") {text <- paste0("We used the incidentally package for R (v", version, "; Neal, 2022) to generate a random bipartite graph with ", R, " agents and ", C, " artifacts, where there was a ", round(P,2), " probability that a given agent was connected to a given artifact.")}
+    if (class != "igraph") {text <- paste0("We used the incidentally package for R (v", version, "; Neal, 2022) to generate a random incidence matrix with ", R, " rows and ", C, " columns, where there was a ", round(P,2), " probability that the ith row and kth column contained a 1.")}
+    message("")
+    message("=== Suggested manuscript text and citations ===")
+    message(text)
+    message("")
+    message("Neal, Z. P. (2022). The Duality of Networks and Foci: Generative Models of Two-Mode Networks from One-Mode Networks. arXiv.")
+  }
+
   return(I)
 }

@@ -13,6 +13,7 @@
 #' @param blau.param vector: Vector of parameters that control blau space (see details)
 #' @param model string: Generative model, one of c("team", "group", "blau") (see details)
 #' @param class string: Return object as `matrix`, `matrix`, `igraph`, or `edgelist`. If `NULL`, object is returned in the same class as `G`.
+#' @param narrative boolean: TRUE if suggested text & citations should be displayed.
 #'
 #' @return An incidence matrix of class `matrix` or `matrix`, an edgelist of class `data.frame`, or a bipartite graph of class {\link{igraph}}.
 #'
@@ -41,8 +42,8 @@
 #' @examples
 #' G <- igraph::erdos.renyi.game(10, .4)
 #' I <- incidence.from.adjacency(G, k = 1000, p = .95,
-#'                               model = "team")
-incidence.from.adjacency <- function(G, k = 1, p = 1, blau.param = c(2,1,10), maximal = TRUE, model = "team", class = NULL) {
+#'                               model = "team", narrative = TRUE)
+incidence.from.adjacency <- function(G, k = 1, p = 1, blau.param = c(2,1,10), maximal = TRUE, model = "team", class = NULL, narrative = TRUE) {
 
   #### Sampling function, to allow sampling from a vector with one entry ####
   sample.vec <- function(x, ...) x[sample(length(x), ...)]
@@ -184,6 +185,23 @@ incidence.from.adjacency <- function(G, k = 1, p = 1, blau.param = c(2,1,10), ma
   if (class == "igraph") {I <- igraph::graph_from_incidence_matrix(I)}
   if (class == "edgelist") {I <- data.frame(igraph::as_edgelist(igraph::graph_from_incidence_matrix(I)))}
   if (class == "Matrix"){I <- Matrix::Matrix(I)}
+
+  #Display narrative if requested
+  if (narrative) {
+    version <- utils::packageVersion("incidentally")
+    type <- " newly-formed teams"
+    if (model == "group") {type <- " newly-formed groups"}
+    if (model == "blau") {type <- " newly-formed organizations"}
+    if (class == "igraph") {text <- paste0("We used the incidentally package for R (v", version, "; Neal, 2022) to generate a random bipartite graph from a unipartite graph. The bipartite graph represents the memberships of the ", igraph::gorder(G), " nodes from the unipartite network in ", k, type, ".")}
+    if (class != "igraph") {text <- paste0("We used the incidentally package for R (v", version, "; Neal, 2022) to generate a random incidence matrix from a unipartite graph. The incidence matrix represents the memberships of the ", igraph::gorder(G), " nodes from the unipartite network (rows) in ", k, type, " (columns).")}
+    message("")
+    message("=== Suggested manuscript text and citations ===")
+    message(text)
+    message("")
+    message("Neal, Z. P. (2022). The Duality of Networks and Foci: Generative Models of Two-Mode Networks from One-Mode Networks. arXiv.")
+  }
+
+
   return(I)  #Return the bipartite graph with row labels
 }
 

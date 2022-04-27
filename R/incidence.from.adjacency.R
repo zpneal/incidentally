@@ -12,9 +12,9 @@
 #' @param maximal boolean: Should teams/groups models be seeded with *maximal* cliques?
 #' @param blau.param vector: Vector of parameters that control blau space (see details)
 #' @param model string: Generative model, one of c("team", "group", "blau") (see details)
-#' @param class string: Return object as `matrix`, `igraph`, or `edgelist`. If `NULL`, object is returned in the same class as `G`.
+#' @param class string: Return object as `matrix`, `matrix`, `igraph`, or `edgelist`. If `NULL`, object is returned in the same class as `G`.
 #'
-#' @return An incidence matrix of class `matrix`, or a bipartite graph as an edgelist of {\link{igraph}} object.
+#' @return An incidence matrix of class `matrix` or `matrix`, an edgelist of class `data.frame`, or a bipartite graph of class {\link{igraph}}.
 #'
 #' @details
 #' Given a unipartite network composed of *i agents* (i.e. nodes) that can be represented by an *i x i* adjacency
@@ -50,13 +50,13 @@ incidence.from.adjacency <- function(G, k = 1, p = 1, blau.param = c(2,1,10), ma
   #### Parameter checks ####
   if (is.null(class) & methods::is(G, "igraph")) {class <- "igraph"}
   if (is.null(class) & methods::is(G, "matrix")) {class <- "matrix"}
-  if (is.null(class) & methods::is(G, "Matrix")) {class <- "matrix"}
+  if (is.null(class) & methods::is(G, "Matrix")) {class <- "Matrix"}
   if (is.null(class) & methods::is(G, "data.frame")) {class <- "edgelist"}
   if (!is.numeric(k)) {stop("k must be numeric")}
   if (!is.numeric(p)) {stop("p must be numeric")}
   if (p < 0 | p > 1) {stop("p must be between 0 and 1")}
   if (!(model %in% c("team", "group", "blau"))) {stop("model must be one if c(\"team\", \"group\", \"blau\")")}
-  if (!(class %in% c("matrix", "igraph"))) {stop("model must be one if c(\"matrix\", \"igraph\"")}
+  if (!(class %in% c("matrix", "igraph"))) {stop("class must be one if c(\"matrix\", \"Matrix\", \"edgelist\",  \"igraph\")")}
   if (blau.param[1]%%1!=0 | blau.param[1]<2) {stop("The first blau.param must be an integer greater than 1")}
   if (blau.param[2]<0 | blau.param[3]<0) {stop("The second and third blau.param must be positive")}
 
@@ -183,6 +183,7 @@ incidence.from.adjacency <- function(G, k = 1, p = 1, blau.param = c(2,1,10), ma
   }
   if (class == "igraph") {I <- igraph::graph_from_incidence_matrix(I)}
   if (class == "edgelist") {I <- data.frame(igraph::as_edgelist(igraph::graph_from_incidence_matrix(I)))}
+  if (class == "Matrix"){I <- Matrix::Matrix(I)}
   return(I)  #Return the bipartite graph with row labels
 }
 

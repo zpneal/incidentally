@@ -8,10 +8,10 @@
 #' @param P numeric: probability that a cell contains a 1
 #' @param rowdist vector length 2: Row marginals will approximately follow a Beta(a,b) distribution
 #' @param coldist vector length 2: Column marginals will approximately follow a Beta(a,b) distribution
-#' @param class string: the class of the returned backbone graph, one of c("matrix", "igraph")
+#' @param class string: the class of the returned backbone graph, one of c("matrix", "Matrix", "igraph").
 #'
 #' @return
-#' An incidence matrix of class `matrix` or a bipartite graph of class {\link{igraph}}.
+#' An incidence matrix of class `matrix` or `Matrix`, or a bipartite graph of class {\link{igraph}}.
 #' 
 #' @export
 #'
@@ -61,6 +61,7 @@ incidence.from.distribution <- function(R, C, P, rowdist = c(1,1), coldist = c(1
   if (all.equal(R,rowSums(I)) == TRUE | all.equal(C,colSums(I)) == TRUE) {
     I <- curveball(I)
     if (class == "igraph"){I <- igraph::graph_from_incidence_matrix(I)}
+    if (class == "Matrix"){I <- Matrix::Matrix(I)}
     return(I)
   } else {stop("A bipartite network with these degree distributions is not possible")}
 }

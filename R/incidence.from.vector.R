@@ -4,10 +4,10 @@
 #'
 #' @param R numeric vector: row marginal sums
 #' @param C numeric vector: column marginal sums
-#' @param class string: the class of the returned backbone graph, one of c("matrix", "igraph")
+#' @param class string: the class of the returned backbone graph, one of c("matrix", "Matrix", "igraph").
 #'
 #' @return
-#' An incidence matrix of class `matrix` or a bipartite graph of class {\link{igraph}}.
+#' An incidence matrix of class `matrix` or `Matrix`, or a bipartite graph of class {\link{igraph}}.
 #'
 #' @export
 #'
@@ -52,6 +52,7 @@ incidence.from.vector <- function(R,C,class="matrix"){
   if ((sum(row_s) == 0) & (sum(col_s) == 0)) {
     I <- curveball(I)
     if (class == "igraph"){I <- igraph::graph_from_incidence_matrix(I)}
+    if (class == "Matrix"){I <- Matrix::Matrix(I)}
     return(I)
   } else {stop("An incidence matrix with these marginal sums does not exist.")}
 

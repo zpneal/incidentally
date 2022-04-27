@@ -4,7 +4,7 @@
 \alias{incidence.from.vector}
 \title{Generates an incidence matrix with given row and column marginal sums}
 \usage{
-incidence.from.vector(R, C, class = "matrix")
+incidence.from.vector(R, C, class = "matrix", narrative = FALSE)
 }
 \arguments{
 \item{R}{numeric vector: row marginal sums}
@@ -12,6 +12,8 @@ incidence.from.vector(R, C, class = "matrix")
 \item{C}{numeric vector: column marginal sums}
 
 \item{class}{string: the class of the returned backbone graph, one of c("matrix", "Matrix", "igraph").}
+
+\item{narrative}{boolean: TRUE if suggested text & citations should be displayed.}
 }
 \value{
 An incidence matrix of class \code{matrix} or \code{Matrix}, or a bipartite graph of class {\link{igraph}}.
@@ -21,5 +23,6 @@ An incidence matrix of class \code{matrix} or \code{Matrix}, or a bipartite grap
 }
 \examples{
 I <- incidence.from.vector(R = c(1,1,2), C = c(1,1,2))
-I <- incidence.from.vector(R = c(1,1,2), C = c(1,1,2), class = "igraph")
+I <- incidence.from.vector(R = c(1,1,2), C = c(1,1,2),
+     class = "igraph", narrative = TRUE)
 }

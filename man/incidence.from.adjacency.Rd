@@ -11,7 +11,8 @@ incidence.from.adjacency(
   blau.param = c(2, 1, 10),
   maximal = TRUE,
   model = "team",
-  class = NULL
+  class = NULL,
+  narrative = TRUE
 )
 }
 \arguments{
@@ -30,6 +31,8 @@ or an undirected, unweighted unipartite graph of class {\link{igraph}}.}
 \item{model}{string: Generative model, one of c("team", "group", "blau") (see details)}
 
 \item{class}{string: Return object as \code{matrix}, \code{matrix}, \code{igraph}, or \code{edgelist}. If \code{NULL}, object is returned in the same class as \code{G}.}
+
+\item{narrative}{boolean: TRUE if suggested text & citations should be displayed.}
 }
 \value{
 An incidence matrix of class \code{matrix} or \code{matrix}, an edgelist of class \code{data.frame}, or a bipartite graph of class {\link{igraph}}.
@@ -61,5 +64,5 @@ sizes that are strongly positively skewed (i.e., many specialist organizations, 
 \examples{
 G <- igraph::erdos.renyi.game(10, .4)
 I <- incidence.from.adjacency(G, k = 1000, p = .95,
-                              model = "team")
+                              model = "team", narrative = TRUE)
 }

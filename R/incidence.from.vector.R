@@ -10,6 +10,8 @@
 #' @return
 #' An incidence matrix of class `matrix` or `Matrix`, or a bipartite graph of class {\link{igraph}}.
 #'
+#' @references {Neal, Z. P., Domagalski, R., and Sagan, B. 2021. Comparing alternatives to the fixed degree sequence model for extracting the backbone of bipartite projections. *Scientific Reports, 11*, 23929. \doi{10.1038/s41598-021-03238-3}}
+#'
 #' @export
 #'
 #' @examples

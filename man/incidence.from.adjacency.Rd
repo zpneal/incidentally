@@ -66,3 +66,6 @@ G <- igraph::erdos.renyi.game(10, .4)
 I <- incidence.from.adjacency(G, k = 1000, p = .95,
                               model = "team", narrative = TRUE)
 }
+\references{
+{Neal, Z. P. 2022. The Duality of Networks and Foci: Generative Models of Two-Mode Networks from One-Mode Networks. \emph{arXiv:2204.13670} [cs.SI]. \doi{10.48550/arXiv.2204.13670}}
+}

@@ -49,3 +49,6 @@ I <- incidence.from.distribution(R = 100, C = 100, P = 0.1,
      rowdist = c(10,10), coldist = c(10,10),
      narrative = TRUE)  #Normal
 }
+\references{
+{Neal, Z. P., Domagalski, R., and Sagan, B. 2021. Comparing alternatives to the fixed degree sequence model for extracting the backbone of bipartite projections. \emph{Scientific Reports, 11}, 23929. \doi{10.1038/s41598-021-03238-3}}
+}

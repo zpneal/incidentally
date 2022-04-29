@@ -37,3 +37,6 @@ happens, increase \code{max.tries} to keep looking for eligible swaps or reduce 
 I <- incidence.from.probability(R = 20, C = 20, P = .5)
 I <- add.blocks(I, blocks = 2, density = .7)
 }
+\references{
+{Neal, Z. P., Domagalski, R., and Sagan, B. 2021. Comparing alternatives to the fixed degree sequence model for extracting the backbone of bipartite projections. \emph{Scientific Reports, 11}, 23929. \doi{10.1038/s41598-021-03238-3}}
+}

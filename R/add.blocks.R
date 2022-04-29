@@ -40,7 +40,8 @@ add.blocks <- function(I,blocks=2,density=.5,max.tries=100000) {
   block.names <- LETTERS[seq(from = 1, to = blocks)]  #Generate list of group names
   rownames(I) <- paste0(sample(block.names,nrow(I),replace=TRUE),c(1:nrow(I)))  #Assign each row to a group
   colnames(I) <- paste0(sample(block.names,ncol(I),replace=TRUE),c(1:ncol(I)))  #Assign each column to a group
-  within.block <- sum((outer(substr(rownames(I),1,1), substr(colnames(I),1,1), `==`)*1)*I) / sum(I)  #Compute starting block density
+  within <- outer(substr(rownames(I),1,1), substr(colnames(I),1,1), `==`)  #Find within-group pairs
+  within.block <- sum((within*I) / sum(I))  #Compute starting block density
   pb <- utils::txtProgressBar(min = .49, max = density, style = 3)  #Initiate progress bar
 
   failed.swaps <- 0
@@ -56,7 +57,7 @@ add.blocks <- function(I,blocks=2,density=.5,max.tries=100000) {
     # If a checkboard swap would increase within-block density, make the swap and recompute
     if (all(matrix(c(0,1,1,0),nrow=2,ncol=2) == I[c(agent1,agent2),c(artifact1,artifact2)])) {
       I[c(agent1,agent2),c(artifact1,artifact2)] <- abs(I[c(agent1,agent2),c(artifact1,artifact2)] - 1)
-      within.block <- sum((outer(substr(rownames(I),1,1), substr(colnames(I),1,1), `==`)*1)*I) / sum(I)
+      within.block <- sum((within*I) / sum(I))
       utils::setTxtProgressBar(pb, within.block)
       failed.swaps <- 0
     } else {failed.swaps <- failed.swaps + 1}  #If a swap would not increase within-block density, increase counter
@@ -70,3 +71,4 @@ add.blocks <- function(I,blocks=2,density=.5,max.tries=100000) {
   I <- I[order(rownames(I)), order(colnames(I))]
   return(I)
 }
+

@@ -14,7 +14,8 @@ Imports:
     igraph,
     Matrix,
     methods,
-    stats
+    stats,
+    xml2
 Suggests:
     rmarkdown,
     knitr

@@ -5,8 +5,7 @@
 #'
 #' @param session numeric: the session of congress (currently 108-117)
 #' @param types vector: types of bills to include. May be any combination of c(\"s\", \"sres\", \"sjres\", \"sconres\") OR any combination of c(\"hr\", \"hres\", \"hjres\", \"hconres\").
-#' @param sponsors boolean: should sponsors be distinguished from co-sponsors using edge weights
-#' @param names boolean: should legislators be identified by name (TRUE), or by bioguideId (FALSE)
+#' @param weighted boolean: should sponsor-bill edges have a weight of 2, but cosponsor-bill edges have a weight of 1
 #' @param format string: format of output, one of c(\"data\", \"igraph\")
 #'
 #' @return
@@ -15,7 +14,7 @@
 #' If `format = "igraph"`, a bipartite igraph object composed of legislator vertices and bill vertices, each with vertex attributes.
 #'
 #' @export
-incidence.from.congress <- function(session = NULL, types = NULL, sponsors = FALSE, names = TRUE, format = "data"){
+incidence.from.congress <- function(session = NULL, types = NULL, weighted = FALSE, format = "data"){
 
   #Parameter check
   if (!is.numeric(session)) {stop("session must be an integer between 108 and 117")}
@@ -81,10 +80,7 @@ incidence.from.congress <- function(session = NULL, types = NULL, sponsors = FAL
   } #End type loop
 
   #Prep sponsorship data and codebooks
-  if (sponsors & names) {sponsorship <- dat[c("name", "bill", "weight")]}
-  if (sponsors & !names) {sponsorship <- dat[c("id", "bill", "weight")]}
-  if (!sponsors & names) {sponsorship <- dat[c("name", "bill")]}
-  if (!sponsors & !names) {sponsorship <- dat[c("id", "bill")]}
+  if (weighted) {sponsorship <- dat[c("name", "bill", "weight")]} else {sponsorship <- dat[c("name", "bill")]}
   legislator <- unique(dat[c("id", "name", "last", "party", "state")])
   bills <- unique(dat[c("bill", "title", "area", "status")])
 
@@ -92,7 +88,7 @@ incidence.from.congress <- function(session = NULL, types = NULL, sponsors = FAL
   if (format == "data") {
     G <- igraph::graph_from_data_frame(sponsorship, directed = F)
     igraph::V(G)$type <- igraph::V(G)$name %in% sponsorship[,2] #second column of edges is TRUE type
-    if (sponsors) {I <- igraph::as_incidence_matrix(G, attr = "weight", sparse = FALSE)} else {I <- igraph::as_incidence_matrix(G, sparse = FALSE)}
+    if (weighted) {I <- igraph::as_incidence_matrix(G, attr = "weight", sparse = FALSE)} else {I <- igraph::as_incidence_matrix(G, sparse = FALSE)}
     return(list(matrix = I, legislator = legislator, bills = bills))
   }
 
@@ -102,8 +98,7 @@ incidence.from.congress <- function(session = NULL, types = NULL, sponsors = FAL
     igraph::V(G)[which(igraph::V(G)$type==F)]$party <- legislator$party
     igraph::V(G)[which(igraph::V(G)$type==F)]$state <- legislator$state
     igraph::V(G)[which(igraph::V(G)$type==F)]$last <- legislator$last
-    if (names) {igraph::V(G)[which(igraph::V(G)$type==F)]$id <- legislator$id}
-    if (!names) {igraph::V(G)[which(igraph::V(G)$type==F)]$name <- legislator$name}
+    igraph::V(G)[which(igraph::V(G)$type==F)]$id <- legislator$id
     igraph::V(G)[which(igraph::V(G)$type==T)]$title <- bills$title
     igraph::V(G)[which(igraph::V(G)$type==T)]$area <- bills$area
     igraph::V(G)[which(igraph::V(G)$type==T)]$status <- bills$status

@@ -29,3 +29,27 @@ If \code{format = "igraph"}, a bipartite igraph object composed of legislator ve
 \code{incidence.from.congress()} uses data from \href{https://www.congress.gov/}{https://www.congress.gov/} to construct an incidence
 matrix or bipartite graph recording legislators' bill (co-)sponsorships.
 }
+\details{
+The \code{incidence.from.congress()} function uses data from \href{https://www.congress.gov/}{https://www.congress.gov/} to
+construct an incidence matrix or bipartite graph recording legislators' bill (co-)sponsorships. In an incidence matrix
+\strong{I}, entry \emph{Iik = 1} if legislator \emph{i} sponsored or co-sponsored bill \emph{k}, and otherwise is 0. In a bipartite graph
+\strong{G}, a legislator \emph{i} is connected to a bill \emph{k} if \emph{i} sponsored or co-sponsored \emph{k}.
+
+In the US Congress, the law making process begins when a \emph{sponsor} legislator introduces a bill in their chamber (House of
+Representatives or Senate). Additional legislators in the same chamber can support the bill by joining as a \emph{co-sponsor}.
+The bill is discussed, revised, and possibly voted on in the chamber. If it passes in one chamber, it is sent to the other
+chamber for further discussion, revision, and possibly a vote. If it passed both chambers, it is sent to the President. If
+the President signs the bill, it becomes law.
+
+In the House of Representatives, legislators can introduce four types of bills: a House Bill (hb), a House Joint Resolution (hjres),
+a House Concurrent Resolution (hconres), and a House Simple Resolution (hres). Similarly, in the Senate, legislators can introduce
+four types of bills: a Senate Bill (s), a Senate Joint Resolution (sjres), a Senate Concurrent Resolution (sconres), and a Senate
+Simple Resolution (sres). In both chambers, concurrent and simple resolutions are used for minor procedural matters and do not
+have the force of law. Only bills and joint resolutions require the President's signature and have the force of law if signed.
+}
+\examples{
+\dontrun{
+D <- incidence.from.congress(session = 116, types = "s", format = "data")
+G <- incidence.from.congress(session = 115, types = c("hr", "hres"), format = "igraph")
+}
+}

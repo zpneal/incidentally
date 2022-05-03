@@ -7,8 +7,7 @@
 incidence.from.congress(
   session = NULL,
   types = NULL,
-  sponsors = FALSE,
-  names = TRUE,
+  weighted = FALSE,
   format = "data"
 )
 }
@@ -17,9 +16,7 @@ incidence.from.congress(
 
 \item{types}{vector: types of bills to include. May be any combination of c(\"s\", \"sres\", \"sjres\", \"sconres\") OR any combination of c(\"hr\", \"hres\", \"hjres\", \"hconres\").}
 
-\item{sponsors}{boolean: should sponsors be distinguished from co-sponsors using edge weights}
-
-\item{names}{boolean: should legislators be identified by name (TRUE), or by bioguideId (FALSE)}
+\item{weighted}{boolean: should sponsor-bill edges have a weight of 2, but cosponsor-bill edges have a weight of 1}
 
 \item{format}{string: format of output, one of c(\"data\", \"igraph\")}
 }

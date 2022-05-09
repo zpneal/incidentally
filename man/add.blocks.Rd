@@ -15,9 +15,9 @@ add.blocks(
 \arguments{
 \item{I}{matrix: An incidence matrix}
 
-\item{rowblock}{numeric: vector of integers c(1:26) indicating each row node's block membership}
+\item{rowblock}{numeric: vector indicating each row node's block membership}
 
-\item{colblock}{numeric: vector of integers c(1:26) indicating each column node's block membership}
+\item{colblock}{numeric: vector indicating each column node's block membership}
 
 \item{density}{numeric: desired within-block density}
 
@@ -33,10 +33,9 @@ matrix: An incidence matrix with a block structure
 Stochastic block and planted partition models generate graphs in which the probability that two nodes are connected
 depends on whether they are members of the same or different blocks/partitions. Functions such as \link[igraph]{sample_sbm}
 can randomly sample from stochastic block models with given probabilities. In contrast \code{add.blocks} adds a block
-structure to an existing incidence matrix while preserving the row and column sums.
-
-Row nodes' and column nodes' block memberships are supplied in separate integer vectors. If block membership vectors are
-not provided, then nodes are randomly assigned to two groups.
+structure to an existing incidence matrix while preserving the row and column sums. Row nodes' and column nodes'
+block memberships are supplied in separate vectors. If block membership vectors are not provided, then nodes are
+randomly assigned to two groups.
 }
 \examples{
 I <- incidence.from.probability(R = 100, C = 100, P = .1)

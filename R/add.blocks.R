@@ -5,19 +5,14 @@
 #' @param I matrix: An incidence matrix
 #' @param blocks integer: number of blocks to add (between 2 and 26)
 #' @param density numeric: desired within-block density
-#' @param max.tries numeric: number of ineligible re-wiring attempts before giving up
 #'
 #' @details
 #' Stochastic block and planted partition models generate graphs in which the probability that two nodes are connected
 #'    depends on whether they are members of the same or different blocks/partitions. Functions such as \link[igraph]{sample_sbm}
-#'    can randomly sample from stochastic block models with given probabilities. In contrast `add.blocks` attempts to
-#'    generate a block model that preserves the degree sequences (i.e., a matrix with preserved row and column sums).
-#' 
-#' Each row and each column node are randomly assigned to one of `blocks` number of groups. Then
-#'    checkerboard swaps are performed that increase the within-block density, until `density` is achieved.
-#'    Eligible swaps are identified randomly, so the re-wiring can be slow when `I` is large. The process
-#'    can get stuck when no eligible swaps remain but the target `density` has not been achieved; if this
-#'    happens, increase `max.tries` to keep looking for eligible swaps or reduce the target `density`.
+#'    can randomly sample from stochastic block models with given probabilities. In contrast `add.blocks` adds a block
+#'    structure to an existing incidence matrix while preserving the row and column sums. Each row and each column are randomly
+#'    assigned to one of `blocks` number of groups, then marginal-perserving checkerboard swaps are performed that increase
+#'    the within-block density, until `density` is achieved (if possible).
 #'
 #' @return
 #' matrix: An incidence matrix, row and column names begin with a letter indicating their block membership
@@ -27,9 +22,24 @@
 #' @export
 #'
 #' @examples
-#' I <- incidence.from.probability(R = 20, C = 20, P = .5)
-#' I <- add.blocks(I, blocks = 2, density = .7)
-add.blocks <- function(I,blocks=2,density=.5,max.tries=100000) {
+#' I <- incidence.from.probability(R = 100, C = 100, P = .1)
+#' blockedI <- add.blocks(I, blocks = 2, density = .7)
+#' all(rowSums(I)==rowSums(blockedI))
+#' all(colSums(I)==colSums(blockedI))
+add.blocks <- function(I, blocks=2, density=.5) {
+
+  #Function to sample 2x2 checkerboards from a larger matrix
+  sample.cb <- function(m) {
+    n <- nrow(m) * ncol(m)
+    m <- Matrix::spMatrix(nrow(m), ncol(m),  #Convert m to a sparse matrix in triplet format
+                           i = which(m != 0, arr.ind = T)[,1],
+                           j = which(m != 0, arr.ind = T)[,2],
+                           x = rep(1,sum(m)))
+    mIdx <- matrix(sample(length(m@i), 2L*n, TRUE), ncol = 2)
+    dt <- data.frame(row1 = m@i[mIdx[,1]], col1 = m@j[mIdx[,2]], row2 = m@i[mIdx[,2]], col2 = m@j[mIdx[,1]]) + 1L
+    dt <- dt[which(dt$row1 != dt$row2 & dt$col1 != dt$col2 & !(m[matrix(c(dt$row1, dt$col1), n)] + m[matrix(c(dt$row2, dt$col2), n)])),]
+    return(dt)
+  }
 
   # Parameter checks
   if (!is.numeric(blocks) | !is.numeric(density)) {stop("blocks and density must be numeric")}
@@ -44,31 +54,32 @@ add.blocks <- function(I,blocks=2,density=.5,max.tries=100000) {
   within.block <- sum((within*I) / sum(I))  #Compute starting block density
   pb <- utils::txtProgressBar(min = .49, max = density, style = 3)  #Initiate progress bar
 
-  failed.swaps <- 0
-  while (within.block < density) {
-    # Pick agents
-    agent1 <- sample(rownames(I),1)  #Pick a random agent
-    agent2 <- sample(rownames(I)[which(substr(rownames(I),1,1)!=substr(agent1,1,1))],1)  #Pick a random agent from another group
+  while (within.block < density) { #While trying to improve density...
 
-    # Pick artifacts
-    artifact1 <- sample(colnames(I)[which(substr(colnames(I),1,1)==substr(agent1,1,1))],1)  #Pick a random artifact from agent 1's group
-    artifact2 <- sample(colnames(I)[which(substr(colnames(I),1,1)==substr(agent2,1,1))],1)  #Pick a random artifact from agent 2's group
+    # Get list a possible swaps
+    possible <- sample.cb(I)
+    possible$row1 <- rownames(I)[possible$row1]
+    possible$row2 <- rownames(I)[possible$row2]
+    possible$col1 <- colnames(I)[possible$col1]
+    possible$col2 <- colnames(I)[possible$col2]
+    possible <- possible[which(substr(possible$row1,1,1)!=substr(possible$row2,1,1) &  #Agents are from different groups
+                               substr(possible$row1,1,1)!=substr(possible$row2,1,1) &  #Artifacts are from different groups
+                               substr(possible$row1,1,1)==substr(possible$col1,1,1) &  #First agent and artifact are from same group
+                               substr(possible$row2,1,1)==substr(possible$col2,1,1)),] #Second agent and artifact are from same group
+    if (nrow(possible) == 0) {stop("No remaining swaps available")}
 
-    # If a checkboard swap would increase within-block density, make the swap and recompute
-    if (all(matrix(c(0,1,1,0),nrow=2,ncol=2) == I[c(agent1,agent2),c(artifact1,artifact2)])) {
-      I[c(agent1,agent2),c(artifact1,artifact2)] <- abs(I[c(agent1,agent2),c(artifact1,artifact2)] - 1)
-      within.block <- sum((within*I) / sum(I))
-      utils::setTxtProgressBar(pb, within.block)
-      failed.swaps <- 0
-    } else {failed.swaps <- failed.swaps + 1}  #If a swap would not increase within-block density, increase counter
-
-  # If within-block density can't be improved further, stop
-  if (failed.swaps == max.tries) {stop("No more swaps found; try again with higher `max.tries` or lower target `density`.")}
+    # Try making swaps from the list, until achieving desired density
+    for (try in 1:nrow(possible)) {
+      if (within.block < density & all(matrix(c(0,1,1,0),nrow=2,ncol=2) == I[c(possible$row1[try],possible$row2[try]),c(possible$col1[try],possible$col2[try])])) {  #If necessary and allowable
+        I[c(possible$row1[try],possible$row2[try]),c(possible$col1[try],possible$col2[try])] <- matrix(c(1,0,0,1),nrow=2,ncol=2)
+        within.block <- sum((within*I) / sum(I))
+        utils::setTxtProgressBar(pb, within.block)
+      }
+    }
   }
 
-  # Arrange by groups and close progress bar
+  # End progress bar & return
   close(pb)
-  I <- I[order(rownames(I)), order(colnames(I))]
   return(I)
 }
 

@@ -3,19 +3,22 @@
 #' `add.blocks` shuffles an incidence matrix to have a block structure or planted partition while preserving the row and column sums
 #'
 #' @param I matrix: An incidence matrix
-#' @param blocks integer: number of blocks to add (between 2 and 26)
+#' @param rowblock numeric: vector of integers c(1:26) indicating each row node's block membership
+#' @param colblock numeric: vector of integers c(1:26) indicating each column node's block membership
 #' @param density numeric: desired within-block density
+#' @param sorted boolean: if TRUE, return incidence matrix permuted by block
 #'
 #' @details
 #' Stochastic block and planted partition models generate graphs in which the probability that two nodes are connected
 #'    depends on whether they are members of the same or different blocks/partitions. Functions such as \link[igraph]{sample_sbm}
 #'    can randomly sample from stochastic block models with given probabilities. In contrast `add.blocks` adds a block
-#'    structure to an existing incidence matrix while preserving the row and column sums. Each row and each column are randomly
-#'    assigned to one of `blocks` number of groups, then marginal-perserving checkerboard swaps are performed that increase
-#'    the within-block density, until `density` is achieved (if possible).
+#'    structure to an existing incidence matrix while preserving the row and column sums.
+#'    
+#' Row nodes' and column nodes' block memberships are supplied in separate integer vectors. If block membership vectors are
+#'    not provided, then nodes are randomly assigned to two groups.
 #'
 #' @return
-#' matrix: An incidence matrix, row and column names begin with a letter indicating their block membership
+#' matrix: An incidence matrix with a block structure
 #'
 #' @references {Neal, Z. P., Domagalski, R., and Sagan, B. 2021. Comparing alternatives to the fixed degree sequence model for extracting the backbone of bipartite projections. *Scientific Reports, 11*, 23929. \doi{10.1038/s41598-021-03238-3}}
 #'
@@ -23,10 +26,14 @@
 #'
 #' @examples
 #' I <- incidence.from.probability(R = 100, C = 100, P = .1)
-#' blockedI <- add.blocks(I, blocks = 2, density = .7)
+#' blockedI <- add.blocks(I, density = .7)
 #' all(rowSums(I)==rowSums(blockedI))
 #' all(colSums(I)==colSums(blockedI))
-add.blocks <- function(I, blocks=2, density=.5) {
+add.blocks <- function(I, 
+                       rowblock = sample(1:2,replace=T,nrow(I)), 
+                       colblock = sample(1:2,replace=T,ncol(I)), 
+                       density = .5,
+                       sorted = FALSE) {
 
   #Function to sample 2x2 checkerboards from a larger matrix
   sample.cb <- function(m) {
@@ -42,31 +49,27 @@ add.blocks <- function(I, blocks=2, density=.5) {
   }
 
   # Parameter checks
-  if (!is.numeric(blocks) | !is.numeric(density)) {stop("blocks and density must be numeric")}
-  if (blocks<2 | blocks>26 | blocks%%1!=0) {stop("blocks must be a positive integer between 2 and 26")}
-  if (density<0.5 | density>1) {stop("density must be between 0 and 1")}
+  if (!is.numeric(density)) {stop("density must be numeric")}
+  if (density<0 | density>1) {stop("density must be between 0 and 1")}
+  if (!is.numeric(rowblock) | !is.numeric(colblock)) {stop("rowblock and colblock must be integer vectors")}
+  if (length(rowblock)!=nrow(I)) {stop("rowblock must contain nrow(I) elements")}
+  if (length(colblock)!=ncol(I)) {stop("colblock must contain ncol(I) elements")}
 
   # Begin progress bar, assign nodes to blocks
-  block.names <- LETTERS[seq(from = 1, to = blocks)]  #Generate list of group names
-  rownames(I) <- paste0(sample(block.names,nrow(I),replace=TRUE),c(1:nrow(I)))  #Assign each row to a group
-  colnames(I) <- paste0(sample(block.names,ncol(I),replace=TRUE),c(1:ncol(I)))  #Assign each column to a group
-  within <- outer(substr(rownames(I),1,1), substr(colnames(I),1,1), `==`)  #Find within-group pairs
+  within <- outer(rowblock, colblock, `==`)  #Find within-group pairs
   within.block <- sum((within*I) / sum(I))  #Compute starting block density
-  pb <- utils::txtProgressBar(min = .49, max = density, style = 3)  #Initiate progress bar
+  if (within.block > density) {return(I)}  #Return original I if starting block density is already above requested
+  pb <- utils::txtProgressBar(min = within.block, max = density, style = 3)  #Initiate progress bar
 
   while (within.block < density) { #While trying to improve density...
 
     # Get list a possible swaps
     possible <- sample.cb(I)
-    possible$row1 <- rownames(I)[possible$row1]
-    possible$row2 <- rownames(I)[possible$row2]
-    possible$col1 <- colnames(I)[possible$col1]
-    possible$col2 <- colnames(I)[possible$col2]
-    possible <- possible[which(substr(possible$row1,1,1)!=substr(possible$row2,1,1) &  #Agents are from different groups
-                               substr(possible$row1,1,1)!=substr(possible$row2,1,1) &  #Artifacts are from different groups
-                               substr(possible$row1,1,1)==substr(possible$col1,1,1) &  #First agent and artifact are from same group
-                               substr(possible$row2,1,1)==substr(possible$col2,1,1)),] #Second agent and artifact are from same group
-    if (nrow(possible) == 0) {stop("No remaining swaps available")}
+    possible <- possible[which(rowblock[possible$row1]!=rowblock[possible$row2] &  #Agents are from different groups
+                               colblock[possible$col1]!=colblock[possible$col2] &  #Artifacts are from different groups
+                               rowblock[possible$row1]==colblock[possible$col1] &  #First agent and artifact are from same group
+                               rowblock[possible$row2]==colblock[possible$col2]),] #Second agent and artifact are from same group
+    if (nrow(possible) == 0) {stop("Requested within-block density not achieved")}
 
     # Try making swaps from the list, until achieving desired density
     for (try in 1:nrow(possible)) {
@@ -78,8 +81,10 @@ add.blocks <- function(I, blocks=2, density=.5) {
     }
   }
 
-  # End progress bar & return
+  # Complete & end progress bar, return
+  utils::setTxtProgressBar(pb, density)
   close(pb)
+  if (sorted) {I <- I[order(rowblock), order(colblock)]}
   return(I)
 }
 

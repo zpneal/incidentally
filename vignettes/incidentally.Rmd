@@ -40,9 +40,12 @@ par(mar = c(0, 0, 1, 0))
     c. [Marginal distributions](#distributions)
 3. [Generative models](#generative)
     a. [Teams model](#team)
-    a. [Groups model](#group)
-    a. [Blau Space model](#blau)
-4. [Block models](#block)
+    b. [Groups model](#group)
+    c. [Blau Space model](#blau)
+4. [Utilities](#util)
+    a. [Block models](#block)
+5. [Empirical data](#data)
+    a. [US Congress](#congress)
 
 # Introduction {#introduction}
 
@@ -76,15 +79,13 @@ Upon successful loading, a startup message will display that shows the version n
 ## Package overview {#overview}
 The incidentally package offers multiple incidence matrix-generating functions that differ in how the resulting incidence matrix is constrained. These functions are described in detail below, but briefly:
 
-* [`incidence.from.probability()`](#probability) generates an incidence matrix with a given probabaility that $I_{ij} = 1$.
-
-* [`incidence.from.vector()`](#vector) generates an incidence matrix with given row and column marginals.
-
-* [`incidence.from.distribution()`](#distribution) generates an incidence matrix in which the row and column marginals follow a given distribution.
+* [`incidence.from.probability()`](#probability), [`incidence.from.vector()`](#vector), and [`incidence.from.distribution()`](#distribution) generate an incidence matrices and bipartite graphs with given constraints on its fill/density and marginals/degrees.
 
 * [`incidence.from.adjacency()`](#adjacency) uses one of several generative models to create a bipartite network (in the form of an incidence matrix) from a unipartite network (in the form of an adjacency matrix).
 
-Once an incidence matrix is generated using one of these functions, the [`add.blocks()`](#block) function can be used to add a block structure or planted partition.
+* [`add.blocks()`](#block) adds a block structure or planted partition to an existing incidence matrix or bipartite graph.
+
+* [`incidence.from.congress()`](#congress) constructs an incidence matrix representing US Congress legislators' sponsorship of bills.
 
 ## Supported data formats {#formats}
 The incidentally package can return incidence matrices in several data formats that are useful for subsequent analysis in R:
@@ -233,19 +234,48 @@ The social network is plotted using a Multidimensional Scaling layout, and there
 
 [back to Table of Contents](#toc)
 
-# Block models {#block}
+# Utilities {#util}
+## Block models {#block}
 The `add.blocks()` function shuffles an incidence matrix to have a block structure or planted partition while preserving the row and column marginals. For example, after generating a 100 $\times$ 100 incidence matrix with a density of .1, we can plant a partition in which the within-group `density = 0.7`. In this example, the first 50 row nodes and first 50 column nodes are assigned to block 1, while the second 50 row nodes and second 50 column nodes are assigned to block 2:
-```{r}
+```{r, echo = TRUE, results = 'hide'}
 I <- incidence.from.probability(R = 100, C = 100, P = .1)
-blockedI <- add.blocks(I, density = .7, 
+blocked <- add.blocks(I, density = .7, 
                        rowblock = c(rep(1,50),rep(2,50)),
                        colblock = c(rep(1,50),rep(2,50)))
-all(rowSums(I)==rowSums(blockedI))
-all(colSums(I)==colSums(blockedI))
-
+```
+```{r}
+all(rowSums(I)==rowSums(blocked))
+all(colSums(I)==colSums(blocked))
 ```
 
 In this example, the row objects are partitioned into two randomly-sized groups labeled `A` and `B`, and similarly the column objects are partitioned into two randomly-sized groups labeled `A` and `B`. There is a 0.7 probability of a 1 occuring between a row and column object belonging to the same group. Note that the row and column marginals are preserved.
+
+[back to Table of Contents](#toc)
+
+# Empirical data {#data}
+Incidence matrices and bipartite graphs are very common. These functions generate such objects from empirical data available online.
+
+## US Congress {#congress}
+In the US Congress, the legislative process begins when a legislator in the House of Representatives or Senate introduces a bill for consideration. The legislator who introduces a bill is the *sponsor*, while other legislators can support the bill by joining as *co-sponsors*. These activities can be recorded in an incidence matrix **I** where $I_{ik} = 1$ if legislator *i* sponsored or co-sponsored bill *k*, and otherwise is 0. These data can be useful for constructing co-sponsorship networks, where legislators are connected if they sponsored the same bills, which can provide insight into political alliances and oppositions [@neal2014].
+
+The `incidence.from.congress()` function makes it possible to construct such an incidence matrix for a given `session` and for given types of `bills`. For example:
+```{r, echo = TRUE, results = 'hide'}
+I <- incidence.from.congress(session = 115, types = "sjres", format = "data")
+```
+generates data on Joint Resolution bills introducted in the 115th session of the Senate. By specifying `format = "data"`, the resulting object is a list containing (1) the incidence matrix, (2) a data frame of legislator characteristics, and (3) a data frame of bill characteristics:
+```{r}
+I$matrix[1:5,1:5]
+I$legislator[1:5,1:5]
+I$bills[1:5,c(1,2,4,5)]
+```
+
+Alternatively, specifying `format = "igraph"` yields an *igraph* bipartite graph that includes legislator and bill characteristics as vertex attibutes:
+```{r, echo = TRUE, results = 'hide'}
+G <- incidence.from.congress(session = 115, types = "sjres", format = "igraph")
+```
+```{r}
+G
+```
 
 [back to Table of Contents](#toc)
 

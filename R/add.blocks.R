@@ -3,8 +3,8 @@
 #' `add.blocks` shuffles an incidence matrix to have a block structure or planted partition while preserving the row and column sums
 #'
 #' @param I matrix: An incidence matrix
-#' @param rowblock numeric: vector of integers c(1:26) indicating each row node's block membership
-#' @param colblock numeric: vector of integers c(1:26) indicating each column node's block membership
+#' @param rowblock numeric: vector indicating each row node's block membership
+#' @param colblock numeric: vector indicating each column node's block membership
 #' @param density numeric: desired within-block density
 #' @param sorted boolean: if TRUE, return incidence matrix permuted by block
 #'
@@ -12,10 +12,9 @@
 #' Stochastic block and planted partition models generate graphs in which the probability that two nodes are connected
 #'    depends on whether they are members of the same or different blocks/partitions. Functions such as \link[igraph]{sample_sbm}
 #'    can randomly sample from stochastic block models with given probabilities. In contrast `add.blocks` adds a block
-#'    structure to an existing incidence matrix while preserving the row and column sums.
-#'    
-#' Row nodes' and column nodes' block memberships are supplied in separate integer vectors. If block membership vectors are
-#'    not provided, then nodes are randomly assigned to two groups.
+#'    structure to an existing incidence matrix while preserving the row and column sums. Row nodes' and column nodes'
+#'    block memberships are supplied in separate vectors. If block membership vectors are not provided, then nodes are
+#'    randomly assigned to two groups.
 #'
 #' @return
 #' matrix: An incidence matrix with a block structure

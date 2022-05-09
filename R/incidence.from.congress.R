@@ -120,14 +120,14 @@ incidence.from.congress <- function(session = NULL, types = NULL, weighted = FAL
   if (format == "igraph") {
     G <- igraph::graph_from_data_frame(sponsorship, directed = F)
     igraph::V(G)$type <- igraph::V(G)$name %in% sponsorship[,2] #second column of edges is TRUE type
-    igraph::V(G)[which(igraph::V(G)$type==F)]$party <- legislator$party
-    igraph::V(G)[which(igraph::V(G)$type==F)]$state <- legislator$state
-    igraph::V(G)[which(igraph::V(G)$type==F)]$last <- legislator$last
-    igraph::V(G)[which(igraph::V(G)$type==F)]$id <- legislator$id
-    igraph::V(G)[which(igraph::V(G)$type==T)]$introduced <- bills$introduced
-    igraph::V(G)[which(igraph::V(G)$type==T)]$title <- bills$title
-    igraph::V(G)[which(igraph::V(G)$type==T)]$area <- bills$area
-    igraph::V(G)[which(igraph::V(G)$type==T)]$status <- bills$status
+    suppressWarnings(igraph::V(G)[which(igraph::V(G)$type==F)]$party <- legislator$party)
+    suppressWarnings(igraph::V(G)[which(igraph::V(G)$type==F)]$state <- legislator$state)
+    suppressWarnings(igraph::V(G)[which(igraph::V(G)$type==F)]$last <- legislator$last)
+    suppressWarnings(igraph::V(G)[which(igraph::V(G)$type==F)]$id <- legislator$id)
+    suppressWarnings(igraph::V(G)[which(igraph::V(G)$type==T)]$introduced <- bills$introduced)
+    suppressWarnings(igraph::V(G)[which(igraph::V(G)$type==T)]$title <- bills$title)
+    suppressWarnings(igraph::V(G)[which(igraph::V(G)$type==T)]$area <- bills$area)
+    suppressWarnings(igraph::V(G)[which(igraph::V(G)$type==T)]$status <- bills$status)
     return(G)
   }
 

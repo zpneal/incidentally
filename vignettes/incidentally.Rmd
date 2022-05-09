@@ -234,10 +234,12 @@ The social network is plotted using a Multidimensional Scaling layout, and there
 [back to Table of Contents](#toc)
 
 # Block models {#block}
-The `add.blocks()` function shuffles an incidence matrix to have a block structure or planted partition while preserving the row and column marginals. For example, after generating an incidence matrix with a density of .1, we can plant a two-group (`block = 2`) partition in which the within-group `density = 0.7`:
+The `add.blocks()` function shuffles an incidence matrix to have a block structure or planted partition while preserving the row and column marginals. For example, after generating a 100 $\times$ 100 incidence matrix with a density of .1, we can plant a partition in which the within-group `density = 0.7`. In this example, the first 50 row nodes and first 50 column nodes are assigned to block 1, while the second 50 row nodes and second 50 column nodes are assigned to block 2:
 ```{r}
 I <- incidence.from.probability(R = 100, C = 100, P = .1)
-blockedI <- add.blocks(I, blocks = 2, density = .7)
+blockedI <- add.blocks(I, density = .7, 
+                       rowblock = c(rep(1,50),rep(2,50)),
+                       colblock = c(rep(1,50),rep(2,50)))
 all(rowSums(I)==rowSums(blockedI))
 all(colSums(I)==colSums(blockedI))
 

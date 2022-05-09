@@ -4,7 +4,7 @@
 \alias{add.blocks}
 \title{Adds a block structure to an incidence matrix}
 \usage{
-add.blocks(I, blocks = 2, density = 0.5, max.tries = 1e+05)
+add.blocks(I, blocks = 2, density = 0.5)
 }
 \arguments{
 \item{I}{matrix: An incidence matrix}
@@ -12,8 +12,6 @@ add.blocks(I, blocks = 2, density = 0.5, max.tries = 1e+05)
 \item{blocks}{integer: number of blocks to add (between 2 and 26)}
 
 \item{density}{numeric: desired within-block density}
-
-\item{max.tries}{numeric: number of ineligible re-wiring attempts before giving up}
 }
 \value{
 matrix: An incidence matrix, row and column names begin with a letter indicating their block membership
@@ -24,18 +22,16 @@ matrix: An incidence matrix, row and column names begin with a letter indicating
 \details{
 Stochastic block and planted partition models generate graphs in which the probability that two nodes are connected
 depends on whether they are members of the same or different blocks/partitions. Functions such as \link[igraph]{sample_sbm}
-can randomly sample from stochastic block models with given probabilities. In contrast \code{add.blocks} attempts to
-generate a block model that preserves the degree sequences (i.e., a matrix with preserved row and column sums).
-
-Each row and each column node are randomly assigned to one of \code{blocks} number of groups. Then
-checkerboard swaps are performed that increase the within-block density, until \code{density} is achieved.
-Eligible swaps are identified randomly, so the re-wiring can be slow when \code{I} is large. The process
-can get stuck when no eligible swaps remain but the target \code{density} has not been achieved; if this
-happens, increase \code{max.tries} to keep looking for eligible swaps or reduce the target \code{density}.
+can randomly sample from stochastic block models with given probabilities. In contrast \code{add.blocks} adds a block
+structure to an existing incidence matrix while preserving the row and column sums. Each row and each column are randomly
+assigned to one of \code{blocks} number of groups, then marginal-perserving checkerboard swaps are performed that increase
+the within-block density, until \code{density} is achieved (if possible).
 }
 \examples{
-I <- incidence.from.probability(R = 20, C = 20, P = .5)
-I <- add.blocks(I, blocks = 2, density = .7)
+I <- incidence.from.probability(R = 100, C = 100, P = .1)
+blockedI <- add.blocks(I, blocks = 2, density = .7)
+all(rowSums(I)==rowSums(blockedI))
+all(colSums(I)==colSums(blockedI))
 }
 \references{
 {Neal, Z. P., Domagalski, R., and Sagan, B. 2021. Comparing alternatives to the fixed degree sequence model for extracting the backbone of bipartite projections. \emph{Scientific Reports, 11}, 23929. \doi{10.1038/s41598-021-03238-3}}

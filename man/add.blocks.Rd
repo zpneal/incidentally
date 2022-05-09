@@ -4,17 +4,27 @@
 \alias{add.blocks}
 \title{Adds a block structure to an incidence matrix}
 \usage{
-add.blocks(I, blocks = 2, density = 0.5)
+add.blocks(
+  I,
+  rowblock = sample(1:2, replace = T, nrow(I)),
+  colblock = sample(1:2, replace = T, ncol(I)),
+  density = 0.5,
+  sorted = FALSE
+)
 }
 \arguments{
 \item{I}{matrix: An incidence matrix}
 
-\item{blocks}{integer: number of blocks to add (between 2 and 26)}
+\item{rowblock}{numeric: vector of integers c(1:26) indicating each row node's block membership}
+
+\item{colblock}{numeric: vector of integers c(1:26) indicating each column node's block membership}
 
 \item{density}{numeric: desired within-block density}
+
+\item{sorted}{boolean: if TRUE, return incidence matrix permuted by block}
 }
 \value{
-matrix: An incidence matrix, row and column names begin with a letter indicating their block membership
+matrix: An incidence matrix with a block structure
 }
 \description{
 \code{add.blocks} shuffles an incidence matrix to have a block structure or planted partition while preserving the row and column sums
@@ -23,13 +33,14 @@ matrix: An incidence matrix, row and column names begin with a letter indicating
 Stochastic block and planted partition models generate graphs in which the probability that two nodes are connected
 depends on whether they are members of the same or different blocks/partitions. Functions such as \link[igraph]{sample_sbm}
 can randomly sample from stochastic block models with given probabilities. In contrast \code{add.blocks} adds a block
-structure to an existing incidence matrix while preserving the row and column sums. Each row and each column are randomly
-assigned to one of \code{blocks} number of groups, then marginal-perserving checkerboard swaps are performed that increase
-the within-block density, until \code{density} is achieved (if possible).
+structure to an existing incidence matrix while preserving the row and column sums.
+
+Row nodes' and column nodes' block memberships are supplied in separate integer vectors. If block membership vectors are
+not provided, then nodes are randomly assigned to two groups.
 }
 \examples{
 I <- incidence.from.probability(R = 100, C = 100, P = .1)
-blockedI <- add.blocks(I, blocks = 2, density = .7)
+blockedI <- add.blocks(I, density = .7)
 all(rowSums(I)==rowSums(blockedI))
 all(colSums(I)==colSums(blockedI))
 }

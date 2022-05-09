@@ -234,19 +234,16 @@ The social network is plotted using a Multidimensional Scaling layout, and there
 [back to Table of Contents](#toc)
 
 # Block models {#block}
-The `add.blocks()` function shuffles an incidence matrix to have a block structure or planted partition while preserving the row and column marginals. For example, after generating an incidence matrix with a density of .5, we can plant a two-group (`block = 2`) partition in which the within-group `density = 0.7`:
+The `add.blocks()` function shuffles an incidence matrix to have a block structure or planted partition while preserving the row and column marginals. For example, after generating an incidence matrix with a density of .1, we can plant a two-group (`block = 2`) partition in which the within-group `density = 0.7`:
 ```{r}
-I <- incidence.from.probability(20, 20, .5)
-I
-rowSums(I)
-colSums(I)
-I <- add.blocks(I, blocks = 2, density = .7)
-I
-rowSums(I)
-colSums(I)
+I <- incidence.from.probability(R = 100, C = 100, P = .1)
+blockedI <- add.blocks(I, blocks = 2, density = .7)
+all(rowSums(I)==rowSums(blockedI))
+all(colSums(I)==colSums(blockedI))
+
 ```
 
-In this example, the row objects are partitioned into two randomly-sized groups labeled `A` and `B`, and similarly the column objects are partitioned into two randomly-sized groups labeled `A` and `B`. There is a 0.8 probability of a 1 occuring between a row and column object belonging to the same group. Note that the row and column marginals are preserved.
+In this example, the row objects are partitioned into two randomly-sized groups labeled `A` and `B`, and similarly the column objects are partitioned into two randomly-sized groups labeled `A` and `B`. There is a 0.7 probability of a 1 occuring between a row and column object belonging to the same group. Note that the row and column marginals are preserved.
 
 [back to Table of Contents](#toc)
 

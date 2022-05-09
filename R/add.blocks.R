@@ -2,7 +2,7 @@
 #'
 #' `add.blocks` shuffles an incidence matrix to have a block structure or planted partition while preserving the row and column sums
 #'
-#' @param I matrix: An incidence matrix
+#' @param I An incidence matrix or {\link{igraph}} bipartite graph
 #' @param rowblock numeric: vector indicating each row node's block membership
 #' @param colblock numeric: vector indicating each column node's block membership
 #' @param density numeric: desired within-block density
@@ -17,7 +17,7 @@
 #'    randomly assigned to two groups.
 #'
 #' @return
-#' matrix: An incidence matrix with a block structure
+#' An incidence matrix or {\link{igraph}} bipartite graph with a block structure
 #'
 #' @references {Neal, Z. P., Domagalski, R., and Sagan, B. 2021. Comparing alternatives to the fixed degree sequence model for extracting the backbone of bipartite projections. *Scientific Reports, 11*, 23929. \doi{10.1038/s41598-021-03238-3}}
 #'
@@ -25,12 +25,16 @@
 #'
 #' @examples
 #' I <- incidence.from.probability(R = 100, C = 100, P = .1)
-#' blockedI <- add.blocks(I, density = .7)
-#' all(rowSums(I)==rowSums(blockedI))
-#' all(colSums(I)==colSums(blockedI))
-add.blocks <- function(I, 
-                       rowblock = sample(1:2,replace=T,nrow(I)), 
-                       colblock = sample(1:2,replace=T,ncol(I)), 
+#' blocked <- add.blocks(I, density = .7)
+#' all(rowSums(I)==rowSums(blocked))
+#' all(colSums(I)==colSums(blocked))
+#'
+#' B <- igraph::sample_bipartite(100, 100, p=.1)
+#' blocked <- add.blocks(B, density = .7)
+#' all(igraph::degree(B)==igraph::degree(blocked))
+add.blocks <- function(I,
+                       rowblock = sample(1:2,replace=T,nrow(I)),
+                       colblock = sample(1:2,replace=T,ncol(I)),
                        density = .5,
                        sorted = FALSE) {
 
@@ -47,6 +51,15 @@ add.blocks <- function(I,
     return(dt)
   }
 
+  # Prep object
+  if (!methods::is(I,"matrix") & !methods::is(I,"igraph")) {stop("I must be a matrix or igraph object")}
+  class <- "matrix"
+  if (methods::is(I,"igraph")) {
+    if (!igraph::is.bipartite(I)) {stop("I must be bipartite")}
+    I <- igraph::as_incidence_matrix(I)
+    class <- "igraph"
+  }
+
   # Parameter checks
   if (!is.numeric(density)) {stop("density must be numeric")}
   if (density<0 | density>1) {stop("density must be between 0 and 1")}
@@ -54,10 +67,10 @@ add.blocks <- function(I,
   if (length(rowblock)!=nrow(I)) {stop("rowblock must contain nrow(I) elements")}
   if (length(colblock)!=ncol(I)) {stop("colblock must contain ncol(I) elements")}
 
-  # Begin progress bar, assign nodes to blocks
+  # Check starting within-block density
   within <- outer(rowblock, colblock, `==`)  #Find within-group pairs
   within.block <- sum((within*I) / sum(I))  #Compute starting block density
-  if (within.block > density) {return(I)}  #Return original I if starting block density is already above requested
+  if (within.block > density) {stop("I already has a within-block density > `density`")}
   pb <- utils::txtProgressBar(min = within.block, max = density, style = 3)  #Initiate progress bar
 
   while (within.block < density) { #While trying to improve density...
@@ -83,7 +96,8 @@ add.blocks <- function(I,
   # Complete & end progress bar, return
   utils::setTxtProgressBar(pb, density)
   close(pb)
-  if (sorted) {I <- I[order(rowblock), order(colblock)]}
+  if (sorted & class=="matrix") {I <- I[order(rowblock), order(colblock)]}
+  if (class == "igraph") {I <- igraph::graph_from_incidence_matrix(I)}
   return(I)
 }
 

@@ -5,6 +5,7 @@
 #'
 #' @param session numeric: the session of congress (currently 108-117)
 #' @param types vector: types of bills to include. May be any combination of c(\"s\", \"sres\", \"sjres\", \"sconres\") OR any combination of c(\"hr\", \"hres\", \"hjres\", \"hconres\").
+#' @param areas string: policy areas of bills to include (see details)
 #' @param weighted boolean: should sponsor-bill edges have a weight of 2, but cosponsor-bill edges have a weight of 1
 #' @param format string: format of output, one of c(\"data\", \"igraph\")
 #'
@@ -26,6 +27,11 @@
 #'    Simple Resolution (sres). In both chambers, concurrent and simple resolutions are used for minor procedural matters and do not
 #'    have the force of law. Only bills and joint resolutions require the President's signature and have the force of law if signed.
 #'
+#' Each bill is assigned a policy area by the Congressional Research Service. By default, bills from all policy areas are included,
+#'    however the `areas` parameter can be used to include only bills addressing certain policy areas. The `areas` takes a vector of
+#'    strings listing the desired policy areas (e.g., `areas = c("Congress", "Animals")`). Policy area names are **case-sensitive**. A
+#'    complete list of policy areas and brief descriptions is available at \href{https://www.congress.gov/help/field-values/policy-area}{https://www.congress.gov/help/field-values/policy-area}.
+#'
 #' @return
 #' If `format = "data"`, a list containing an incidence matrix, a dataframe of legislator characteristics, and a dataframe of bill characteristics.
 #'
@@ -36,9 +42,10 @@
 #' @examples
 #' \dontrun{
 #' D <- incidence.from.congress(session = 116, types = "s", format = "data")
+#' D <- incidence.from.congress(session = 116, types = "s", format = "data", areas = "Animals")
 #' G <- incidence.from.congress(session = 115, types = c("hr", "hres"), format = "igraph")
 #' }
-incidence.from.congress <- function(session = NULL, types = NULL, weighted = FALSE, format = "data"){
+incidence.from.congress <- function(session = NULL, types = NULL, areas = "all", weighted = FALSE, format = "data"){
 
   #Parameter check
   if (!is.numeric(session)) {stop("session must be an integer between 108 and 117")}
@@ -55,7 +62,7 @@ incidence.from.congress <- function(session = NULL, types = NULL, weighted = FAL
 
     #Download zip of bill-type as tempfile, determine contents
     temp <- tempfile()
-    message(paste0("Retriving ", type, " bills from session ", session))
+    message(paste0("Retriving bills from session ", session))
     utils::download.file(paste0("https://www.govinfo.gov/bulkdata/BILLSTATUS/",session,"/",type,"/BILLSTATUS-",session,"-",type,".zip"),temp)  #Download file
     files <- utils::unzip(temp, list = TRUE)$Name  #Unzip and get list of XML contents
     number.of.bills <- length(files)
@@ -103,6 +110,9 @@ incidence.from.congress <- function(session = NULL, types = NULL, weighted = FAL
     } #End file loop
     close(pb)
   } #End type loop
+
+  #Restrict by bill topic
+  suppressWarnings(if (areas != "all") {dat <- dat[which(dat$area %in% areas),]})
 
   #Prep sponsorship data and codebooks
   if (weighted) {sponsorship <- dat[c("name", "bill", "weight")]} else {sponsorship <- dat[c("name", "bill")]}

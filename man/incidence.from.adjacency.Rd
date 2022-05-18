@@ -17,7 +17,6 @@ incidence.from.adjacency(
 }
 \arguments{
 \item{G}{A symmetric, binary adjacency matrix of class \code{matrix} or \code{Matrix},
-a \code{data.frame} containing a symbolic edge list in the first two columns,
 or an undirected, unweighted unipartite graph of class {\link{igraph}}.}
 
 \item{k}{integer: Number of artifacts to generate}
@@ -30,12 +29,12 @@ or an undirected, unweighted unipartite graph of class {\link{igraph}}.}
 
 \item{model}{string: Generative model, one of c("team", "group", "blau") (see details)}
 
-\item{class}{string: Return object as \code{matrix}, \code{matrix}, \code{igraph}, or \code{edgelist}. If \code{NULL}, object is returned in the same class as \code{G}.}
+\item{class}{string: Return object as \code{matrix}, \code{Matrix}, or \code{igraph}. If \code{NULL}, object is returned in the same class as \code{G}.}
 
 \item{narrative}{boolean: TRUE if suggested text & citations should be displayed.}
 }
 \value{
-An incidence matrix of class \code{matrix} or \code{matrix}, an edgelist of class \code{data.frame}, or a bipartite graph of class {\link{igraph}}.
+An incidence matrix of class \code{matrix} or \code{Matrix}, or a bipartite graph of class {\link{igraph}}.
 }
 \description{
 \code{incidence.from.adjacency} generates an incidence matrix from an adjacency matrix or network using

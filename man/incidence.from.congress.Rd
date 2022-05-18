@@ -7,6 +7,7 @@
 incidence.from.congress(
   session = NULL,
   types = NULL,
+  areas = "all",
   weighted = FALSE,
   format = "data"
 )
@@ -15,6 +16,8 @@ incidence.from.congress(
 \item{session}{numeric: the session of congress (currently 108-117)}
 
 \item{types}{vector: types of bills to include. May be any combination of c(\"s\", \"sres\", \"sjres\", \"sconres\") OR any combination of c(\"hr\", \"hres\", \"hjres\", \"hconres\").}
+
+\item{areas}{string: policy areas of bills to include (see details)}
 
 \item{weighted}{boolean: should sponsor-bill edges have a weight of 2, but cosponsor-bill edges have a weight of 1}
 
@@ -46,10 +49,16 @@ a House Concurrent Resolution (hconres), and a House Simple Resolution (hres). S
 four types of bills: a Senate Bill (s), a Senate Joint Resolution (sjres), a Senate Concurrent Resolution (sconres), and a Senate
 Simple Resolution (sres). In both chambers, concurrent and simple resolutions are used for minor procedural matters and do not
 have the force of law. Only bills and joint resolutions require the President's signature and have the force of law if signed.
+
+Each bill is assigned a policy area by the Congressional Research Service. By default, bills from all policy areas are included,
+however the \code{areas} parameter can be used to include only bills addressing certain policy areas. The \code{areas} takes a vector of
+strings listing the desired policy areas (e.g., \code{areas = c("Congress", "Animals")}). Policy area names are \strong{case-sensitive}. A
+complete list of policy areas and brief descriptions is available at \href{https://www.congress.gov/help/field-values/policy-area}{https://www.congress.gov/help/field-values/policy-area}.
 }
 \examples{
 \dontrun{
 D <- incidence.from.congress(session = 116, types = "s", format = "data")
+D <- incidence.from.congress(session = 116, types = "s", format = "data", areas = "Animals")
 G <- incidence.from.congress(session = 115, types = c("hr", "hres"), format = "igraph")
 }
 }

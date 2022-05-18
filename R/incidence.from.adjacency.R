@@ -5,17 +5,16 @@
 #'    a given generative model
 #'
 #' @param G A symmetric, binary adjacency matrix of class `matrix` or `Matrix`,
-#'    a `data.frame` containing a symbolic edge list in the first two columns,
 #'    or an undirected, unweighted unipartite graph of class {\link{igraph}}.
 #' @param k integer: Number of artifacts to generate
 #' @param p numeric: Tuning parameter for artifacts, 0 <= p <= 1
 #' @param maximal boolean: Should teams/groups models be seeded with *maximal* cliques?
 #' @param blau.param vector: Vector of parameters that control blau space (see details)
 #' @param model string: Generative model, one of c("team", "group", "blau") (see details)
-#' @param class string: Return object as `matrix`, `matrix`, `igraph`, or `edgelist`. If `NULL`, object is returned in the same class as `G`.
+#' @param class string: Return object as `matrix`, `Matrix`, or `igraph`. If `NULL`, object is returned in the same class as `G`.
 #' @param narrative boolean: TRUE if suggested text & citations should be displayed.
 #'
-#' @return An incidence matrix of class `matrix` or `matrix`, an edgelist of class `data.frame`, or a bipartite graph of class {\link{igraph}}.
+#' @return An incidence matrix of class `matrix` or `Matrix`, or a bipartite graph of class {\link{igraph}}.
 #'
 #' @details
 #' Given a unipartite network composed of *i agents* (i.e. nodes) that can be represented by an *i x i* adjacency
@@ -54,12 +53,11 @@ incidence.from.adjacency <- function(G, k = 1, p = 1, blau.param = c(2,1,10), ma
   if (is.null(class) & methods::is(G, "igraph")) {class <- "igraph"}
   if (is.null(class) & methods::is(G, "matrix")) {class <- "matrix"}
   if (is.null(class) & methods::is(G, "Matrix")) {class <- "Matrix"}
-  if (is.null(class) & methods::is(G, "data.frame")) {class <- "edgelist"}
   if (!is.numeric(k)) {stop("k must be numeric")}
   if (!is.numeric(p)) {stop("p must be numeric")}
   if (p < 0 | p > 1) {stop("p must be between 0 and 1")}
   if (!(model %in% c("team", "group", "blau"))) {stop("model must be one if c(\"team\", \"group\", \"blau\")")}
-  if (!(class %in% c("matrix", "Matrix", "edgelist", "igraph"))) {stop("class must be one if c(\"matrix\", \"Matrix\", \"edgelist\",  \"igraph\")")}
+  if (!(class %in% c("matrix", "Matrix", "igraph"))) {stop("class must be one if c(\"matrix\", \"Matrix\", \"igraph\")")}
   if (blau.param[1]%%1!=0 | blau.param[1]<2) {stop("The first blau.param must be an integer greater than 1")}
   if (blau.param[2]<0 | blau.param[3]<0) {stop("The second and third blau.param must be positive")}
 
@@ -82,11 +80,6 @@ incidence.from.adjacency <- function(G, k = 1, p = 1, blau.param = c(2,1,10), ma
     if (!all(G %in% c(0,1))) {stop("G must be binary")}
     if (!is.null(rownames(G))) {nodes <- rownames(G)} else {nodes <- 1:nrow(G)}
     G <- igraph::graph_from_adjacency_matrix(G,mode="undirected")
-  }
-  if (methods::is(G, "data.frame")) {
-    if (ncol(G)!=2) {stop("the edgelist must have two columns")}
-    G <- igraph::graph_from_data_frame(G, directed = F)
-    if (!is.null(igraph::V(G)$name)) {nodes <- igraph::V(G)$name} else {nodes <- 1:(igraph::gorder(G))}
   }
 
   I <- as.matrix(1:(igraph::gorder(G)))  #Create empty incidence with numeric row labels
@@ -185,7 +178,6 @@ incidence.from.adjacency <- function(G, k = 1, p = 1, blau.param = c(2,1,10), ma
     colnames(I) <- c(paste0("k", 1:ncol(I)))  #Insert column names
   }
   if (class == "igraph") {I <- igraph::graph_from_incidence_matrix(I)}
-  if (class == "edgelist") {I <- data.frame(igraph::as_edgelist(igraph::graph_from_incidence_matrix(I)))}
   if (class == "Matrix"){I <- Matrix::Matrix(I)}
 
   #Display narrative if requested
@@ -202,7 +194,6 @@ incidence.from.adjacency <- function(G, k = 1, p = 1, blau.param = c(2,1,10), ma
     message("")
     message("Neal, Z. P. (2022). The Duality of Networks and Foci: Generative Models of Two-Mode Networks from One-Mode Networks. arXiv.")
   }
-
 
   return(I)  #Return the bipartite graph with row labels
 }

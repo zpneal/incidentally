@@ -73,11 +73,14 @@ incidence.from.congress <- function(session = NULL, types = NULL, areas = "all",
     for (file in 1:number.of.bills) {
       bill <- xml2::read_xml(unz(temp, files[file]))
 
+      #Check area, add bill if relevant
+      area <- xml2::xml_text(xml2::xml_find_first(bill, ".//policyArea"))
+      if (areas=="all" | area %in% areas) {
+
       #Bill characteristics
       number <- paste0(xml2::xml_text(xml2::xml_find_first(bill, ".//billType")),xml2::xml_text(xml2::xml_find_first(bill, ".//billNumber")))
       introduced <- xml2::xml_text(xml2::xml_find_first(bill, ".//introducedDate"))
       title <- xml2::xml_text(xml2::xml_find_first(bill, ".//title"))
-      area <- xml2::xml_text(xml2::xml_find_first(bill, ".//policyArea"))
       status <- "Introduced"
       if (grepl("Became Public Law", xml2::xml_text(bill))) {status <- "Became law"}
       if (grepl("Passed/agreed to in Senate", xml2::xml_text(bill)) & grepl("Passed/agreed to in House", xml2::xml_text(bill)) & !(grepl("Became Public Law", xml2::xml_text(bill)))) {status <- "Sent to president"}
@@ -105,14 +108,12 @@ incidence.from.congress <- function(session = NULL, types = NULL, areas = "all",
       #Add to data
       dat <- rbind(dat, data.frame(id = s.id, name = s.name, last = s.last, party = s.party, state = s.state, bill = number, introduced = introduced, title = title, area = area, status = status, weight = 2))
       if (length(cs.id)>0) dat <- rbind(dat, data.frame(id = cs.id, name = cs.name, last = cs.last, party = cs.party, state = cs.state, bill = number, introduced = introduced, title = title, area = area, status = status, weight = 1))
+      }
 
       utils::setTxtProgressBar(pb, file)
     } #End file loop
     close(pb)
   } #End type loop
-
-  #Restrict by bill topic
-  suppressWarnings(if (areas != "all") {dat <- dat[which(dat$area %in% areas),]})
 
   #Prep sponsorship data and codebooks
   if (weighted) {sponsorship <- dat[c("name", "bill", "weight")]} else {sponsorship <- dat[c("name", "bill")]}

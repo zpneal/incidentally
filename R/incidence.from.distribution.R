@@ -61,24 +61,24 @@ incidence.from.distribution <- function(R, C, P, rowdist = c(1,1), coldist = c(1
   C <- integers(C,ones,coldist[1],coldist[2])  #Create a vector of artifact degrees; if not possible, error
   I <- incidence.from.vector(R,C)  #Create incidence matrix
 
-  #Verify, randomize, and return
+  #Verify and randomize
   if (all.equal(R,rowSums(I)) == TRUE | all.equal(C,colSums(I)) == TRUE) {
     I <- curveball(I)
     if (class == "igraph"){I <- igraph::graph_from_incidence_matrix(I)}
     if (class == "Matrix"){I <- Matrix::Matrix(I)}
-
-    #Display narrative if requested
-    if (narrative) {
-      version <- utils::packageVersion("incidentally")
-      if (class == "igraph") {text <- paste0("We used the incidentally package for R (v", version, "; Neal, 2022) to generate a random bipartite graph with ", R, " agents whose degrees are approximately distributed as B(", rowdist[1], ",", rowdist[2],"), and ", C, " artifacts whose degrees are approximately distributed as B(", coldist[1], ",", coldist[2],").")}
-      if (class != "igraph") {text <- paste0("We used the incidentally package for R (v", version, "; Neal, 2022) to generate a random incidence matrix with ", R, " rows whose sums are approximately distributed as B(", rowdist[1], ",", rowdist[2],"), and ", C, " columns whose sums are approximately distributed as B(", coldist[1], ",", coldist[2],").")}
-      message("")
-      message("=== Suggested manuscript text and citations ===")
-      message(text)
-      message("")
-      message("Neal, Z. P. (2022). The Duality of Networks and Foci: Generative Models of Two-Mode Networks from One-Mode Networks. arXiv.")
-    }
-
-    return(I)
   } else {stop("A bipartite network with these degree distributions is not possible")}
+
+  #Display narrative if requested
+  if (narrative) {
+    version <- utils::packageVersion("incidentally")
+    if (class == "igraph") {text <- paste0("We used the incidentally package for R (v", version, "; Neal, 2022) to generate a random bipartite graph with ", R, " agents whose degrees are approximately distributed as B(", rowdist[1], ",", rowdist[2],"), and ", C, " artifacts whose degrees are approximately distributed as B(", coldist[1], ",", coldist[2],").")}
+    if (class != "igraph") {text <- paste0("We used the incidentally package for R (v", version, "; Neal, 2022) to generate a random incidence matrix with ", R, " rows whose sums are approximately distributed as B(", rowdist[1], ",", rowdist[2],"), and ", C, " columns whose sums are approximately distributed as B(", coldist[1], ",", coldist[2],").")}
+    message("")
+    message("=== Suggested manuscript text and citations ===")
+    message(text)
+    message("")
+    message("Neal, Z. P. (2022). The Duality of Networks and Foci: Generative Models of Two-Mode Networks from One-Mode Networks. arXiv.")
+  }
+
+  return(I)
 }

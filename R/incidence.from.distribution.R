@@ -57,16 +57,16 @@ incidence.from.distribution <- function(R, C, P, rowdist = c(1,1), coldist = c(1
 
   # Generate bipartite
   ones <- round(R * C * P)  #Number of 1s in matrix, given dimensions and density
-  R <- integers(R,ones,rowdist[1],rowdist[2])  #Create a vector of agent degrees; if not possible, error
-  C <- integers(C,ones,coldist[1],coldist[2])  #Create a vector of artifact degrees; if not possible, error
-  I <- incidence.from.vector(R,C)  #Create incidence matrix
+  Rseq <- integers(R,ones,rowdist[1],rowdist[2])  #Create a vector of agent degrees; if not possible, error
+  Cseq <- integers(C,ones,coldist[1],coldist[2])  #Create a vector of artifact degrees; if not possible, error
+  I <- incidentally::incidence.from.vector(Rseq,Cseq)  #Create incidence matrix
 
   #Verify and randomize
-  if (all.equal(R,rowSums(I)) == TRUE | all.equal(C,colSums(I)) == TRUE) {
-    I <- curveball(I)
+  if (all.equal(Rseq,rowSums(I)) == TRUE | all.equal(Cseq,colSums(I)) == TRUE) {
+    I <- incidentally::curveball(I)
     if (class == "igraph"){I <- igraph::graph_from_incidence_matrix(I)}
     if (class == "Matrix"){I <- Matrix::Matrix(I)}
-  } else {stop("A bipartite network with these degree distributions is not possible")}
+  } else {stop("These distributions are not possible")}
 
   #Display narrative if requested
   if (narrative) {

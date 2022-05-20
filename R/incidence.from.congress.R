@@ -93,6 +93,7 @@ incidence.from.congress <- function(session = NULL, types = NULL, areas = "all",
       s.id <- xml2::xml_text(xml2::xml_find_first(sponsor, ".//bioguideId"))
       s.name <- xml2::xml_text(xml2::xml_find_first(sponsor, ".//fullName"))
       s.last <- xml2::xml_text(xml2::xml_find_first(sponsor, ".//lastName"))
+      s.last <- tools::toTitleCase(tolower(s.last))  #Correcting capitalization
       s.party <- xml2::xml_text(xml2::xml_find_first(sponsor, ".//party"))
       s.state <- xml2::xml_text(xml2::xml_find_first(sponsor, ".//state"))
 
@@ -102,6 +103,7 @@ incidence.from.congress <- function(session = NULL, types = NULL, areas = "all",
       cs.id <- xml2::xml_text(xml2::xml_find_first(cosponsor, ".//bioguideId"))
       cs.name <- xml2::xml_text(xml2::xml_find_first(cosponsor, ".//fullName"))
       cs.last <- xml2::xml_text(xml2::xml_find_first(cosponsor, ".//lastName"))
+      cs.last <- tools::toTitleCase(tolower(cs.last))  #Correcting capitalization
       cs.party <- xml2::xml_text(xml2::xml_find_first(cosponsor, ".//party"))
       cs.state <- xml2::xml_text(xml2::xml_find_first(cosponsor, ".//state"))
 

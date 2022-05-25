@@ -17,6 +17,7 @@ Imports:
     stats,
     xml2
 Suggests:
+    backbone,
     rmarkdown,
     knitr
 VignetteBuilder: knitr

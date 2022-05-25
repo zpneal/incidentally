@@ -10,7 +10,7 @@ incidence.from.congress(
   areas = "all",
   weighted = FALSE,
   format = "data",
-  narrative = TRUE
+  narrative = FALSE
 )
 }
 \arguments{

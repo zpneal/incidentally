@@ -3,11 +3,12 @@
 #' `incidence.from.congress()` uses data from \href{https://www.congress.gov/}{https://www.congress.gov/} to construct an incidence
 #'    matrix or bipartite graph recording legislators' bill (co-)sponsorships.
 #'
-#' @param session numeric: the session of congress (currently 108-117)
+#' @param session numeric: the session of congress
 #' @param types vector: types of bills to include. May be any combination of c(\"s\", \"sres\", \"sjres\", \"sconres\") OR any combination of c(\"hr\", \"hres\", \"hjres\", \"hconres\").
 #' @param areas string: policy areas of bills to include (see details)
 #' @param weighted boolean: should sponsor-bill edges have a weight of 2, but cosponsor-bill edges have a weight of 1
 #' @param format string: format of output, one of c(\"data\", \"igraph\")
+#' @param narrative boolean: TRUE if suggested text & citations should be displayed.
 #'
 #' @details
 #' The `incidence.from.congress()` function uses data from \href{https://www.congress.gov/}{https://www.congress.gov/} to
@@ -45,12 +46,11 @@
 #' D <- incidence.from.congress(session = 116, types = "s", format = "data", areas = "Animals")
 #' G <- incidence.from.congress(session = 115, types = c("hr", "hres"), format = "igraph")
 #' }
-incidence.from.congress <- function(session = NULL, types = NULL, areas = "all", weighted = FALSE, format = "data"){
+incidence.from.congress <- function(session = NULL, types = NULL, areas = "all", weighted = FALSE, format = "data", narrative = TRUE){
 
   #Parameter check
-  if (!is.numeric(session)) {stop("session must be an integer between 108 and 117")}
-  if (session%%1!=0) {stop("session must be an integer between 108 and 117")}
-  if (session<108 | session>117) {stop("session must be an integer between 108 and 117")}
+  if (!is.numeric(session)) {stop("session must be an integer")}
+  if (session%%1!=0) {stop("session must be an integer")}
   if (!(all(types %in% c("s", "sres", "sjres", "sconres"))) & !(all(types %in% c("hr", "hres", "hjres", "hconres")))) {stop("types must be a combination of c(\"s\", \"sres\", \"sjres\", \"sconres\") OR a combination of c(\"hr\", \"hres\", \"hjres\", \"hconres\")")}
   if (!(format %in% c("data", "igraph"))) {stop("format must be one of c(\"data\", \"igraph\")")}
 
@@ -121,6 +121,22 @@ incidence.from.congress <- function(session = NULL, types = NULL, areas = "all",
   if (weighted) {sponsorship <- dat[c("name", "bill", "weight")]} else {sponsorship <- dat[c("name", "bill")]}
   legislator <- unique(dat[c("id", "name", "last", "party", "state")])
   bills <- unique(dat[c("bill", "introduced", "title", "area", "status")])
+
+  #Display narrative if requested
+  if (narrative) {
+    version <- utils::packageVersion("incidentally")
+    if (all(types %in% c("s", "sres", "sjres", "sconres"))) {who <- "Senators'"}
+    if (all(types %in% c("hr", "hres", "hjres", "hconres"))) {who <- "Representatives'"}
+    if (format == "igraph" & areas == "all") {text <- paste0("We used the incidentally package for R (v", version, "; Neal, 2022) to generate a bipartite graph recording ", who, " bill sponsorships during the ", session, " session of the US Congress.")}
+    if (format == "igraph" & areas != "all") {text <- paste0("We used the incidentally package for R (v", version, "; Neal, 2022) to generate a bipartite graph recording ", who, " bill sponsorships during the ", session, " session of the US Congress. We restricted our focus to bills in the following policy areas: ", paste(areas, collapse=', '), ".")}
+    if (format == "data" & areas == "all") {text <- paste0("We used the incidentally package for R (v", version, "; Neal, 2022) to generate an incidence matrix recording ", who, " bill sponsorships during the ", session, " session of the US Congress.")}
+    if (format == "data" & areas != "all") {text <- paste0("We used the incidentally package for R (v", version, "; Neal, 2022) to generate an incidence matrix recording ", who, " bill sponsorships during the ", session, " session of the US Congress. We restricted our focus to bills in the following policy areas: ", paste(areas, collapse=', '), ".")}
+    message("")
+    message("=== Suggested manuscript text and citations ===")
+    message(text)
+    message("")
+    message("Neal, Z. P. (2022). The Duality of Networks and Foci: Generative Models of Two-Mode Networks from One-Mode Networks. arXiv.")
+  }
 
   #Construct incidence matrix and codebooks
   if (format == "data") {

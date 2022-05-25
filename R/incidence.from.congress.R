@@ -46,7 +46,7 @@
 #' D <- incidence.from.congress(session = 116, types = "s", format = "data", areas = "Animals")
 #' G <- incidence.from.congress(session = 115, types = c("hr", "hres"), format = "igraph")
 #' }
-incidence.from.congress <- function(session = NULL, types = NULL, areas = "all", weighted = FALSE, format = "data", narrative = TRUE){
+incidence.from.congress <- function(session = NULL, types = NULL, areas = "all", weighted = FALSE, format = "data", narrative = FALSE){
 
   #Parameter check
   if (!is.numeric(session)) {stop("session must be an integer")}

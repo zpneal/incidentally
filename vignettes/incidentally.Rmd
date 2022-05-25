@@ -44,8 +44,6 @@ par(mar = c(0, 0, 1, 0))
 4. [Utilities](#util)
     a. [Randomization](#random)
     b. [Block models](#block)
-5. [Empirical data](#data)
-    a. [US Congress](#congress)
 
 # Introduction {#introduction}
 
@@ -92,7 +90,7 @@ The incidentally package offers multiple incidence matrix-generating functions t
 
 * [`curveball()`](#random) randomizes an incidence matrix or bipartite graph while preserving in marginal/degree sequence, and [`add.blocks()`](#block) adds a block structure or planted partition to an existing incidence matrix or bipartite graph.
 
-* [`incidence.from.congress()`](#congress) constructs an incidence matrix or bipartite graph representing US Congress legislators' sponsorship of bills.
+* `incidence.from.congress()` constructs an incidence matrix or bipartite graph representing US Congress legislators' sponsorship of bills. For a detailed description of this function, and its use with the `backbone` to generate political networks, see this [companion vignette](congress.html)
 
 [back to Table of Contents](#toc)
 
@@ -259,33 +257,6 @@ I  #Original matrix
 blocked  #Blocked matrix
 all(rowSums(I)==rowSums(blocked)) #Row marginals preserved
 all(colSums(I)==colSums(blocked)) #Column marginals preserved
-```
-
-[back to Table of Contents](#toc)
-
-# Empirical data {#data}
-Incidence matrices and bipartite graphs are very common. These functions generate such objects from empirical data available online.
-
-## US Congress {#congress}
-In the US Congress, the legislative process begins when a legislator in the House of Representatives or Senate introduces a bill for consideration. The legislator who introduces a bill is the *sponsor*, while other legislators can support the bill by joining as *co-sponsors*. These activities can be recorded in an incidence matrix **I** where $I_{ik} = 1$ if legislator *i* sponsored or co-sponsored bill *k*, and otherwise is 0. These data can be useful for constructing co-sponsorship networks, where legislators are connected if they sponsored the same bills, which can provide insight into political alliances and oppositions [@neal2014].
-
-The `incidence.from.congress()` function constructs an incidence matrix for a given `session` and for given types of `bills`. For example:
-```{r, echo = TRUE, results = 'hide'}
-I <- incidence.from.congress(session = 115, types = "sjres", format = "data")
-```
-generates data on Joint Resolution bills introducted in the 115th session of the Senate. By specifying `format = "data"`, the resulting object is a list containing (1) the incidence matrix, (2) a data frame of legislator characteristics, and (3) a data frame of bill characteristics:
-```{r}
-I$matrix[1:5,1:5]
-I$legislator[1:5,1:5]
-I$bills[1:5,c(1,2,4,5)]
-```
-
-Alternatively, specifying `format = "igraph"` yields an *igraph* bipartite graph that includes legislator and bill characteristics as vertex attibutes:
-```{r, echo = TRUE, results = 'hide'}
-G <- incidence.from.congress(session = 115, types = "sjres", format = "igraph")
-```
-```{r}
-G
 ```
 
 [back to Table of Contents](#toc)

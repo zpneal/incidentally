@@ -90,7 +90,7 @@ The incidentally package offers multiple incidence matrix-generating functions t
 
 * [`curveball()`](#random) randomizes an incidence matrix or bipartite graph while preserving in marginal/degree sequence, and [`add.blocks()`](#block) adds a block structure or planted partition to an existing incidence matrix or bipartite graph.
 
-* `incidence.from.congress()` constructs an incidence matrix or bipartite graph representing US Congress legislators' sponsorship of bills. For a detailed description of this function, and its use with the `backbone` to generate political networks, see this [companion vignette](congress.html)
+* `incidence.from.congress()` constructs an incidence matrix or bipartite graph representing US Congress legislators' sponsorship of bills. For a detailed description of this function, and its use with the `backbone` package to generate political networks, see this [companion vignette](congress.html).
 
 [back to Table of Contents](#toc)
 

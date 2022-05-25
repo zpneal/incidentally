@@ -38,7 +38,7 @@ par(mar = c(0, 0, 1, 0))
 # Introduction {#introduction}
 
 ## Welcome {#welcome}
-This vignette describes how to use the `incidentally` package to obtain data on bill sponsorship in US Congress, and how to use the `backbone` package to construct political networks from these data. For a more general introduction to the `incidentally` package, see [this companion vignette](incidentally.html).
+This vignette describes how to use the `incidentally` package to obtain data on bill sponsorship in US Congress, and how to use the `backbone` package to construct political networks from these data. For a more general introduction to the `incidentally` package, see [the main vignette](incidentally.html).
 
 If you have questions about the incidentally package or would like an incidentally hex sticker, please contact the maintainer Zachary Neal by email ([zpneal\@msu.edu](mailto:zpneal@msu.edu)) or via Twitter ([\@zpneal](https://twitter.com/zpneal)). Please report bugs in the backbone package at [https://github.com/zpneal/incidentally/issues](https://github.com/zpneal/backbone/issues).
 

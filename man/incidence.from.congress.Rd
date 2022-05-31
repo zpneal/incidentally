@@ -7,7 +7,7 @@
 incidence.from.congress(
   session = NULL,
   types = NULL,
-  areas = "all",
+  areas = "All",
   weighted = FALSE,
   format = "data",
   narrative = FALSE

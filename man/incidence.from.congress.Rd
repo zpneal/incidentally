@@ -65,3 +65,8 @@ D <- incidence.from.congress(session = 116, types = "s", format = "data", areas 
 G <- incidence.from.congress(session = 115, types = c("hr", "hres"), format = "igraph")
 }
 }
+\references{
+
+
+{Neal, Z. P. 2022. incidentally: An R package to generate incidence matrices and bipartite graphs. \emph{OSF Preprints} \doi{10.31219/osf.io/ectms}}
+}

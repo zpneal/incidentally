@@ -81,9 +81,9 @@ Upon successful loading, a startup message will display that shows the version n
 
 Now we can use the `incidence.from.congress()` function to get data on legislators' bill sponsorship activities:
 ```{r, echo = TRUE, results = 'hide', warning = FALSE}
-I <- incidence.from.congress(session = 115, types = c("s", "sjres"), areas = "Health", format = "data", narrative = TRUE)
+I <- incidence.from.congress(session = 115, types = c("sres"), areas = c("All"), format = "data", narrative = TRUE)
 ```
-In this example, we request data on Senate bills and joint resolutions (`types = c("s","sjres")`) pertaining to health (`areas = "Health")`) that were introduced during the 115th session (`session = 115`), which took place between January 3, 2017 and January 3, 2019. Running this command can take some time because many bills must be downloaded and parsed, but a progress bar is displayed. By specifying `narrative = TRUE`, the function generates suggested text and citations for describing what it has done. By specifying `format = "data"`, the resulting object `I` is a list containing (1) an incidence matrix recording which legislators sponsored or co-sponsored which bills, (2) a data frame of legislator characteristics, and (3) a data frame of bill characteristics:
+In this example, we request data on Senate simple resolutions (`types = c("sres")`) in all policy areas (`areas = "All")`) that were introduced during the 115th session (`session = 115`), which took place between January 3, 2017 and January 3, 2019. Running this command can take some time because many bills must be downloaded and parsed, but a progress bar is displayed. By specifying `narrative = TRUE`, the function generates suggested text and citations for describing what it has done. By specifying `format = "data"`, the resulting object `I` is a list containing (1) an incidence matrix recording which legislators sponsored or co-sponsored which bills, (2) a data frame of legislator characteristics, and (3) a data frame of bill characteristics:
 ```{r}
 I$matrix[1:5,1:5]
 I$legislator[1:5,1:5]
@@ -92,7 +92,7 @@ I$bills[1:5,c(1,2,4,5)]
 
 Using the same parameters, but specifying `format = "igraph"` yields an *igraph* bipartite graph `B` that includes the legislator and bill characteristics as vertex attibutes:
 ```{r, echo = TRUE, results = 'hide', warning = FALSE}
-B <- incidence.from.congress(session = 115, types = c("s", "sjres"), areas = "Health", format = "igraph")
+B <- incidence.from.congress(session = 115, types = c("sres"), areas = c("All"), format = "igraph")
 ```
 ```{r}
 B

@@ -187,13 +187,14 @@ incidence.from.adjacency <- function(G, k = 1, p = 1, blau.param = c(2,1,10), ma
     type <- " newly-formed teams"
     if (model == "group") {type <- " newly-formed groups"}
     if (model == "blau") {type <- " newly-formed organizations"}
-    if (class == "igraph") {text <- paste0("We used the incidentally package for R (v", version, "; Neal, 2022) to generate a random bipartite graph from a unipartite graph. The bipartite graph represents the memberships of the ", igraph::gorder(G), " nodes from the unipartite network in ", k, type, ".")}
-    if (class != "igraph") {text <- paste0("We used the incidentally package for R (v", version, "; Neal, 2022) to generate a random incidence matrix from a unipartite graph. The incidence matrix represents the memberships of the ", igraph::gorder(G), " nodes from the unipartite network (rows) in ", k, type, " (columns).")}
+    if (class == "igraph") {text <- paste0("We used the incidentally package for R (v", version, "; Neal, 2022a) to generate a random bipartite graph from a unipartite graph. The bipartite graph represents the memberships of the ", igraph::gorder(G), " nodes from the unipartite network in ", k, type, " (Neal, 2022b).")}
+    if (class != "igraph") {text <- paste0("We used the incidentally package for R (v", version, "; Neal, 2022a) to generate a random incidence matrix from a unipartite graph. The incidence matrix represents the memberships of the ", igraph::gorder(G), " nodes from the unipartite network (rows) in ", k, type, " (columns; Neal, 2022b).")}
     message("")
     message("=== Suggested manuscript text and citations ===")
     message(text)
     message("")
-    message("Neal, Z. P. (2022). The Duality of Networks and Foci: Generative Models of Two-Mode Networks from One-Mode Networks. arXiv.")
+    message("Neal, Z. P. (2022a). incidentally: An R package to generate incidence matrices and bipartite graphs. OSF Preprints. https://doi.org/10.31219/osf.io/ectms")
+    message("Neal, Z. P. (2022b). The Duality of Networks and Foci: Generative Models of Two-Mode Networks from One-Mode Networks. arXiv:2204.13670 [cs.SI]. https://doi.org/10.48550/arXiv.2204.13670")
   }
 
   return(I)  #Return the bipartite graph with row labels

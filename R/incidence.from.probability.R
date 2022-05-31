@@ -59,7 +59,7 @@ incidence.from.probability <- function(R, C, P=0, constrain = TRUE, class="matri
     message("=== Suggested manuscript text and citations ===")
     message(text)
     message("")
-    message("Neal, Z. P. (2022). The Duality of Networks and Foci: Generative Models of Two-Mode Networks from One-Mode Networks. arXiv.")
+    message("Neal, Z. P. (2022). incidentally: An R package to generate incidence matrices and bipartite graphs. OSF Preprints. https://doi.org/10.31219/osf.io/ectms")
   }
 
   return(I)

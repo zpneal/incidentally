@@ -49,7 +49,7 @@
 #' D <- incidence.from.congress(session = 116, types = "s", format = "data", areas = "Animals")
 #' G <- incidence.from.congress(session = 115, types = c("hr", "hres"), format = "igraph")
 #' }
-incidence.from.congress <- function(session = NULL, types = NULL, areas = "all", weighted = FALSE, format = "data", narrative = FALSE){
+incidence.from.congress <- function(session = NULL, types = NULL, areas = "All", weighted = FALSE, format = "data", narrative = FALSE){
 
   #Parameter check
   if (!is.numeric(session)) {stop("session must be an integer")}
@@ -78,7 +78,7 @@ incidence.from.congress <- function(session = NULL, types = NULL, areas = "all",
 
       #Check area, add bill if relevant
       area <- xml2::xml_text(xml2::xml_find_first(bill, ".//policyArea"))
-      if (areas=="all" | area %in% areas) {
+      if (areas=="All" | area %in% areas) {
 
       #Bill characteristics
       number <- paste0(xml2::xml_text(xml2::xml_find_first(bill, ".//billType")),xml2::xml_text(xml2::xml_find_first(bill, ".//billNumber")))
@@ -130,10 +130,10 @@ incidence.from.congress <- function(session = NULL, types = NULL, areas = "all",
     version <- utils::packageVersion("incidentally")
     if (all(types %in% c("s", "sres", "sjres", "sconres"))) {who <- "Senators'"}
     if (all(types %in% c("hr", "hres", "hjres", "hconres"))) {who <- "Representatives'"}
-    if (format == "igraph" & areas == "all") {text <- paste0("We used the incidentally package for R (v", version, "; Neal, 2022) to generate a bipartite graph recording ", who, " bill sponsorships during the ", session, " session of the US Congress.")}
-    if (format == "igraph" & areas != "all") {text <- paste0("We used the incidentally package for R (v", version, "; Neal, 2022) to generate a bipartite graph recording ", who, " bill sponsorships during the ", session, " session of the US Congress. We restricted our focus to bills in the following policy areas: ", paste(areas, collapse=', '), ".")}
-    if (format == "data" & areas == "all") {text <- paste0("We used the incidentally package for R (v", version, "; Neal, 2022) to generate an incidence matrix recording ", who, " bill sponsorships during the ", session, " session of the US Congress.")}
-    if (format == "data" & areas != "all") {text <- paste0("We used the incidentally package for R (v", version, "; Neal, 2022) to generate an incidence matrix recording ", who, " bill sponsorships during the ", session, " session of the US Congress. We restricted our focus to bills in the following policy areas: ", paste(areas, collapse=', '), ".")}
+    if (format == "igraph" & areas == "All") {text <- paste0("We used the incidentally package for R (v", version, "; Neal, 2022) to generate a bipartite graph recording ", who, " bill sponsorships during the ", session, " session of the US Congress.")}
+    if (format == "igraph" & areas != "All") {text <- paste0("We used the incidentally package for R (v", version, "; Neal, 2022) to generate a bipartite graph recording ", who, " bill sponsorships during the ", session, " session of the US Congress. We restricted our focus to bills in the following policy areas: ", paste(areas, collapse=', '), ".")}
+    if (format == "data" & areas == "All") {text <- paste0("We used the incidentally package for R (v", version, "; Neal, 2022) to generate an incidence matrix recording ", who, " bill sponsorships during the ", session, " session of the US Congress.")}
+    if (format == "data" & areas != "All") {text <- paste0("We used the incidentally package for R (v", version, "; Neal, 2022) to generate an incidence matrix recording ", who, " bill sponsorships during the ", session, " session of the US Congress. We restricted our focus to bills in the following policy areas: ", paste(areas, collapse=', '), ".")}
     message("")
     message("=== Suggested manuscript text and citations ===")
     message(text)

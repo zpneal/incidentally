@@ -38,6 +38,9 @@
 #'
 #' If `format = "igraph"`, a bipartite igraph object composed of legislator vertices and bill vertices, each with vertex attributes.
 #'
+#' @references
+#' @references {Neal, Z. P. 2022. incidentally: An R package to generate incidence matrices and bipartite graphs. *OSF Preprints* \doi{10.31219/osf.io/ectms}}
+#'
 #' @export
 #'
 #' @examples

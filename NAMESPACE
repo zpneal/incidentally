@@ -3,6 +3,7 @@
 export(add.blocks)
 export(curveball)
 export(incidence.from.adjacency)
+export(incidence.from.congress)
 export(incidence.from.distribution)
 export(incidence.from.probability)
 export(incidence.from.vector)

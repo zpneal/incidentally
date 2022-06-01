@@ -2,20 +2,22 @@
 % Please edit documentation in R/curveball.R
 \name{curveball}
 \alias{curveball}
-\title{Randomize a binary matrix using the curveball algorithm}
+\title{Randomize an incidence matrix or bipartite graph using the curveball algorithm}
 \usage{
-curveball(M, trades = 5 * nrow(M))
+curveball(M, trades = 5 * nrow(M), class = NULL)
 }
 \arguments{
-\item{M}{a binary matrix}
+\item{M}{a binary matrix of class \code{matrix} or \code{Matrix}, or a bipartite graph of class {\link{igraph}}.}
 
 \item{trades}{integer: number of trades; the default is 5 * nrow(M) (approx. mixing time)}
+
+\item{class}{string: Return object as \code{matrix}, \code{Matrix}, \code{igraph}. If \code{NULL}, object is returned in the same class as \code{M}.}
 }
 \value{
-A random binary matrix with same row sums and column sums as M
+An incidence matrix of class \code{matrix} or \code{Matrix}, or a bipartite graph of class {\link{igraph}}.
 }
 \description{
-\code{curveball} randomizes a binary matrix, preserving the row and column sums
+\code{curveball} randomizes an incidence matrix or bipartite graph, preserving the row and column sums
 }
 \details{
 Strona et al. (2014) provided an initial implementation of the Curveball algorithm in R. \code{curveball()} is a modified R
@@ -31,4 +33,6 @@ all.equal(colSums(M), colSums(curveball(M)))
 {Strona, Giovanni, Domenico Nappo, Francesco Boccacci, Simone Fattorini, and Jesus San-Miguel-Ayanz. 2014. A Fast and Unbiased Procedure to Randomize Ecological Binary Matrices with Fixed Row and Column Totals. \emph{Nature Communications, 5}, 4114. \doi{10.1038/ncomms5114}}
 
 {Godard, Karl and Neal, Zachary P. 2022. fastball: A fast algorithm to sample bipartite graphs with fixed degree sequences. \href{https://arxiv.org/abs/2112.04017}{\emph{arXiv:2112.04017}}}
+
+{Neal, Z. P. 2022. incidentally: An R package to generate incidence matrices and bipartite graphs. \emph{OSF Preprints} \doi{10.31219/osf.io/ectms}}
 }

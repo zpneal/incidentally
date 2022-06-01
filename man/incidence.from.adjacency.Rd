@@ -4,25 +4,37 @@
 \alias{incidence.from.adjacency}
 \title{Generates an incidence matrix from an adjacency matrix}
 \usage{
-incidence.from.adjacency(G, k = 1, p = 1, d = 2, model = "team", class = NULL)
+incidence.from.adjacency(
+  G,
+  k = 1,
+  p = 1,
+  blau.param = c(2, 1, 10),
+  maximal = TRUE,
+  model = "team",
+  class = NULL,
+  narrative = TRUE
+)
 }
 \arguments{
 \item{G}{A symmetric, binary adjacency matrix of class \code{matrix} or \code{Matrix},
-a \code{data.frame} containing a symbolic edge list in the first two columns,
 or an undirected, unweighted unipartite graph of class {\link{igraph}}.}
 
 \item{k}{integer: Number of artifacts to generate}
 
 \item{p}{numeric: Tuning parameter for artifacts, 0 <= p <= 1}
 
-\item{d}{numeric: Number of dimensions in Blau space, d >= 2}
+\item{blau.param}{vector: Vector of parameters that control blau space (see details)}
+
+\item{maximal}{boolean: Should teams/groups models be seeded with \emph{maximal} cliques?}
 
 \item{model}{string: Generative model, one of c("team", "group", "blau") (see details)}
 
-\item{class}{string: Return object as \code{matrix}, \code{igraph}, or \code{edgelist}. If \code{NULL}, object is returned in the same class as \code{G}.}
+\item{class}{string: Return object as \code{matrix}, \code{Matrix}, or \code{igraph}. If \code{NULL}, object is returned in the same class as \code{G}.}
+
+\item{narrative}{boolean: TRUE if suggested text & citations should be displayed.}
 }
 \value{
-An incidence matrix of class \code{matrix}, or a bipartite graph as an edgelist of {\link{igraph}} object.
+An incidence matrix of class \code{matrix} or \code{Matrix}, or a bipartite graph of class {\link{igraph}}.
 }
 \description{
 \code{incidence.from.adjacency} generates an incidence matrix from an adjacency matrix or network using
@@ -43,10 +55,18 @@ density of at least \code{p}.
 
 The \strong{Blau Space Model} (\code{model == "blau"}) mirrors an organization (the artifact) recruiting members from social
 space, where those within the organization's niche join with probability \code{p}, and those outside the niche join
-with probability 1-\code{p}.
+with probability 1-\code{p}. \code{blau.param} is a vector containing three values that control the characteristics of the
+blau space. The first value is the space's dimensionality. The second two values are shape parameters of a Beta
+distribution that describes niche sizes. The default is a two-dimensional blau space, with organization niche
+sizes that are strongly positively skewed (i.e., many specialist organizations, few generalists).
 }
 \examples{
 G <- igraph::erdos.renyi.game(10, .4)
 I <- incidence.from.adjacency(G, k = 1000, p = .95,
-                              model = "team")
+                              model = "team", narrative = TRUE)
+}
+\references{
+{Neal, Z. P. 2022. The Duality of Networks and Foci: Generative Models of Two-Mode Networks from One-Mode Networks. \emph{arXiv:2204.13670} [cs.SI]. \doi{10.48550/arXiv.2204.13670}}
+
+{Neal, Z. P. 2022. incidentally: An R package to generate incidence matrices and bipartite graphs. \emph{OSF Preprints} \doi{10.31219/osf.io/ectms}}
 }

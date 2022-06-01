@@ -8,25 +8,30 @@
 #' @param P numeric: probability that a cell contains a 1
 #' @param rowdist vector length 2: Row marginals will approximately follow a Beta(a,b) distribution
 #' @param coldist vector length 2: Column marginals will approximately follow a Beta(a,b) distribution
-#' @param class string: the class of the returned backbone graph, one of c("matrix", "igraph")
+#' @param class string: the class of the returned backbone graph, one of c("matrix", "Matrix", "igraph").
+#' @param narrative boolean: TRUE if suggested text & citations should be displayed.
 #'
 #' @return
-#' An incidence matrix of class `matrix` or a bipartite graph of class {\link{igraph}}.
-#' 
+#' An incidence matrix of class `matrix` or `Matrix`, or a bipartite graph of class {\link{igraph}}.
+#'
+#' @references {Neal, Z. P., Domagalski, R., and Sagan, B. 2021. Comparing alternatives to the fixed degree sequence model for extracting the backbone of bipartite projections. *Scientific Reports, 11*, 23929. \doi{10.1038/s41598-021-03238-3}}
+#' @references {Neal, Z. P. 2022. incidentally: An R package to generate incidence matrices and bipartite graphs. *OSF Preprints* \doi{10.31219/osf.io/ectms}}
+#'
 #' @export
 #'
 #' @examples
 #' I <- incidence.from.distribution(R = 100, C = 100, P = 0.1,
-#'   rowdist = c(1,1), coldist = c(1,1))  #Uniform
+#'      rowdist = c(10000,10000), coldist = c(10000,10000))  #Constant
 #' I <- incidence.from.distribution(R = 100, C = 100, P = 0.1,
-#'   rowdist = c(1,10), coldist = c(1,10))  #Right-tailed
+#'      rowdist = c(1,1), coldist = c(1,1))  #Uniform
 #' I <- incidence.from.distribution(R = 100, C = 100, P = 0.1,
-#'   rowdist = c(10,1), coldist = c(10,1))  #Left-tailed
+#'      rowdist = c(1,10), coldist = c(1,10))  #Right-tailed
 #' I <- incidence.from.distribution(R = 100, C = 100, P = 0.1,
-#'   rowdist = c(10,10), coldist = c(10,10))  #Normal
+#'      rowdist = c(10,1), coldist = c(10,1))  #Left-tailed
 #' I <- incidence.from.distribution(R = 100, C = 100, P = 0.1,
-#'   rowdist = c(10000,10000), coldist = c(10000,10000))  #Constant
-incidence.from.distribution <- function(R, C, P, rowdist = c(1,1), coldist = c(1,1), class="matrix") {
+#'      rowdist = c(10,10), coldist = c(10,10),
+#'      narrative = TRUE)  #Normal
+incidence.from.distribution <- function(R, C, P, rowdist = c(1,1), coldist = c(1,1), class="matrix", narrative = TRUE) {
 
   # Vector of N integers with sum S and approximately distributed as beta(a,b) ####
   integers <- function(N, S, a, b){
@@ -53,14 +58,28 @@ incidence.from.distribution <- function(R, C, P, rowdist = c(1,1), coldist = c(1
 
   # Generate bipartite
   ones <- round(R * C * P)  #Number of 1s in matrix, given dimensions and density
-  R <- integers(R,ones,rowdist[1],rowdist[2])  #Create a vector of agent degrees; if not possible, error
-  C <- integers(C,ones,coldist[1],coldist[2])  #Create a vector of artifact degrees; if not possible, error
-  I <- incidence.from.vector(R,C)  #Create incidence matrix
+  Rseq <- integers(R,ones,rowdist[1],rowdist[2])  #Create a vector of agent degrees; if not possible, error
+  Cseq <- integers(C,ones,coldist[1],coldist[2])  #Create a vector of artifact degrees; if not possible, error
+  I <- incidentally::incidence.from.vector(Rseq,Cseq)  #Create incidence matrix
 
-  #Verify, randomize, and return
-  if (all.equal(R,rowSums(I)) == TRUE | all.equal(C,colSums(I)) == TRUE) {
-    I <- curveball(I)
+  #Verify and randomize
+  if (all.equal(Rseq,rowSums(I)) == TRUE | all.equal(Cseq,colSums(I)) == TRUE) {
+    I <- incidentally::curveball(I)
     if (class == "igraph"){I <- igraph::graph_from_incidence_matrix(I)}
-    return(I)
-  } else {stop("A bipartite network with these degree distributions is not possible")}
+    if (class == "Matrix"){I <- Matrix::Matrix(I)}
+  } else {stop("These distributions are not possible")}
+
+  #Display narrative if requested
+  if (narrative) {
+    version <- utils::packageVersion("incidentally")
+    if (class == "igraph") {text <- paste0("We used the incidentally package for R (v", version, "; Neal, 2022) to generate a random bipartite graph with ", R, " agents whose degrees are approximately distributed as B(", rowdist[1], ",", rowdist[2],"), and ", C, " artifacts whose degrees are approximately distributed as B(", coldist[1], ",", coldist[2],").")}
+    if (class != "igraph") {text <- paste0("We used the incidentally package for R (v", version, "; Neal, 2022) to generate a random incidence matrix with ", R, " rows whose sums are approximately distributed as B(", rowdist[1], ",", rowdist[2],"), and ", C, " columns whose sums are approximately distributed as B(", coldist[1], ",", coldist[2],").")}
+    message("")
+    message("=== Suggested manuscript text and citations ===")
+    message(text)
+    message("")
+    message("Neal, Z. P. (2022). incidentally: An R package to generate incidence matrices and bipartite graphs. OSF Preprints. https://doi.org/10.31219/osf.io/ectms")
+  }
+
+  return(I)
 }

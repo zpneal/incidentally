@@ -10,7 +10,8 @@ incidence.from.distribution(
   P,
   rowdist = c(1, 1),
   coldist = c(1, 1),
-  class = "matrix"
+  class = "matrix",
+  narrative = TRUE
 )
 }
 \arguments{
@@ -24,10 +25,12 @@ incidence.from.distribution(
 
 \item{coldist}{vector length 2: Column marginals will approximately follow a Beta(a,b) distribution}
 
-\item{class}{string: the class of the returned backbone graph, one of c("matrix", "igraph")}
+\item{class}{string: the class of the returned backbone graph, one of c("matrix", "Matrix", "igraph").}
+
+\item{narrative}{boolean: TRUE if suggested text & citations should be displayed.}
 }
 \value{
-An incidence matrix of class \code{matrix} or a bipartite graph of class {\link{igraph}}.
+An incidence matrix of class \code{matrix} or \code{Matrix}, or a bipartite graph of class {\link{igraph}}.
 }
 \description{
 \code{incidence.from.distribution} generates a random incidence matrix with row and column
@@ -35,13 +38,19 @@ sums that approximately follow beta distributions with given parameters.
 }
 \examples{
 I <- incidence.from.distribution(R = 100, C = 100, P = 0.1,
-  rowdist = c(1,1), coldist = c(1,1))  #Uniform
+     rowdist = c(10000,10000), coldist = c(10000,10000))  #Constant
 I <- incidence.from.distribution(R = 100, C = 100, P = 0.1,
-  rowdist = c(1,10), coldist = c(1,10))  #Right-tailed
+     rowdist = c(1,1), coldist = c(1,1))  #Uniform
 I <- incidence.from.distribution(R = 100, C = 100, P = 0.1,
-  rowdist = c(10,1), coldist = c(10,1))  #Left-tailed
+     rowdist = c(1,10), coldist = c(1,10))  #Right-tailed
 I <- incidence.from.distribution(R = 100, C = 100, P = 0.1,
-  rowdist = c(10,10), coldist = c(10,10))  #Normal
+     rowdist = c(10,1), coldist = c(10,1))  #Left-tailed
 I <- incidence.from.distribution(R = 100, C = 100, P = 0.1,
-  rowdist = c(10000,10000), coldist = c(10000,10000))  #Constant
+     rowdist = c(10,10), coldist = c(10,10),
+     narrative = TRUE)  #Normal
+}
+\references{
+{Neal, Z. P., Domagalski, R., and Sagan, B. 2021. Comparing alternatives to the fixed degree sequence model for extracting the backbone of bipartite projections. \emph{Scientific Reports, 11}, 23929. \doi{10.1038/s41598-021-03238-3}}
+
+{Neal, Z. P. 2022. incidentally: An R package to generate incidence matrices and bipartite graphs. \emph{OSF Preprints} \doi{10.31219/osf.io/ectms}}
 }

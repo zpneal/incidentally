@@ -1,0 +1,153 @@
+---
+title: "Working with US Congress bill sponsorship data"
+author: "Zachary Neal"
+output: 
+  rmarkdown::html_vignette:
+  toc: true
+  
+bibliography: incidentally.bib
+link-citations: yes
+vignette: >
+  %\VignetteIndexEntry{Working with US Congress bill sponsorship data}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
+knitr::opts_knit$set(global.par = TRUE)
+```
+
+```{r, echo = FALSE, message = FALSE}
+library(igraph)
+oldpar <- par(mar = c(0, 0, 1, 0))
+par(mar = c(0, 0, 1, 0))
+```
+
+# Table of Contents {#toc}
+
+[<img src='../man/figures/logo.png' align="right" height="250" />](https://www.zacharyneal.com/backbone)
+
+1. [Introduction](#introduction)
+    a. [Welcome](#welcome)
+    b. [The US legislative process](#process)
+    c. [Types and areas of bills](#types)
+2. [Getting the data](#data)
+3. [Constructing a network](#network)
+
+# Introduction {#introduction}
+
+## Welcome {#welcome}
+This vignette describes how to use the `incidentally` package to obtain data on bill sponsorship in US Congress, and how to use the `backbone` package to construct political networks from these data. For a more general introduction to the `incidentally` package, see [the main vignette](incidentally.html).
+
+The `incidentally` package can be cited as:
+
+**Neal, Z. P. (2022). incidentally: An R package to generate incidence matrices and bipartite graphs. *OSF Preprints*. [https://doi.org/10.31219/osf.io/ectms](https://doi.org/10.31219/osf.io/ectms)**
+
+If you have questions about the incidentally package or would like an incidentally hex sticker, please contact the maintainer Zachary Neal by email ([zpneal\@msu.edu](mailto:zpneal@msu.edu)) or via Twitter ([\@zpneal](https://twitter.com/zpneal)). Please report bugs in the backbone package at [https://github.com/zpneal/incidentally/issues](https://github.com/zpneal/backbone/issues).
+
+## The US legislative process {#process}
+In the US Congress, bills may become laws through a multi-step legislative process:
+
+  1. A legislator in either the House of Represenatives or Senate introduces a bill for consideration. This individual is known as the bill's *sponsor*. Additional legislators in the same chamber can express their support for the bill by joining as *co-sponsors*.
+  2. The bill is debated, revised, and (possibly) voted on in the originating chamber.
+  3. If the bill passes in the originating chamber, it is sent to the other chamber, where it is again debated, revised, and (possibly) voted on.
+  4. If the bill passes in the second chamber, it is sent to the President. In some cases, bills are referred back to the originating chamber to reconcile differences in versions passed by each chamber.
+  5. If the President signs the bill, it becomes law. If the President vetoes the bill, it is returned to the Congress, which can override the veto and make the bill a law with a two-thirds majority.
+
+The vast majority of introduced bills are never formally voted on, and never become law, because they fail to pass one of these legislative hurdles. Therefore, focusing only on votes or passage provides limited information about legislators' politcial positions. In contrast, because all introduced bills have sponsors and co-sponsors, legislators' sponsorship behaviors provides rich data on their political positions.
+
+## Types and areas of bills {#types}
+There are four types of legislation that can be introduced in the US Congress:
+
+  1. **Bills** - This type is used for most legislation. If it passes both chambers of Congress and is signed by the President, it becomes a law. Bills introduced in the House are labeled *H.R.* and bills introduced in the Senate ate labeled *S.*.
+  2. **Joint Resolutions** - This type is nearly identical to a bill, except that it is also used when Congress proposes an amendment to the US Constitution. If it passes both chambers of Congress and is signed by the President, it becomes a law. Joint Resolutions introduced in the House are labeled *H.J.Res.* and bills introduced in the Senate ate labeled *S.J.Res.*.
+  3. **Concurrent Resolutions** - This type is used to make or amend procedural rules that apply to both chambers of Congress, and to express the sentiments of both chambers. They are not sent to the President and do not become law. Concurrent Resolutions introduced in the House are labeled *H.Con.Res.* and bills introduced in the Senate ate labeled *S.Con.Res.*.
+  4. **Simple Resolutions** - This type is used to make or amend procedural rules that apply to one chamber of Congress, and to express the sentiments of a single chamber (e.g., express condolences for the death of a member). They are not sent to the President and do not become law. Simple Resolutions introduced in the House are labeled *H.Res.* and bills introduced in the Senate ate labeled *S.Res.*.
+  
+Because bills and joint resolutions can become laws, these often provide more information about legislators' political positions than concurrent and simple resolutions, which are used only for procedural matters.
+
+When any type of legislation is introduced, the Congressional Research Service assigns it to one of 32 broad policy areas. A
+complete list of policy areas and brief descriptions is available at [https://www.congress.gov/help/field-values/policy-area](https://www.congress.gov/help/field-values/policy-area).
+
+[back to Table of Contents](#toc)
+
+# Getting the data {#data}
+The `incidence.from.congress()` function in the `incidentally` package makes it easy to get data on legislators' bill sponsorship activities. The `incidentally` package can be loaded in the usual way:
+```{r}
+library(incidentally)
+```
+Upon successful loading, a startup message will display that shows the version number, citation, ways to get help, and ways to contact me.
+
+Now we can use the `incidence.from.congress()` function to get data on legislators' bill sponsorship activities:
+```{r, echo = TRUE, results = 'hide', warning = FALSE}
+I <- incidence.from.congress(session = 115, types = c("sres"), areas = c("All"), format = "data", narrative = TRUE)
+```
+In this example, we request data on Senate simple resolutions (`types = c("sres")`) in all policy areas (`areas = "All")`) that were introduced during the 115th session (`session = 115`), which took place between January 3, 2017 and January 3, 2019. Running this command can take some time because many bills must be downloaded and parsed, but a progress bar is displayed. By specifying `narrative = TRUE`, the function generates suggested text and citations for describing what it has done. By specifying `format = "data"`, the resulting object `I` is a list containing (1) an incidence matrix recording which legislators sponsored or co-sponsored which bills, (2) a data frame of legislator characteristics, and (3) a data frame of bill characteristics:
+```{r}
+I$matrix[1:5,1:5]
+I$legislator[1:5,1:5]
+I$bills[1:5,c(1,2,4,5)]
+```
+
+Using the same parameters, but specifying `format = "igraph"` yields an *igraph* bipartite graph `B` that includes the legislator and bill characteristics as vertex attibutes:
+```{r, echo = TRUE, results = 'hide', warning = FALSE}
+B <- incidence.from.congress(session = 115, types = c("sres"), areas = c("All"), format = "igraph")
+```
+```{r}
+B
+```
+
+[back to Table of Contents](#toc)
+
+# Constructing a network {#network}
+The bill sponsorship data generated by `incidence.from.congress()` can be examined in a variety of ways. However, one common used of bill sponsorship data is the construction of a bill co-sponsorship network. In a bill co-sponsorship network, two legislators are connected if they sponsored or co-sponsored the same bills, which provides evidence of their political alignment and possibly that they are political allies. One key challenge in constructing co-sponsorship networks is deciding how many bills two legislators must (co-)sponsor together before inferring they are aligned or allies [@neal2014;@neal2020sign]. The `backbone` package offers several methods for making these inferences.
+
+The `backbone` package can be loaded in the usual way:
+```{r}
+library(backbone)
+```
+Upon successful loading, a startup message will display that shows the version number, citation, ways to get help, and ways to contact me.
+
+Given the bipartite igraph object generated by `incidence.from.congress()` above, we can generate a political network among the Senators using:
+```{r}
+network <- sdsm(B, alpha = 0.05, narrative = TRUE)
+network
+```
+The *stochastic degree sequence model* (SDSM) connects two legislators if they (co-)sponsored statistically significantly (at the `alpha = 0.05` level) more bills together than would be expected if (a) their total number of sponsorships was approximately the same and (b) each bill's total number of sponsorships was approximately the same, but (c) they randomly chose which bills to sponsor. Because we started with an igraph object `B`, the result is also an igraph object `network` that contains the Senators' characteristics as vertex attributes. By specifying `narrative = TRUE`, the function generates suggested text and citations for describing what it has done.
+
+We can use the `igraph` package to plot this network, coloring each node by political party:
+```{r}
+V(network)$color <- rgb(1,0,0,.5)  #Define the color of Republicans
+V(network)$color[which(V(network)$party=="D")] <- rgb(0,0,1,.5)  #...of Democrats
+V(network)$color[which(V(network)$party=="I")] <- rgb(0,1,0,.5)  #...of Independents
+plot(network, vertex.label = NA, vertex.color = V(network)$color, vertex.frame.color = NA, vertex.size = 10)
+```
+
+This network clearly shows the partisan structure of the US Senate: Democrats (blue) mostly work with other Democrats, and Republicans (red) mostly work with other Republicans.
+
+We can also generate a *signed* political network:
+```{r}
+signed <- sdsm(B, alpha = 0.05, signed = TRUE)
+```
+where Senators that sponsor significantly *many* bills are connected by a positive tie that might indicate alliance, while Senators that sponsor significantly *few* bills are connected by a negative tie that might indicate opposition.
+
+Again, using the `igraph` package to plot this network:
+```{r}
+V(signed)$color <- rgb(1,0,0,.5)  #Define the color of Republicans
+V(signed)$color[which(V(signed)$party=="D")] <- rgb(0,0,1,.5)  #...of Democrats
+V(signed)$color[which(V(signed)$party=="I")] <- rgb(0,1,0,.5)  #...of Independents
+E(signed)$color <- rgb(0,1,0,1)  #Define color of positive edges
+E(signed)$color[which(E(signed)$weight==-1)] <- rgb(1,0,0,.01)  #Define color of negative edges
+layout <- layout_nicely(delete_edges(signed, which(E(signed)$weight==-1)))  #Get layout based on positive edges
+plot(signed, vertex.label = NA, vertex.color = V(signed)$color, vertex.frame.color = NA, vertex.size = 10, layout = layout)
+```
+
+This network still shows the partisan structure of the US Senate, but illustrates that there are positive ties within-party and negative ties between-party.
+
+[back to Table of Contents](#toc)
+```{r, echo = FALSE, message = FALSE}
+par(oldpar) #Restore old parameters
+```
+
+# References

@@ -2,69 +2,103 @@
 #'
 #' `add.blocks` shuffles an incidence matrix to have a block structure or planted partition while preserving the row and column sums
 #'
-#' @param I matrix: An incidence matrix
-#' @param blocks integer: number of blocks to add (between 2 and 26)
+#' @param I An incidence matrix or {\link{igraph}} bipartite graph
+#' @param rowblock numeric: vector indicating each row node's block membership
+#' @param colblock numeric: vector indicating each column node's block membership
 #' @param density numeric: desired within-block density
-#' @param max.tries numeric: number of ineligible re-wiring attempts before giving up
+#' @param sorted boolean: if TRUE, return incidence matrix permuted by block
 #'
 #' @details
 #' Stochastic block and planted partition models generate graphs in which the probability that two nodes are connected
 #'    depends on whether they are members of the same or different blocks/partitions. Functions such as \link[igraph]{sample_sbm}
-#'    can randomly sample from stochastic block models with given probabilities. In contrast `add.blocks` attempts to
-#'    generate a block model that preserves the degree sequences (i.e., a matrix with preserved row and column sums).
-#' 
-#' Each row and each column node are randomly assigned to one of `blocks` number of groups. Then
-#'    checkerboard swaps are performed that increase the within-block density, until `density` is achieved.
-#'    Eligible swaps are identified randomly, so the re-wiring can be slow when `I` is large. The process
-#'    can get stuck when no eligible swaps remain but the target `density` has not been achieved; if this
-#'    happens, increase `max.tries` to keep looking for eligible swaps or reduce the target `density`.
+#'    can randomly sample from stochastic block models with given probabilities. In contrast `add.blocks` adds a block
+#'    structure to an existing incidence matrix while preserving the row and column sums. Row nodes' and column nodes'
+#'    block memberships are supplied in separate vectors. If block membership vectors are not provided, then nodes are
+#'    randomly assigned to two groups.
 #'
 #' @return
-#' matrix: An incidence matrix, row and column names begin with a letter indicating their block membership
+#' An incidence matrix or {\link{igraph}} bipartite graph with a block structure
+#'
+#' @references {Neal, Z. P., Domagalski, R., and Sagan, B. 2021. Comparing alternatives to the fixed degree sequence model for extracting the backbone of bipartite projections. *Scientific Reports, 11*, 23929. \doi{10.1038/s41598-021-03238-3}}
+#' @references {Neal, Z. P. 2022. incidentally: An R package to generate incidence matrices and bipartite graphs. *OSF Preprints* \doi{10.31219/osf.io/ectms}}
 #'
 #' @export
 #'
 #' @examples
-#' I <- incidence.from.probability(R = 20, C = 20, P = .5)
-#' I <- add.blocks(I, blocks = 2, density = .7)
-add.blocks <- function(I,blocks=2,density=.5,max.tries=100000) {
+#' I <- incidence.from.probability(R = 100, C = 100, P = .1)
+#' blocked <- add.blocks(I, density = .7)
+#' all(rowSums(I)==rowSums(blocked))
+#' all(colSums(I)==colSums(blocked))
+#'
+#' B <- igraph::sample_bipartite(100, 100, p=.1)
+#' blocked <- add.blocks(B, density = .7)
+#' all(igraph::degree(B)==igraph::degree(blocked))
+add.blocks <- function(I,
+                       rowblock = sample(1:2,replace=T,nrow(I)),
+                       colblock = sample(1:2,replace=T,ncol(I)),
+                       density = .5,
+                       sorted = FALSE) {
 
-  # Parameter checks
-  if (!is.numeric(blocks) | !is.numeric(density)) {stop("blocks and density must be numeric")}
-  if (blocks<2 | blocks>26 | blocks%%1!=0) {stop("blocks must be a positive integer between 2 and 26")}
-  if (density<0.5 | density>1) {stop("density must be between 0 and 1")}
-
-  # Begin progress bar, assign nodes to blocks
-  block.names <- LETTERS[seq(from = 1, to = blocks)]  #Generate list of group names
-  rownames(I) <- paste0(sample(block.names,nrow(I),replace=TRUE),c(1:nrow(I)))  #Assign each row to a group
-  colnames(I) <- paste0(sample(block.names,ncol(I),replace=TRUE),c(1:ncol(I)))  #Assign each column to a group
-  within.block <- sum((outer(substr(rownames(I),1,1), substr(colnames(I),1,1), `==`)*1)*I) / sum(I)  #Compute starting block density
-  pb <- utils::txtProgressBar(min = .49, max = density, style = 3)  #Initiate progress bar
-
-  failed.swaps <- 0
-  while (within.block < density) {
-    # Pick agents
-    agent1 <- sample(rownames(I),1)  #Pick a random agent
-    agent2 <- sample(rownames(I)[which(substr(rownames(I),1,1)!=substr(agent1,1,1))],1)  #Pick a random agent from another group
-
-    # Pick artifacts
-    artifact1 <- sample(colnames(I)[which(substr(colnames(I),1,1)==substr(agent1,1,1))],1)  #Pick a random artifact from agent 1's group
-    artifact2 <- sample(colnames(I)[which(substr(colnames(I),1,1)==substr(agent2,1,1))],1)  #Pick a random artifact from agent 2's group
-
-    # If a checkboard swap would increase within-block density, make the swap and recompute
-    if (all(matrix(c(0,1,1,0),nrow=2,ncol=2) == I[c(agent1,agent2),c(artifact1,artifact2)])) {
-      I[c(agent1,agent2),c(artifact1,artifact2)] <- abs(I[c(agent1,agent2),c(artifact1,artifact2)] - 1)
-      within.block <- sum((outer(substr(rownames(I),1,1), substr(colnames(I),1,1), `==`)*1)*I) / sum(I)
-      utils::setTxtProgressBar(pb, within.block)
-      failed.swaps <- 0
-    } else {failed.swaps <- failed.swaps + 1}  #If a swap would not increase within-block density, increase counter
-
-  # If within-block density can't be improved further, stop
-  if (failed.swaps == max.tries) {stop("No more swaps found; try again with higher `max.tries` or lower target `density`.")}
+  #Function to sample 2x2 checkerboards from a larger matrix
+  sample.cb <- function(m) {
+    n <- nrow(m) * ncol(m)
+    m <- Matrix::spMatrix(nrow(m), ncol(m),  #Convert m to a sparse matrix in triplet format
+                           i = which(m != 0, arr.ind = T)[,1],
+                           j = which(m != 0, arr.ind = T)[,2],
+                           x = rep(1,sum(m)))
+    mIdx <- matrix(sample(length(m@i), 2L*n, TRUE), ncol = 2)
+    dt <- data.frame(row1 = m@i[mIdx[,1]], col1 = m@j[mIdx[,2]], row2 = m@i[mIdx[,2]], col2 = m@j[mIdx[,1]]) + 1L
+    dt <- dt[which(dt$row1 != dt$row2 & dt$col1 != dt$col2 & !(m[matrix(c(dt$row1, dt$col1), n)] + m[matrix(c(dt$row2, dt$col2), n)])),]
+    return(dt)
   }
 
-  # Arrange by groups and close progress bar
+  # Prep object
+  if (!methods::is(I,"matrix") & !methods::is(I,"igraph")) {stop("I must be a matrix or igraph object")}
+  class <- "matrix"
+  if (methods::is(I,"igraph")) {
+    if (!igraph::is.bipartite(I)) {stop("I must be bipartite")}
+    I <- igraph::as_incidence_matrix(I)
+    class <- "igraph"
+  }
+
+  # Parameter checks
+  if (!is.numeric(density)) {stop("density must be numeric")}
+  if (density<0 | density>1) {stop("density must be between 0 and 1")}
+  if (!is.numeric(rowblock) | !is.numeric(colblock)) {stop("rowblock and colblock must be integer vectors")}
+  if (length(rowblock)!=nrow(I)) {stop("rowblock must contain nrow(I) elements")}
+  if (length(colblock)!=ncol(I)) {stop("colblock must contain ncol(I) elements")}
+
+  # Check starting within-block density
+  within <- outer(rowblock, colblock, `==`)  #Find within-group pairs
+  within.block <- sum((within*I) / sum(I))  #Compute starting block density
+  if (within.block > density) {stop("I already has a within-block density > `density`")}
+  pb <- utils::txtProgressBar(min = within.block, max = density, style = 3)  #Initiate progress bar
+
+  while (within.block < density) { #While trying to improve density...
+
+    # Get list a possible swaps
+    possible <- sample.cb(I)
+    possible <- possible[which(rowblock[possible$row1]!=rowblock[possible$row2] &  #Agents are from different groups
+                               colblock[possible$col1]!=colblock[possible$col2] &  #Artifacts are from different groups
+                               rowblock[possible$row1]==colblock[possible$col1] &  #First agent and artifact are from same group
+                               rowblock[possible$row2]==colblock[possible$col2]),] #Second agent and artifact are from same group
+    if (nrow(possible) == 0) {stop("Requested within-block density not achieved")}
+
+    # Try making swaps from the list, until achieving desired density
+    for (try in 1:nrow(possible)) {
+      if (within.block < density & all(matrix(c(0,1,1,0),nrow=2,ncol=2) == I[c(possible$row1[try],possible$row2[try]),c(possible$col1[try],possible$col2[try])])) {  #If necessary and allowable
+        I[c(possible$row1[try],possible$row2[try]),c(possible$col1[try],possible$col2[try])] <- matrix(c(1,0,0,1),nrow=2,ncol=2)
+        within.block <- sum((within*I) / sum(I))
+        utils::setTxtProgressBar(pb, within.block)
+      }
+    }
+  }
+
+  # Complete & end progress bar, return
+  utils::setTxtProgressBar(pb, density)
   close(pb)
-  I <- I[order(rownames(I)), order(colnames(I))]
+  if (sorted & class=="matrix") {I <- I[order(rowblock), order(colblock)]}
+  if (class == "igraph") {I <- igraph::graph_from_incidence_matrix(I)}
   return(I)
 }
+

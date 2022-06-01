@@ -8,7 +8,7 @@
 <!-- badges: end -->
 
 ## Welcome
-Welcome to the `incidentally` package\! The incidentally package implements methods to generate incidence matrices, which can represent bipartite (aka two-mode, affiliation) networks. It is currently *under development* but the existing functions should mostly work.
+Welcome to the `incidentally` package\! The incidentally package implements methods to generate incidence matrices, which can represent bipartite (aka two-mode, affiliation) networks.
 
 ## Installation
 The /release branch contains the current CRAN release of the incidentally package. You can install it from [CRAN](https://CRAN.R-project.org) with:

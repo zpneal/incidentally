@@ -5,6 +5,7 @@
 [![](https://www.r-pkg.org/badges/version/incidentally?color=orange)](https://cran.r-project.org/package=incidentally)
 [![](http://cranlogs.r-pkg.org/badges/grand-total/incidentally?color=blue)](https://cran.r-project.org/package=incidentally)
 [![](http://cranlogs.r-pkg.org/badges/last-month/incidentally?color=green)](https://cran.r-project.org/package=incidentally)
+[![DOI:10.31219/osf.io/ectms](http://img.shields.io/badge/DOI-10.31219/osf.io/ectms-B31B1B.svg)](https://doi.org/10.31219/osf.io/ectms)
 <!-- badges: end -->
 
 ## Welcome

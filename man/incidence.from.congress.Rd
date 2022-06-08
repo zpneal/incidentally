@@ -8,6 +8,7 @@ incidence.from.congress(
   session = NULL,
   types = NULL,
   areas = "All",
+  nonvoting = FALSE,
   weighted = FALSE,
   format = "data",
   narrative = FALSE
@@ -19,6 +20,8 @@ incidence.from.congress(
 \item{types}{vector: types of bills to include. May be any combination of c(\"s\", \"sres\", \"sjres\", \"sconres\") OR any combination of c(\"hr\", \"hres\", \"hjres\", \"hconres\").}
 
 \item{areas}{string: policy areas of bills to include (see details)}
+
+\item{nonvoting}{boolean: should non-voting members be included}
 
 \item{weighted}{boolean: should sponsor-bill edges have a weight of 2, but cosponsor-bill edges have a weight of 1}
 

@@ -111,8 +111,8 @@ incidence.from.congress <- function(session = NULL, types = NULL, areas = "All",
       cs.state <- xml2::xml_text(xml2::xml_find_first(cosponsor, ".//state"))
 
       #Add to data
-      dat <- rbind(dat, data.frame(id = s.id, name = s.name, last = s.last, party = s.party, state = s.state, bill = number, introduced = introduced, title = title, area = area, status = status, weight = 2))
-      if (length(cs.id)>0) dat <- rbind(dat, data.frame(id = cs.id, name = cs.name, last = cs.last, party = cs.party, state = cs.state, bill = number, introduced = introduced, title = title, area = area, status = status, weight = 1))
+      if (length(s.id)>0) {dat <- rbind(dat, data.frame(id = s.id, name = s.name, last = s.last, party = s.party, state = s.state, bill = number, introduced = introduced, title = title, area = area, status = status, weight = 2))}
+      if (length(cs.id)>0) {dat <- rbind(dat, data.frame(id = cs.id, name = cs.name, last = cs.last, party = cs.party, state = cs.state, bill = number, introduced = introduced, title = title, area = area, status = status, weight = 1))}
       }
 
       utils::setTxtProgressBar(pb, file)

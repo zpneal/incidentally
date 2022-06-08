@@ -6,6 +6,7 @@
 #' @param session numeric: the session of congress
 #' @param types vector: types of bills to include. May be any combination of c(\"s\", \"sres\", \"sjres\", \"sconres\") OR any combination of c(\"hr\", \"hres\", \"hjres\", \"hconres\").
 #' @param areas string: policy areas of bills to include (see details)
+#' @param nonvoting boolean: should non-voting members be included
 #' @param weighted boolean: should sponsor-bill edges have a weight of 2, but cosponsor-bill edges have a weight of 1
 #' @param format string: format of output, one of c(\"data\", \"igraph\")
 #' @param narrative boolean: TRUE if suggested text & citations should be displayed.
@@ -49,7 +50,7 @@
 #' D <- incidence.from.congress(session = 116, types = "s", format = "data", areas = "Animals")
 #' G <- incidence.from.congress(session = 115, types = c("hr", "hres"), format = "igraph")
 #' }
-incidence.from.congress <- function(session = NULL, types = NULL, areas = "All", weighted = FALSE, format = "data", narrative = FALSE){
+incidence.from.congress <- function(session = NULL, types = NULL, areas = "All", nonvoting = FALSE, weighted = FALSE, format = "data", narrative = FALSE){
 
   #Parameter check
   if (!is.numeric(session)) {stop("session must be an integer")}
@@ -121,6 +122,7 @@ incidence.from.congress <- function(session = NULL, types = NULL, areas = "All",
   } #End type loop
 
   #Prep sponsorship data and codebooks
+  if (!nonvoting) {dat <- dat[which(dat$state!="AS" & dat$state!="DC" & dat$state!="GU" & dat$state!="MP" & dat$state!="PR" & dat$state!="VI"),]}
   if (weighted) {sponsorship <- dat[c("name", "bill", "weight")]} else {sponsorship <- dat[c("name", "bill")]}
   legislator <- unique(dat[c("id", "name", "last", "party", "state")])
   bills <- unique(dat[c("bill", "introduced", "title", "area", "status")])

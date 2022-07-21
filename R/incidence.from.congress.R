@@ -4,11 +4,11 @@
 #'    matrix or bipartite graph recording legislators' bill (co-)sponsorships.
 #'
 #' @param session numeric: the session of congress
-#' @param types vector: types of bills to include. May be any combination of c(\"s\", \"sres\", \"sjres\", \"sconres\") OR any combination of c(\"hr\", \"hres\", \"hjres\", \"hconres\").
+#' @param types vector: types of bills to include. May be any combination of c("s", "sres", "sjres", "sconres") OR any combination of c("hr", "hres", "hjres", "hconres").
 #' @param areas string: policy areas of bills to include (see details)
 #' @param nonvoting boolean: should non-voting members be included
 #' @param weighted boolean: should sponsor-bill edges have a weight of 2, but cosponsor-bill edges have a weight of 1
-#' @param format string: format of output, one of c(\"data\", \"igraph\")
+#' @param format string: format of output, one of c("data", "igraph")
 #' @param narrative boolean: TRUE if suggested text & citations should be displayed.
 #'
 #' @details
@@ -112,8 +112,8 @@ incidence.from.congress <- function(session = NULL, types = NULL, areas = "All",
       cs.state <- xml2::xml_text(xml2::xml_find_first(cosponsor, ".//state"))
 
       #Add to data
-      if (length(s.id)>0) {dat <- rbind(dat, data.frame(id = s.id, name = s.name, last = s.last, party = s.party, state = s.state, bill = number, introduced = introduced, title = title, area = area, status = status, weight = 2))}
-      if (length(cs.id)>0) {dat <- rbind(dat, data.frame(id = cs.id, name = cs.name, last = cs.last, party = cs.party, state = cs.state, bill = number, introduced = introduced, title = title, area = area, status = status, weight = 1))}
+      if (length(s.id)>0) {dat <- rbind(dat, data.frame(id = s.id, name = s.name, last = s.last, party = s.party, state = s.state, bill = number, introduced = introduced, title = title, area = area, sponsor.party = s.party, status = status, weight = 2))}
+      if (length(cs.id)>0) {dat <- rbind(dat, data.frame(id = cs.id, name = cs.name, last = cs.last, party = cs.party, state = cs.state, bill = number, introduced = introduced, title = title, area = area, sponsor.party = s.party, status = status, weight = 1))}
       }
 
       utils::setTxtProgressBar(pb, file)
@@ -125,7 +125,7 @@ incidence.from.congress <- function(session = NULL, types = NULL, areas = "All",
   if (!nonvoting) {dat <- dat[which(dat$state!="AS" & dat$state!="DC" & dat$state!="GU" & dat$state!="MP" & dat$state!="PR" & dat$state!="VI"),]}
   if (weighted) {sponsorship <- dat[c("name", "bill", "weight")]} else {sponsorship <- dat[c("name", "bill")]}
   legislator <- unique(dat[c("id", "name", "last", "party", "state")])
-  bills <- unique(dat[c("bill", "introduced", "title", "area", "status")])
+  bills <- unique(dat[c("bill", "introduced", "title", "area", "sponsor.party", "status")])
 
   #Display narrative if requested
   if (narrative) {
@@ -161,6 +161,7 @@ incidence.from.congress <- function(session = NULL, types = NULL, areas = "All",
     suppressWarnings(igraph::V(G)[which(igraph::V(G)$type==T)]$introduced <- bills$introduced)
     suppressWarnings(igraph::V(G)[which(igraph::V(G)$type==T)]$title <- bills$title)
     suppressWarnings(igraph::V(G)[which(igraph::V(G)$type==T)]$area <- bills$area)
+    suppressWarnings(igraph::V(G)[which(igraph::V(G)$type==T)]$party <- bills$sponsor.party)
     suppressWarnings(igraph::V(G)[which(igraph::V(G)$type==T)]$status <- bills$status)
     return(G)
   }

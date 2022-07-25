@@ -39,8 +39,8 @@ par(mar = c(0, 0, 1, 0))
     c. [Marginal distributions](#distributions)
 3. [Generative models](#generative)
     a. [Teams model](#team)
-    b. [Groups model](#group)
-    c. [Blau Space model](#blau)
+    b. [Clubs model](#club)
+    c. [Organizations model](#org)
 4. [Utilities](#util)
     a. [Randomization](#random)
     b. [Block models](#block)
@@ -200,29 +200,29 @@ Notice that because the social network `G` is supplied as a `igraph` object, the
 
 [back to Table of Contents](#toc)
 
-## Groups model {#group}
-The *groups* model mirrors a social group formation process [@backstrom2006group] in which current group members try to recruit their friends. To ensure a minimum level of group cohesion, potential recruits join a newly-forming group only if doing so would yield a group in which the members' social ties have a density of at least $p$. Each row in the generated incidence matrix represents an agent in a given social network, while each column in the incidence matrix records the members of a group.
+## Clubs model {#club}
+The *clubs* model mirrors a social club formation process [@backstrom2006group] in which current club members try to recruit their friends. To ensure a minimum level of group cohesion, potential recruits join a newly-forming club only if doing so would yield a club in which the members' social ties have a density of at least $p$. Each row in the generated incidence matrix represents an agent in a given social network, while each column in the incidence matrix records the members of a club.
 
-Given an initial social network among 15 people, we can simulate their formation of one (`k = 1`) new group, where the group has a minimum density of `p = 0.75`:
+Given an initial social network among 15 people, we can simulate their formation of one (`k = 1`) new club, where the club has a minimum density of `p = 0.75`:
 ```{r, fig.show="hold", out.width="40%"}
 G <- erdos.renyi.game(15, .33)  #A random social network of 15 people, as igraph
-I <- incidence.from.adjacency(G, k = 1, p = .75, model = "group")  #Groups model
+I <- incidence.from.adjacency(G, k = 1, p = .75, model = "club")  #Groups model
 V(I)$shape <- ifelse(V(I)$type, "square", "circle")  #Add shapes
 plot(G, main="Social Network")
 plot(I, layout = layout_as_bipartite(I), main="New Group")
 ```
 
-In this example, a new group (node 16) is joined by five agents (nodes 3, 6, 10, 13, and 14). The social network among these group members is very cohesive (density = .9). The members of this group may have attempted to recruit other friends, but these others did not join because doing so would have reduced the group's cohesion. For example, agent 10 may have tried to recruit agent 9. However, if agent 9 had joined the group, the new group would have a density of 0.73, which is lower than the minimum threshold. Therefore, agent 9 did not join the group.
+In this example, a new club (node 16) is joined by five agents (nodes 3, 6, 10, 13, and 14). The social network among these group members is very cohesive (density = .9). The members of this group may have attempted to recruit other friends, but these others did not join because doing so would have reduced the group's cohesion. For example, agent 10 may have tried to recruit agent 9. However, if agent 9 had joined the club, the new club would have a density of 0.73, which is lower than the minimum threshold. Therefore, agent 9 did not join the club.
 
 [back to Table of Contents](#toc)
 
-## Blau Space model {#blau}
-The *Blau Space* model mirrors an organizational recruitment process [@mcpherson1983ecology]. The given social network is embedded in a $d$ dimensional social space in which the dimensions are assumed to represent meaningful social distinctions, such that socially similar people are positioned nearby. Organizations recruit members from this space, recruiting people inside their niche with probability $p$, and outside their niche with probability $1-p$. Each row in the generated incidence matrix represents an agent in a given social network, while each column in the incidence matrix records the members of an organization.
+## Organizations model {#org}
+The *Organizations* model mirrors an organizational recruitment process [@mcpherson1983ecology]. The given social network is embedded in a $d$ dimensional social space in which the dimensions are assumed to represent meaningful social distinctions, such that socially similar people are positioned nearby. Organizations recruit members from this space, recruiting people inside their niche with probability $p$, and outside their niche with probability $1-p$. Each row in the generated incidence matrix represents an agent in a given social network, while each column in the incidence matrix records the members of an organization.
 
 Given a social network among 15 people, we can simulate their recruitment by one (`k = 1`) new organization, where there is a `p = 0.95` probability that an individual inside an organization's niche becomes a member:
 ```{r, fig.show="hold", out.width="40%"}
 G <- erdos.renyi.game(15, .5)  #A random social network of 15 people, as igraph
-I <- incidence.from.adjacency(G, k = 1, p = .95, model = "blau")  #Groups model
+I <- incidence.from.adjacency(G, k = 1, p = .95, model = "org")  #Groups model
 V(I)$shape <- ifelse(V(I)$type, "square", "circle")  #Add shapes
 plot(G, layout = layout_with_mds(G), main="Social Network")
 plot(I, layout = layout_as_bipartite(I), main="New Organizations")

@@ -67,22 +67,24 @@ incidence.from.adjacency <- function(G, k = 1, p = 1, blau.param = c(2,1,10), ma
     if (igraph::is_directed(G)) {stop("G must be undirected")}
     if (igraph::is_weighted(G)) {stop("G must be unweighted")}
     if (igraph::is_bipartite(G)) {stop("G must be unipartite")}
-    if (!is.null(igraph::V(G)$name)) {nodes <- igraph::V(G)$name} else {nodes <- 1:(igraph::gorder(G))}
+    if (!is.null(igraph::V(G)$name)) {names <- igraph::V(G)$name} else {names <- 1:(igraph::gorder(G))}
+    igraph::V(G)$name <- 1:(igraph::gorder(G))
   }
   if (methods::is(G, "matrix")) {
     if (!isSymmetric(G)) {stop("G must be symmetric")}
     if (!all(G %in% c(0,1))) {stop("G must be binary")}
-    if (!is.null(rownames(G))) {nodes <- rownames(G)} else {nodes <- 1:nrow(G)}
+    if (!is.null(rownames(G))) {names <- rownames(G)} else (names <- c(1:nrow(G)))
     G <- igraph::graph_from_adjacency_matrix(G,mode="undirected")
   }
   if (methods::is(G, "Matrix")) {
     G <- as.matrix(G)
     if (!isSymmetric(G)) {stop("G must be symmetric")}
     if (!all(G %in% c(0,1))) {stop("G must be binary")}
-    if (!is.null(rownames(G))) {nodes <- rownames(G)} else {nodes <- 1:nrow(G)}
+    if (!is.null(rownames(G))) {names <- rownames(G)} else (names <- c(1:nrow(G)))
     G <- igraph::graph_from_adjacency_matrix(G,mode="undirected")
   }
 
+  nodes <- c(1:igraph::gorder(G))
   I <- as.matrix(1:(igraph::gorder(G)))  #Create empty incidence with numeric row labels
 
   #### Team model (Guimera et al., 2005) ####
@@ -175,7 +177,7 @@ incidence.from.adjacency <- function(G, k = 1, p = 1, blau.param = c(2,1,10), ma
   # Clean up and return
   I <- I[,-1]  #Remove placeholder ID column
   if (!methods::is(I,"numeric")) {
-    rownames(I) <- igraph::V(G)$name  #Insert row names
+    rownames(I) <- names  #Insert row names
     colnames(I) <- c(paste0("k", 1:ncol(I)))  #Insert column names
   }
   if (class == "igraph") {I <- igraph::graph_from_incidence_matrix(I)}

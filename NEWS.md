@@ -7,6 +7,8 @@ output: html_document
 
 * fixed bug in `incidence.from.congress()` when bills do not have a sponsor
 * `incidence.from.congress()` excludes non-voting members by default
+* `incidence.from.congress()` includes a bill attribute indicating the bill's sponsor's party
+* renamed `group' model as `club' model, and renamed `blau' model as `organizations' model in `incidence.from.adjacency()`
 
 ## incidentally 1.0.0
 

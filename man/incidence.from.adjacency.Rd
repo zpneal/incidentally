@@ -23,11 +23,11 @@ or an undirected, unweighted unipartite graph of class {\link{igraph}}.}
 
 \item{p}{numeric: Tuning parameter for artifacts, 0 <= p <= 1}
 
-\item{blau.param}{vector: Vector of parameters that control blau space (see details)}
+\item{blau.param}{vector: Vector of parameters that control blau space in the organizations model (see details)}
 
-\item{maximal}{boolean: Should teams/groups models be seeded with \emph{maximal} cliques?}
+\item{maximal}{boolean: Should teams/clubs models be seeded with \emph{maximal} cliques?}
 
-\item{model}{string: Generative model, one of c("team", "group", "blau") (see details)}
+\item{model}{string: Generative model, one of c("team", "club", "org") (see details)}
 
 \item{class}{string: Return object as \code{matrix}, \code{Matrix}, or \code{igraph}. If \code{NULL}, object is returned in the same class as \code{G}.}
 
@@ -49,11 +49,11 @@ they associate agents with these artifacts.
 The \strong{Team Model} (\code{model == "team"}) mirrors a team formation process, where each artifact represents a new team
 formed from the incumbants of a prior team (with probability \code{p}) and newcomers (with probability 1-\code{p}).
 
-The \strong{Group Model} (\code{model == "group"}) mirrors a social group formation process, where each artifact represents
-a social group. Group members attempt to recruit non-member friends, who join the group if it would have a
+The \strong{Club Model} (\code{model == "club"}) mirrors a social club formation process, where each artifact represents
+a social club. Club members attempt to recruit non-member friends, who join the club if it would have a
 density of at least \code{p}.
 
-The \strong{Blau Space Model} (\code{model == "blau"}) mirrors an organization (the artifact) recruiting members from social
+The \strong{Organizations Model} (\code{model == "org"}) mirrors an organization (the artifact) recruiting members from social
 space, where those within the organization's niche join with probability \code{p}, and those outside the niche join
 with probability 1-\code{p}. \code{blau.param} is a vector containing three values that control the characteristics of the
 blau space. The first value is the space's dimensionality. The second two values are shape parameters of a Beta

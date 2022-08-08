@@ -8,9 +8,9 @@
 #'    or an undirected, unweighted unipartite graph of class {\link{igraph}}.
 #' @param k integer: Number of artifacts to generate
 #' @param p numeric: Tuning parameter for artifacts, 0 <= p <= 1
-#' @param maximal boolean: Should teams/groups models be seeded with *maximal* cliques?
-#' @param blau.param vector: Vector of parameters that control blau space (see details)
-#' @param model string: Generative model, one of c("team", "group", "blau") (see details)
+#' @param maximal boolean: Should teams/clubs models be seeded with *maximal* cliques?
+#' @param blau.param vector: Vector of parameters that control blau space in the organizations model (see details)
+#' @param model string: Generative model, one of c("team", "club", "org") (see details)
 #' @param class string: Return object as `matrix`, `Matrix`, or `igraph`. If `NULL`, object is returned in the same class as `G`.
 #' @param narrative boolean: TRUE if suggested text & citations should be displayed.
 #'
@@ -25,11 +25,11 @@
 #' The **Team Model** (`model == "team"`) mirrors a team formation process, where each artifact represents a new team
 #'     formed from the incumbants of a prior team (with probability `p`) and newcomers (with probability 1-`p`).
 #'
-#' The **Group Model** (`model == "group"`) mirrors a social group formation process, where each artifact represents
-#'     a social group. Group members attempt to recruit non-member friends, who join the group if it would have a
+#' The **Club Model** (`model == "club"`) mirrors a social club formation process, where each artifact represents
+#'     a social club. Club members attempt to recruit non-member friends, who join the club if it would have a
 #'     density of at least `p`.
 #'
-#' The **Blau Space Model** (`model == "blau"`) mirrors an organization (the artifact) recruiting members from social
+#' The **Organizations Model** (`model == "org"`) mirrors an organization (the artifact) recruiting members from social
 #'     space, where those within the organization's niche join with probability `p`, and those outside the niche join
 #'     with probability 1-`p`. `blau.param` is a vector containing three values that control the characteristics of the
 #'     blau space. The first value is the space's dimensionality. The second two values are shape parameters of a Beta
@@ -57,7 +57,7 @@ incidence.from.adjacency <- function(G, k = 1, p = 1, blau.param = c(2,1,10), ma
   if (!is.numeric(k)) {stop("k must be numeric")}
   if (!is.numeric(p)) {stop("p must be numeric")}
   if (p < 0 | p > 1) {stop("p must be between 0 and 1")}
-  if (!(model %in% c("team", "group", "blau"))) {stop("model must be one if c(\"team\", \"group\", \"blau\")")}
+  if (!(model %in% c("team", "club", "org"))) {stop("model must be one if c(\"team\", \"club\", \"org\")")}
   if (!(class %in% c("matrix", "Matrix", "igraph"))) {stop("class must be one if c(\"matrix\", \"Matrix\", \"igraph\")")}
   if (blau.param[1]%%1!=0 | blau.param[1]<2) {stop("The first blau.param must be an integer greater than 1")}
   if (blau.param[2]<0 | blau.param[3]<0) {stop("The second and third blau.param must be positive")}
@@ -67,22 +67,24 @@ incidence.from.adjacency <- function(G, k = 1, p = 1, blau.param = c(2,1,10), ma
     if (igraph::is_directed(G)) {stop("G must be undirected")}
     if (igraph::is_weighted(G)) {stop("G must be unweighted")}
     if (igraph::is_bipartite(G)) {stop("G must be unipartite")}
-    if (!is.null(igraph::V(G)$name)) {nodes <- igraph::V(G)$name} else {nodes <- 1:(igraph::gorder(G))}
+    if (!is.null(igraph::V(G)$name)) {names <- igraph::V(G)$name} else {names <- 1:(igraph::gorder(G))}
+    igraph::V(G)$name <- 1:(igraph::gorder(G))
   }
   if (methods::is(G, "matrix")) {
     if (!isSymmetric(G)) {stop("G must be symmetric")}
     if (!all(G %in% c(0,1))) {stop("G must be binary")}
-    if (!is.null(rownames(G))) {nodes <- rownames(G)} else {nodes <- 1:nrow(G)}
+    if (!is.null(rownames(G))) {names <- rownames(G)} else (names <- c(1:nrow(G)))
     G <- igraph::graph_from_adjacency_matrix(G,mode="undirected")
   }
   if (methods::is(G, "Matrix")) {
     G <- as.matrix(G)
     if (!isSymmetric(G)) {stop("G must be symmetric")}
     if (!all(G %in% c(0,1))) {stop("G must be binary")}
-    if (!is.null(rownames(G))) {nodes <- rownames(G)} else {nodes <- 1:nrow(G)}
+    if (!is.null(rownames(G))) {names <- rownames(G)} else (names <- c(1:nrow(G)))
     G <- igraph::graph_from_adjacency_matrix(G,mode="undirected")
   }
 
+  nodes <- c(1:igraph::gorder(G))
   I <- as.matrix(1:(igraph::gorder(G)))  #Create empty incidence with numeric row labels
 
   #### Team model (Guimera et al., 2005) ####
@@ -116,8 +118,8 @@ incidence.from.adjacency <- function(G, k = 1, p = 1, blau.param = c(2,1,10), ma
     }
   }
 
-    #### Group model (Backstrom et al., 2006) ####
-    if (model == "group") {
+    #### Club model (Backstrom et al., 2006) ####
+    if (model == "club") {
 
       ## Function to get candidates
       get.candidates <- function(G, members, declined) {
@@ -129,27 +131,27 @@ incidence.from.adjacency <- function(G, k = 1, p = 1, blau.param = c(2,1,10), ma
 
       if (maximal) {cliques <- igraph::max_cliques(G, min=2)} else {cliques <- igraph::cliques(G, min=2)}  #List all (maximal) cliques
 
-      for (i in 1:k) {                                                  #For each new group k:
+      for (i in 1:k) {                                                  #For each new club k:
         members <- as.numeric(cliques[[sample(1:length(cliques),1)]])   #Sample a clique (initial members)
         declined <- NULL                                                #Recruits who declined membership
         candidates <- get.candidates(G, members, declined)
 
         while (length(candidates)!= 0) {                                                               #While there are candidates
           recruit <- sample.vec(candidates, 1)                                                         #Pick random recruit from candidates
-          density <- igraph::edge_density(igraph::induced_subgraph(G, c(members,recruit)))             #Compute prospective group's density
+          density <- igraph::edge_density(igraph::induced_subgraph(G, c(members,recruit)))             #Compute prospective club's density
           if (density >= p) {members <- c(members, recruit)} else {declined <- c(declined, recruit)}   #Join or decline
           candidates <- get.candidates(G, members, declined)                                           #Update candidate list
         }
 
-        I <- cbind(I,0)          #Add a blank artifact (group) to I
-        I[members, i + 1] <- 1   #Fill the artifact with the new group's members
+        I <- cbind(I,0)          #Add a blank artifact (club) to I
+        I[members, i + 1] <- 1   #Fill the artifact with the new club's members
       }
     }
 
-  #### BlauSpace model (McPherson, 2004) ####
-  if (model == "blau") {
+  #### Organizations model (McPherson, 2004) ####
+  if (model == "org") {
 
-    if (!igraph::is.connected(G)) {stop("the blau space model requires that the network be connected")}
+    if (!igraph::is.connected(G)) {stop("the organizations model requires that the network be connected")}
     coords <- igraph::layout_with_mds(G, dim = blau.param[1])  #Get coordinates in Blau Space
     D <- as.matrix(stats::dist(coords))            #Compute distances between nodes in Blau Space
 
@@ -175,7 +177,7 @@ incidence.from.adjacency <- function(G, k = 1, p = 1, blau.param = c(2,1,10), ma
   # Clean up and return
   I <- I[,-1]  #Remove placeholder ID column
   if (!methods::is(I,"numeric")) {
-    rownames(I) <- igraph::V(G)$name  #Insert row names
+    rownames(I) <- names  #Insert row names
     colnames(I) <- c(paste0("k", 1:ncol(I)))  #Insert column names
   }
   if (class == "igraph") {I <- igraph::graph_from_incidence_matrix(I)}
@@ -185,8 +187,8 @@ incidence.from.adjacency <- function(G, k = 1, p = 1, blau.param = c(2,1,10), ma
   if (narrative) {
     version <- utils::packageVersion("incidentally")
     type <- " newly-formed teams"
-    if (model == "group") {type <- " newly-formed groups"}
-    if (model == "blau") {type <- " newly-formed organizations"}
+    if (model == "club") {type <- " newly-formed club"}
+    if (model == "org") {type <- " newly-formed organizations"}
     if (class == "igraph") {text <- paste0("We used the incidentally package for R (v", version, "; Neal, 2022a) to generate a random bipartite graph from a unipartite graph. The bipartite graph represents the memberships of the ", igraph::gorder(G), " nodes from the unipartite network in ", k, type, " (Neal, 2022b).")}
     if (class != "igraph") {text <- paste0("We used the incidentally package for R (v", version, "; Neal, 2022a) to generate a random incidence matrix from a unipartite graph. The incidence matrix represents the memberships of the ", igraph::gorder(G), " nodes from the unipartite network (rows) in ", k, type, " (columns; Neal, 2022b).")}
     message("")

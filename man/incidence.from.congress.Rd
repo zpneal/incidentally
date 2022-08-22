@@ -50,7 +50,7 @@ The bill is discussed, revised, and possibly voted on in the chamber. If it pass
 chamber for further discussion, revision, and possibly a vote. If it passed both chambers, it is sent to the President. If
 the President signs the bill, it becomes law.
 
-In the House of Representatives, legislators can introduce four types of bills: a House Bill (hb), a House Joint Resolution (hjres),
+In the House of Representatives, legislators can introduce four types of bills: a House Bill (hr), a House Joint Resolution (hjres),
 a House Concurrent Resolution (hconres), and a House Simple Resolution (hres). Similarly, in the Senate, legislators can introduce
 four types of bills: a Senate Bill (s), a Senate Joint Resolution (sjres), a Senate Concurrent Resolution (sconres), and a Senate
 Simple Resolution (sres). In both chambers, concurrent and simple resolutions are used for minor procedural matters and do not

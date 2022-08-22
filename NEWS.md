@@ -3,6 +3,10 @@ title: "NEWS"
 output: html_document
 ---
 
+## incidentally 1.0.2
+
+* `incidence.from.congress()` includes bill attributes indicating the number of (co-)sponsors from each party
+
 ## incidentally 1.0.1
 
 * fixed bug in `incidence.from.congress()` when bills do not have a sponsor

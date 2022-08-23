@@ -40,7 +40,7 @@
 #' If `format = "igraph"`, a bipartite igraph object composed of legislator vertices and bill vertices, each with vertex attributes.
 #'
 #' For both formats, legislator characteristics include: BioGuide ID, full name, last name, party affiliation, and state. Bill characteristics
-#'     include: bill ID, introduction date, title, status, sponsor's party, and number of co-sponsors from each party.
+#'     include: bill ID, introduction date, title, policy area, status, sponsor's party, and number of co-sponsors from each party.
 #'
 #' @references
 #' @references {Neal, Z. P. 2022. incidentally: An R package to generate incidence matrices and bipartite graphs. *OSF Preprints* \doi{10.31219/osf.io/ectms}}

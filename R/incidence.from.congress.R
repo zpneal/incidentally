@@ -39,6 +39,9 @@
 #'
 #' If `format = "igraph"`, a bipartite igraph object composed of legislator vertices and bill vertices, each with vertex attributes.
 #'
+#' For both formats, legislator characteristics include: BioGuide ID, full name, last name, party affiliation, and state. Bill characteristics
+#'     include: bill ID, introduction date, title, status, sponsor's party, and number of co-sponsors from each party.
+#'
 #' @references
 #' @references {Neal, Z. P. 2022. incidentally: An R package to generate incidence matrices and bipartite graphs. *OSF Preprints* \doi{10.31219/osf.io/ectms}}
 #'
@@ -60,7 +63,7 @@ incidence.from.congress <- function(session = NULL, types = NULL, areas = "all",
   areas <- tolower(areas)
 
   #Initialize data
-  dat <- data.frame(id = NULL, name = NULL, last = NULL, party = NULL, state = NULL, bill = NULL, introduced = NULL, title = NULL, area = NULL, status = NULL, weight = NULL)
+  dat <- data.frame(id = NULL, name = NULL, last = NULL, party = NULL, state = NULL, bill = NULL, introduced = NULL, title = NULL, area = NULL, status = NULL, sponsor.party = NULL, cosponsors.r = NULL, cosponsors.d = NULL, cosponsors.i = NULL, weight = NULL)
 
   #Begin bill type loop
   for (type in types) {
@@ -112,9 +115,19 @@ incidence.from.congress <- function(session = NULL, types = NULL, areas = "all",
       cs.party <- xml2::xml_text(xml2::xml_find_first(cosponsor, ".//party"))
       cs.state <- xml2::xml_text(xml2::xml_find_first(cosponsor, ".//state"))
 
+      #Count cosponsors' parties
+      Rnum <- 0
+      Dnum <- 0
+      Inum <- 0
+      if (length(cs.party)>0) {
+        Rnum <- sum(cs.party=="R")
+        Dnum <- sum(cs.party=="D")
+        Inum <- sum(cs.party!="R" & cs.party!="D")
+      }
+
       #Add to data
-      if (length(s.id)>0) {dat <- rbind(dat, data.frame(id = s.id, name = s.name, last = s.last, party = s.party, state = s.state, bill = number, introduced = introduced, title = title, area = area, sponsor.party = s.party, status = status, weight = 2))}
-      if (length(cs.id)>0) {dat <- rbind(dat, data.frame(id = cs.id, name = cs.name, last = cs.last, party = cs.party, state = cs.state, bill = number, introduced = introduced, title = title, area = area, sponsor.party = s.party, status = status, weight = 1))}
+      if (length(s.id)>0) {dat <- rbind(dat, data.frame(id = s.id, name = s.name, last = s.last, party = s.party, state = s.state, bill = number, introduced = introduced, title = title, area = area, sponsor.party = s.party, cosponsors.r = Rnum, cosponsors.d = Dnum, cosponsors.i = Inum, status = status, weight = 2))}
+      if (length(cs.id)>0) {dat <- rbind(dat, data.frame(id = cs.id, name = cs.name, last = cs.last, party = cs.party, state = cs.state, bill = number, introduced = introduced, title = title, area = area, sponsor.party = s.party, cosponsors.r = Rnum, cosponsors.d = Dnum, cosponsors.i = Inum, status = status, weight = 1))}
       }
 
       utils::setTxtProgressBar(pb, file)
@@ -122,11 +135,11 @@ incidence.from.congress <- function(session = NULL, types = NULL, areas = "all",
     close(pb)
   } #End type loop
 
-  #Prep sponsorship data and codebooks
+  #Prep sponsorship data and codebooks, remove raw data from memory
   if (!nonvoting) {dat <- dat[which(dat$state!="AS" & dat$state!="DC" & dat$state!="GU" & dat$state!="MP" & dat$state!="PR" & dat$state!="VI"),]}
   if (weighted) {sponsorship <- dat[c("name", "bill", "weight")]} else {sponsorship <- dat[c("name", "bill")]}
   legislator <- unique(dat[c("id", "name", "last", "party", "state")])
-  bills <- unique(dat[c("bill", "introduced", "title", "area", "sponsor.party", "status")])
+  bills <- unique(dat[c("bill", "introduced", "title", "area", "sponsor.party", "cosponsors.r", "cosponsors.d", "cosponsors.i", "status")])
 
   #Display narrative if requested
   if (narrative) {
@@ -162,7 +175,10 @@ incidence.from.congress <- function(session = NULL, types = NULL, areas = "all",
     suppressWarnings(igraph::V(G)[which(igraph::V(G)$type==T)]$introduced <- bills$introduced)
     suppressWarnings(igraph::V(G)[which(igraph::V(G)$type==T)]$title <- bills$title)
     suppressWarnings(igraph::V(G)[which(igraph::V(G)$type==T)]$area <- bills$area)
-    suppressWarnings(igraph::V(G)[which(igraph::V(G)$type==T)]$party <- bills$sponsor.party)
+    suppressWarnings(igraph::V(G)[which(igraph::V(G)$type==T)]$sponsor.party <- bills$sponsor.party)
+    suppressWarnings(igraph::V(G)[which(igraph::V(G)$type==T)]$cosponsors.r <- bills$cosponsors.r)
+    suppressWarnings(igraph::V(G)[which(igraph::V(G)$type==T)]$cosponsors.d <- bills$cosponsors.d)
+    suppressWarnings(igraph::V(G)[which(igraph::V(G)$type==T)]$cosponsors.i <- bills$cosponsors.i)
     suppressWarnings(igraph::V(G)[which(igraph::V(G)$type==T)]$status <- bills$status)
     return(G)
   }

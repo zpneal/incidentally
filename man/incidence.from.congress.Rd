@@ -35,7 +35,7 @@ If \code{format = "data"}, a list containing an incidence matrix, a dataframe of
 If \code{format = "igraph"}, a bipartite igraph object composed of legislator vertices and bill vertices, each with vertex attributes.
 
 For both formats, legislator characteristics include: BioGuide ID, full name, last name, party affiliation, and state. Bill characteristics
-include: bill ID, introduction date, title, status, sponsor's party, and number of co-sponsors from each party.
+include: bill ID, introduction date, title, policy area, status, sponsor's party, and number of co-sponsors from each party.
 }
 \description{
 \code{incidence.from.congress()} uses data from \href{https://www.congress.gov/}{https://www.congress.gov/} to construct an incidence

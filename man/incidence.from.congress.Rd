@@ -7,7 +7,7 @@
 incidence.from.congress(
   session = NULL,
   types = NULL,
-  areas = "All",
+  areas = "all",
   nonvoting = FALSE,
   weighted = FALSE,
   format = "data",
@@ -58,13 +58,13 @@ have the force of law. Only bills and joint resolutions require the President's 
 
 Each bill is assigned a policy area by the Congressional Research Service. By default, bills from all policy areas are included,
 however the \code{areas} parameter can be used to include only bills addressing certain policy areas. The \code{areas} takes a vector of
-strings listing the desired policy areas (e.g., \code{areas = c("Congress", "Animals")}). Policy area names are \strong{case-sensitive}. A
-complete list of policy areas and brief descriptions is available at \href{https://www.congress.gov/help/field-values/policy-area}{https://www.congress.gov/help/field-values/policy-area}.
+strings listing the desired policy areas (e.g., \code{areas = c("Congress", "Animals")}). A complete list of policy areas and brief
+descriptions is available at \href{https://www.congress.gov/help/field-values/policy-area}{https://www.congress.gov/help/field-values/policy-area}.
 }
 \examples{
 \dontrun{
 D <- incidence.from.congress(session = 116, types = "s", format = "data")
-D <- incidence.from.congress(session = 116, types = "s", format = "data", areas = "Animals")
+D <- incidence.from.congress(session = 116, types = "s", format = "data", areas = "animals")
 G <- incidence.from.congress(session = 115, types = c("hr", "hres"), format = "igraph")
 }
 }

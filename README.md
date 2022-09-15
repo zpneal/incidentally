@@ -5,6 +5,7 @@
 [![](https://www.r-pkg.org/badges/version/incidentally?color=orange)](https://cran.r-project.org/package=incidentally)
 [![](http://cranlogs.r-pkg.org/badges/grand-total/incidentally?color=blue)](https://cran.r-project.org/package=incidentally)
 [![](http://cranlogs.r-pkg.org/badges/last-month/incidentally?color=green)](https://cran.r-project.org/package=incidentally)
+[![status](https://tinyverse.netlify.com/badge/incidentally)](https://CRAN.R-project.org/package=incidentally)
 [![DOI:10.31219/osf.io/ectms](http://img.shields.io/badge/DOI-10.31219/osf.io/ectms-B31B1B.svg)](https://doi.org/10.31219/osf.io/ectms)
 <!-- badges: end -->
 
@@ -26,3 +27,6 @@ The /devel branch contains the working beta version of the next release of the i
 library(devtools)
 install_github("zpneal/incidentally", ref = "devel", build_vignettes = TRUE)
 ```
+
+## Dependencies
+The `incidentally` package adopts the [tinyverse](https://www.tinyverse.org/) philosophy, and therefore aims to keep dependencies at a minimum.

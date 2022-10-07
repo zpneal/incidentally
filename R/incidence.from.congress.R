@@ -102,7 +102,7 @@ incidence.from.congress <- function(session = NULL, types = NULL, areas = "all",
       s.name <- xml2::xml_text(xml2::xml_find_first(sponsor, ".//fullName"))
       s.last <- xml2::xml_text(xml2::xml_find_first(sponsor, ".//lastName"))
       s.last <- tools::toTitleCase(tolower(s.last))  #Correcting capitalization
-      s.party <- xml2::xml_text(xml2::xml_find_first(sponsor, ".//party"))
+      s.party <- xml2::xml_text(xml2::xml_find_first(sponsor, ".//party"))[1]  #When multiple, use first sponsor's party
       s.state <- xml2::xml_text(xml2::xml_find_first(sponsor, ".//state"))
 
       #Co-sponsors
@@ -136,6 +136,7 @@ incidence.from.congress <- function(session = NULL, types = NULL, areas = "all",
   } #End type loop
 
   #Prep sponsorship data and codebooks, remove raw data from memory
+  dat <- unique(dat)  #Remove duplicate rows, in rare cases when a sponsor or co-sponsor was listed twice
   if (!nonvoting) {dat <- dat[which(dat$state!="AS" & dat$state!="DC" & dat$state!="GU" & dat$state!="MP" & dat$state!="PR" & dat$state!="VI"),]}
   if (weighted) {sponsorship <- dat[c("name", "bill", "weight")]} else {sponsorship <- dat[c("name", "bill")]}
   legislator <- unique(dat[c("id", "name", "last", "party", "state")])

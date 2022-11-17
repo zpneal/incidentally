@@ -74,5 +74,7 @@ G <- incidence.from.congress(session = 115, types = c("hr", "hres"), format = "i
 \references{
 
 
-{Neal, Z. P. 2022. incidentally: An R package to generate incidence matrices and bipartite graphs. \emph{OSF Preprints} \doi{10.31219/osf.io/ectms}}
+Tutorial: {Neal, Z. P. 2022. Constructing legislative networks in R using incidentally and backbone. \emph{Connections, 42}. \doi{10.2478/connections-2019.026}}
+
+Package: {Neal, Z. P. 2022. incidentally: An R package to generate incidence matrices and bipartite graphs. \emph{OSF Preprints} \doi{10.31219/osf.io/ectms}}
 }

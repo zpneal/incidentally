@@ -5,6 +5,7 @@ output: html_document
 
 ## incidentally 1.0.2
 
+* added reference to congress bill co-sponsorship network tutorial (Neal, 2022)
 * `incidence.from.congress()` includes bill attributes indicating the number of (co-)sponsors from each party
 
 ## incidentally 1.0.1

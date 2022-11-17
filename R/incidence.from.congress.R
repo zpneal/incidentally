@@ -43,7 +43,8 @@
 #'     include: bill ID, introduction date, title, policy area, status, sponsor's party, and number of co-sponsors from each party.
 #'
 #' @references
-#' @references {Neal, Z. P. 2022. incidentally: An R package to generate incidence matrices and bipartite graphs. *OSF Preprints* \doi{10.31219/osf.io/ectms}}
+#' @references Tutorial: {Neal, Z. P. 2022. Constructing legislative networks in R using incidentally and backbone. *Connections, 42*. \doi{10.2478/connections-2019.026}}
+#' @references Package: {Neal, Z. P. 2022. incidentally: An R package to generate incidence matrices and bipartite graphs. *OSF Preprints* \doi{10.31219/osf.io/ectms}}
 #'
 #' @export
 #'
@@ -155,7 +156,7 @@ incidence.from.congress <- function(session = NULL, types = NULL, areas = "all",
     message("=== Suggested manuscript text and citations ===")
     message(text)
     message("")
-    message("Neal, Z. P. (2022). incidentally: An R package to generate incidence matrices and bipartite graphs. OSF Preprints. https://doi.org/10.31219/osf.io/ectms")
+    message("Neal, Z. P. 2022. Constructing legislative networks in R using incidentally and backbone. Connections, 42. https://doi.org/10.2478/connections-2019.026")
   }
 
   #Construct incidence matrix and codebooks

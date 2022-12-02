@@ -64,7 +64,8 @@ incidence.from.congress <- function(session = NULL, types = NULL, areas = "all",
   areas <- tolower(areas)
 
   #Initialize data
-  dat <- data.frame(id = NULL, name = NULL, last = NULL, party = NULL, state = NULL, bill = NULL, introduced = NULL, title = NULL, area = NULL, status = NULL, sponsor.party = NULL, cosponsors.r = NULL, cosponsors.d = NULL, cosponsors.i = NULL, weight = NULL)
+  #dat <- data.frame(id = NULL, name = NULL, last = NULL, party = NULL, state = NULL, bill = NULL, introduced = NULL, title = NULL, area = NULL, status = NULL, sponsor.party = NULL, cosponsors.r = NULL, cosponsors.d = NULL, cosponsors.i = NULL, weight = NULL)
+  dat <- list()
 
   #Begin bill type loop
   for (type in types) {
@@ -126,9 +127,9 @@ incidence.from.congress <- function(session = NULL, types = NULL, areas = "all",
         Inum <- sum(cs.party!="R" & cs.party!="D")
       }
 
-      #Add to data
-      if (length(s.id)>0) {dat <- rbind(dat, data.frame(id = s.id, name = s.name, last = s.last, party = s.party, state = s.state, bill = number, introduced = introduced, title = title, area = area, sponsor.party = s.party, cosponsors.r = Rnum, cosponsors.d = Dnum, cosponsors.i = Inum, status = status, weight = 2))}
-      if (length(cs.id)>0) {dat <- rbind(dat, data.frame(id = cs.id, name = cs.name, last = cs.last, party = cs.party, state = cs.state, bill = number, introduced = introduced, title = title, area = area, sponsor.party = s.party, cosponsors.r = Rnum, cosponsors.d = Dnum, cosponsors.i = Inum, status = status, weight = 1))}
+      #Add to data, each bill sponsor and each bill co-sponsor set becomes a new row in a growing list
+      if (length(s.id)>0) {dat[[length(dat)+1]] <- data.frame(id = s.id, name = s.name, last = s.last, party = s.party, state = s.state, bill = number, introduced = introduced, title = title, area = area, sponsor.party = s.party, cosponsors.r = Rnum, cosponsors.d = Dnum, cosponsors.i = Inum, status = status, weight = 2)}
+      if (length(cs.id)>0) {dat[[length(dat)+1]] <- data.frame(id = cs.id, name = cs.name, last = cs.last, party = cs.party, state = cs.state, bill = number, introduced = introduced, title = title, area = area, sponsor.party = s.party, cosponsors.r = Rnum, cosponsors.d = Dnum, cosponsors.i = Inum, status = status, weight = 1)}
       }
 
       utils::setTxtProgressBar(pb, file)
@@ -136,7 +137,8 @@ incidence.from.congress <- function(session = NULL, types = NULL, areas = "all",
     close(pb)
   } #End type loop
 
-  #Prep sponsorship data and codebooks, remove raw data from memory
+  #Prep sponsorship data and codebooks
+  dat <- do.call(rbind,dat)  #Convert data stored as list into data frame
   dat <- unique(dat)  #Remove duplicate rows, in rare cases when a sponsor or co-sponsor was listed twice
   if (!nonvoting) {dat <- dat[which(dat$state!="AS" & dat$state!="DC" & dat$state!="GU" & dat$state!="MP" & dat$state!="PR" & dat$state!="VI"),]}
   if (weighted) {sponsorship <- dat[c("name", "bill", "weight")]} else {sponsorship <- dat[c("name", "bill")]}

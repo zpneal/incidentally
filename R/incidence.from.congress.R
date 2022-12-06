@@ -63,8 +63,7 @@ incidence.from.congress <- function(session = NULL, types = NULL, areas = "all",
   if (!(format %in% c("data", "igraph"))) {stop("format must be one of c(\"data\", \"igraph\")")}
   areas <- tolower(areas)
 
-  #Initialize data
-  #dat <- data.frame(id = NULL, name = NULL, last = NULL, party = NULL, state = NULL, bill = NULL, introduced = NULL, title = NULL, area = NULL, status = NULL, sponsor.party = NULL, cosponsors.r = NULL, cosponsors.d = NULL, cosponsors.i = NULL, weight = NULL)
+  #Initialize data as an empty list, to which rows will be appended
   dat <- list()
 
   #Begin bill type loop

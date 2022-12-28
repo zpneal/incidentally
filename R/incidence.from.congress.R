@@ -87,9 +87,13 @@ incidence.from.congress <- function(session = NULL, types = NULL, areas = "all",
       if (areas=="all" | area %in% areas) {
 
       #Bill characteristics
-        #XML tags changed in 117th session
-        if (session < 117) {number <- paste0(xml2::xml_text(xml2::xml_find_first(bill, ".//billType")),xml2::xml_text(xml2::xml_find_first(bill, ".//billNumber")))}
-        if (session >= 117) {number <- paste0(xml2::xml_text(xml2::xml_find_first(bill, ".//type")),xml2::xml_text(xml2::xml_find_first(bill, ".//number")))}
+      
+        #Old XML tags (https://github.com/usgpo/bill-status/issues/200)
+        number <- paste0(xml2::xml_text(xml2::xml_find_first(bill, ".//billType")),xml2::xml_text(xml2::xml_find_first(bill, ".//billNumber")))
+        
+        #If it doesn't work, use new XML tags (https://github.com/usgpo/bill-status/issues/200)
+        if (number == "NANA") {number <- paste0(xml2::xml_text(xml2::xml_find_first(bill, ".//type")),xml2::xml_text(xml2::xml_find_first(bill, ".//number")))}
+
       introduced <- xml2::xml_text(xml2::xml_find_first(bill, ".//introducedDate"))
       title <- xml2::xml_text(xml2::xml_find_first(bill, ".//title"))
       status <- "Introduced"

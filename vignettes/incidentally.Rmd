@@ -1,6 +1,6 @@
 ---
 title: "Introduction to Incidentally"
-author: "Zachary Neal"
+author: "Zachary Neal, Michigan State University, zpneal@msu.edu"
 output: 
   rmarkdown::html_vignette:
   toc: true

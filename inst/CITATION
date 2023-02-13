@@ -6,7 +6,7 @@ rref <- c(
     journal  = "OSF Preprints",
     year     = "2022",
     doi      = "10.31219/osf.io/ectms",
-    note = "For the incidentally package:",
+    note = "For the incidentally package",
     textVersion = paste("Neal, Z. P. (2022). incidentally: An R package to generate incidence matrices and bipartite graphs. OSF Preprints. https://doi.org/10.31219/osf.io/ectms")
     ),
 
@@ -19,7 +19,7 @@ rref <- c(
     volume = "42",
     pages = "1-9",
     doi      = "10.2478/connections-2019.026",
-    note = "For the incidence.from.congress() function:",
+    note = "For the incidence.from.congress() function",
     textVersion = paste("Neal, Z. P. (2022). Constructing legislative networks in R using incidentally and backbone. Connections, 42. htps://doi.org/10.2478/connections-2019.026")
     )
 

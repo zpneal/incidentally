@@ -7,6 +7,7 @@ output: html_document
 
 * added reference to congress bill co-sponsorship network tutorial (Neal, 2022)
 * `incidence.from.congress()` includes bill attributes indicating the number of (co-)sponsors from each party
+* fixed minor bugs introduced by `igraph 1.4.0`
 
 ## incidentally 1.0.1
 

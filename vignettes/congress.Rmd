@@ -20,7 +20,7 @@ knitr::opts_knit$set(global.par = TRUE)
 
 ```{r, echo = FALSE, message = FALSE}
 library(igraph)
-oldpar <- par(mar = c(0, 0, 1, 0))
+oldmar <- par()$mar
 par(mar = c(0, 0, 1, 0))
 ```
 
@@ -148,8 +148,9 @@ plot(signed, vertex.label = NA, vertex.color = V(signed)$color, vertex.frame.col
 This network still shows the partisan structure of the US Senate, but illustrates that there are positive ties within-party and negative ties between-party.
 
 [back to Table of Contents](#toc)
-```{r, echo = FALSE, message = FALSE}
-par(oldpar) #Restore old parameters
+
+```{r, echo = FALSE}
+par(mar = oldmar)
 ```
 
 # References

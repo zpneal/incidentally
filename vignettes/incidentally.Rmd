@@ -20,7 +20,7 @@ knitr::opts_knit$set(global.par = TRUE)
 
 ```{r, echo = FALSE, message = FALSE}
 library(igraph)
-oldpar <- par(mar = c(0, 0, 1, 0))
+oldmar <- par()$mar
 par(mar = c(0, 0, 1, 0))
 ```
 
@@ -263,8 +263,8 @@ all(colSums(I)==colSums(blocked)) #Column marginals preserved
 
 [back to Table of Contents](#toc)
 
-```{r, echo = FALSE, message = FALSE}
-par(oldpar) #Restore old parameters
+```{r, echo = FALSE}
+par(mar = oldmar)
 ```
 
 # References

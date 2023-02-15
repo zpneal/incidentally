@@ -66,5 +66,5 @@ I <- incidence.from.adjacency(G, k = 1000, p = .95,
                               model = "team", narrative = TRUE)
 }
 \references{
-{Neal, Z. P. 2022. The duality of networks and groups: Models to generate two-mode networks from one-mode networks. \emph{Network Science}.}
+{Neal, Z. P. 2023. The duality of networks and groups: Models to generate two-mode networks from one-mode networks. \emph{Network Science}.}
 }

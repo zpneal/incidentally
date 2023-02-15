@@ -36,7 +36,7 @@
 #'     distribution that describes niche sizes. The default is a two-dimensional blau space, with organization niche
 #'     sizes that are strongly positively skewed (i.e., many specialist organizations, few generalists).
 #'
-#' @references {Neal, Z. P. 2022. The duality of networks and groups: Models to generate two-mode networks from one-mode networks. *Network Science*.}
+#' @references {Neal, Z. P. 2023. The duality of networks and groups: Models to generate two-mode networks from one-mode networks. *Network Science*.}
 #'
 #' @export
 #'

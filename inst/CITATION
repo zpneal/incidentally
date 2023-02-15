@@ -21,6 +21,17 @@ rref <- c(
     doi      = "10.2478/connections-2019.026",
     note = "For the incidence.from.congress() function",
     textVersion = paste("Neal, Z. P. (2022). Constructing legislative networks in R using incidentally and backbone. Connections, 42. htps://doi.org/10.2478/connections-2019.026")
+    ),
+
+  bibentry(
+    bibtype = "Article",
+    title = "The duality of networks and groups: Models to generate two-mode networks from one-mode networks",
+    author = person("Zachary P Neal", email = "zpneal@msu.edu"),
+    journal  = "Network Science",
+    year     = "2023",
+    note = "For the incidence.from.adjacency() function",
+    textVersion = paste("Neal, Z. P. (2023). The duality of networks and groups: Models to generate two-mode networks from one-mode networks. Network Science.")
     )
+
 
 )

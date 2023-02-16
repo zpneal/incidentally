@@ -1,6 +1,6 @@
 ---
 title: "Working with US Congress bill sponsorship data"
-author: "Zachary Neal"
+author: "Zachary Neal, Michigan State University, zpneal@msu.edu"
 output: 
   rmarkdown::html_vignette:
   toc: true
@@ -20,7 +20,7 @@ knitr::opts_knit$set(global.par = TRUE)
 
 ```{r, echo = FALSE, message = FALSE}
 library(igraph)
-oldpar <- par(mar = c(0, 0, 1, 0))
+oldmar <- par()$mar
 par(mar = c(0, 0, 1, 0))
 ```
 
@@ -35,16 +35,18 @@ par(mar = c(0, 0, 1, 0))
 2. [Getting the data](#data)
 3. [Constructing a network](#network)
 
-# Introduction {#introduction}
+# Introduction [@neal2022legislative] {#introduction}
 
 ## Welcome {#welcome}
-This vignette describes how to use the `incidentally` package to obtain data on bill sponsorship in US Congress, and how to use the `backbone` package to construct political networks from these data. For a more general introduction to the `incidentally` package, see [the main vignette](incidentally.html).
+This vignette briefly illustrates how to use the `incidentally` package to obtain data on bill sponsorship in US Congress, and how to use the `backbone` package to construct political networks from these data. For a more detailed tutorial, please see:
 
-The `incidentally` package can be cited as:
+**Neal, Z. P. (2022). Constructing legislative networks in R using incidentally and backbone. *Connections*. [https://doi.org/10.2478/connections-2019.026](https://doi.org/10.2478/connections-2019.026)**
+
+For a more general introduction to the `incidentally` package, see [the main vignette](incidentally.html). The `incidentally` package can be cited as:
 
 **Neal, Z. P. (2022). incidentally: An R package to generate incidence matrices and bipartite graphs. *OSF Preprints*. [https://doi.org/10.31219/osf.io/ectms](https://doi.org/10.31219/osf.io/ectms)**
 
-If you have questions about the incidentally package or would like an incidentally hex sticker, please contact the maintainer Zachary Neal by email ([zpneal\@msu.edu](mailto:zpneal@msu.edu)) or via Twitter ([\@zpneal](https://twitter.com/zpneal)). Please report bugs in the backbone package at [https://github.com/zpneal/incidentally/issues](https://github.com/zpneal/backbone/issues).
+If you have questions about the incidentally package or would like an incidentally hex sticker, please contact the maintainer Zachary Neal by email ([zpneal\@msu.edu](mailto:zpneal@msu.edu)) or via Mastodon ([\@zpneal@mastodon.social](https://mastodon.social/@zpneal)). Please report bugs in the backbone package at [https://github.com/zpneal/incidentally/issues](https://github.com/zpneal/backbone/issues).
 
 ## The US legislative process {#process}
 In the US Congress, bills may become laws through a multi-step legislative process:
@@ -146,8 +148,9 @@ plot(signed, vertex.label = NA, vertex.color = V(signed)$color, vertex.frame.col
 This network still shows the partisan structure of the US Senate, but illustrates that there are positive ties within-party and negative ties between-party.
 
 [back to Table of Contents](#toc)
-```{r, echo = FALSE, message = FALSE}
-par(oldpar) #Restore old parameters
+
+```{r, echo = FALSE}
+par(mar = oldmar)
 ```
 
 # References

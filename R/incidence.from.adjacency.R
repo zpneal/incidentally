@@ -36,8 +36,7 @@
 #'     distribution that describes niche sizes. The default is a two-dimensional blau space, with organization niche
 #'     sizes that are strongly positively skewed (i.e., many specialist organizations, few generalists).
 #'
-#' @references {Neal, Z. P. 2022. The Duality of Networks and Foci: Generative Models of Two-Mode Networks from One-Mode Networks. *arXiv:2204.13670* \[cs.SI\]. \doi{10.48550/arXiv.2204.13670}}
-#' @references {Neal, Z. P. 2022. incidentally: An R package to generate incidence matrices and bipartite graphs. *OSF Preprints* \doi{10.31219/osf.io/ectms}}
+#' @references {Neal, Z. P. 2023. The duality of networks and groups: Models to generate two-mode networks from one-mode networks. *Network Science*.}
 #'
 #' @export
 #'

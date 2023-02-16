@@ -1,11 +1,37 @@
-citHeader("To cite incidentally in publications use:")
+rref <- c(
+  bibentry(
+    bibtype = "Article",
+    title = "incidentally: An R package to generate incidence matrices and bipartite graphs",
+    author = person("Zachary P Neal", email = "zpneal@msu.edu"),
+    journal  = "OSF Preprints",
+    year     = "2022",
+    doi      = "10.31219/osf.io/ectms",
+    note = "For the incidentally package",
+    textVersion = paste("Neal, Z. P. (2022). incidentally: An R package to generate incidence matrices and bipartite graphs. OSF Preprints. https://doi.org/10.31219/osf.io/ectms")
+    ),
 
-citEntry(
-  entry    = "Article",
-  title    = "incidentally: An R package to generate incidence matrices and bipartite graphs",
-  author   = "Zachary P. Neal",
-  journal  = "OSF Preprints",
-  year     = "2022",
-  doi      = "10.31219/osf.io/ectms",
-  textVersion = paste("Neal, Z. P. (2022). incidentally: An R package to generate incidence matrices and bipartite graphs. OSF Preprints. https://doi.org/10.31219/osf.io/ectms")
+  bibentry(
+    bibtype = "Article",
+    title = "Constructing legislative networks in R using incidentally and backbone",
+    author = person("Zachary P Neal", email = "zpneal@msu.edu"),
+    journal  = "Connections",
+    year     = "2022",
+    volume = "42",
+    pages = "1-9",
+    doi      = "10.2478/connections-2019.026",
+    note = "For the incidence.from.congress() function",
+    textVersion = paste("Neal, Z. P. (2022). Constructing legislative networks in R using incidentally and backbone. Connections, 42. htps://doi.org/10.2478/connections-2019.026")
+    ),
+
+  bibentry(
+    bibtype = "Article",
+    title = "The duality of networks and groups: Models to generate two-mode networks from one-mode networks",
+    author = person("Zachary P Neal", email = "zpneal@msu.edu"),
+    journal  = "Network Science",
+    year     = "2023",
+    note = "For the incidence.from.adjacency() function",
+    textVersion = paste("Neal, Z. P. (2023). The duality of networks and groups: Models to generate two-mode networks from one-mode networks. Network Science.")
+    )
+
+
 )

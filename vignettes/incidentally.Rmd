@@ -1,6 +1,6 @@
 ---
 title: "Introduction to Incidentally"
-author: "Zachary Neal"
+author: "Zachary Neal, Michigan State University, zpneal@msu.edu"
 output: 
   rmarkdown::html_vignette:
   toc: true
@@ -20,7 +20,7 @@ knitr::opts_knit$set(global.par = TRUE)
 
 ```{r, echo = FALSE, message = FALSE}
 library(igraph)
-oldpar <- par(mar = c(0, 0, 1, 0))
+oldmar <- par()$mar
 par(mar = c(0, 0, 1, 0))
 ```
 
@@ -54,7 +54,7 @@ The `incidentally` package can be cited as:
 
 **Neal, Z. P. (2022). incidentally: An R package to generate incidence matrices and bipartite graphs. *OSF Preprints*. [https://doi.org/10.31219/osf.io/ectms](https://doi.org/10.31219/osf.io/ectms)**
 
-For additional resources on the incidentally package, please see [https://www.rbackbone.net/](https://www.zacharyneal.com/backbone). If you have questions about the incidentally package or would like an incidentally hex sticker, please contact the maintainer Zachary Neal by email ([zpneal\@msu.edu](mailto:zpneal@msu.edu)) or via Twitter ([\@zpneal](https://twitter.com/zpneal)). Please report bugs in the backbone package at [https://github.com/zpneal/incidentally/issues](https://github.com/zpneal/backbone/issues).
+For additional resources on the incidentally package, please see [https://www.rbackbone.net/](https://www.zacharyneal.com/backbone). If you have questions about the incidentally package or would like an incidentally hex sticker, please contact the maintainer Zachary Neal by email ([zpneal\@msu.edu](mailto:zpneal@msu.edu)) or via Mastodon ([\@zpneal@mastodon.social](https://mastodon.social/@zpneal)). Please report bugs in the backbone package at [https://github.com/zpneal/incidentally/issues](https://github.com/zpneal/backbone/issues).
 
 ## What are incidence matrices? {#what}
 An *incidence* matrix is a binary $r \times c$ matrix **I** that records associations between $r$ objects represented by rows and $c$ objects represented by columns. In this matrix, $I_{ij} = 1$ if the i<sup>th</sup> row object is associated with the j<sup>th</sup> column object, and otherwise $I_{ij} = 0$. An incidence matrix can be used to represent a *bipartite*, *two-mode*, or *affiliation* network/graph, in which the rows represent one type of node, and the columns represent another type of node (e.g., people who author papers, species living in habitats) [@latapy2008]. An incidence matrix can also represent a *hypergraph*, in which each column represents a hyperedge and identifies the nodes that it connects.
@@ -263,8 +263,8 @@ all(colSums(I)==colSums(blocked)) #Column marginals preserved
 
 [back to Table of Contents](#toc)
 
-```{r, echo = FALSE, message = FALSE}
-par(oldpar) #Restore old parameters
+```{r, echo = FALSE}
+par(mar = oldmar)
 ```
 
 # References

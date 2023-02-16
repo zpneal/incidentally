@@ -23,7 +23,7 @@
 #'    chamber for further discussion, revision, and possibly a vote. If it passed both chambers, it is sent to the President. If
 #'    the President signs the bill, it becomes law.
 #'
-#' In the House of Representatives, legislators can introduce four types of bills: a House Bill (hb), a House Joint Resolution (hjres),
+#' In the House of Representatives, legislators can introduce four types of bills: a House Bill (hr), a House Joint Resolution (hjres),
 #'    a House Concurrent Resolution (hconres), and a House Simple Resolution (hres). Similarly, in the Senate, legislators can introduce
 #'    four types of bills: a Senate Bill (s), a Senate Joint Resolution (sjres), a Senate Concurrent Resolution (sconres), and a Senate
 #'    Simple Resolution (sres). In both chambers, concurrent and simple resolutions are used for minor procedural matters and do not
@@ -31,35 +31,40 @@
 #'
 #' Each bill is assigned a policy area by the Congressional Research Service. By default, bills from all policy areas are included,
 #'    however the `areas` parameter can be used to include only bills addressing certain policy areas. The `areas` takes a vector of
-#'    strings listing the desired policy areas (e.g., `areas = c("Congress", "Animals")`). Policy area names are **case-sensitive**. A
-#'    complete list of policy areas and brief descriptions is available at \href{https://www.congress.gov/help/field-values/policy-area}{https://www.congress.gov/help/field-values/policy-area}.
+#'    strings listing the desired policy areas (e.g., `areas = c("Congress", "Animals")`). A complete list of policy areas and brief
+#'    descriptions is available at \href{https://www.congress.gov/help/field-values/policy-area}{https://www.congress.gov/help/field-values/policy-area}.
 #'
 #' @return
 #' If `format = "data"`, a list containing an incidence matrix, a dataframe of legislator characteristics, and a dataframe of bill characteristics.
 #'
 #' If `format = "igraph"`, a bipartite igraph object composed of legislator vertices and bill vertices, each with vertex attributes.
 #'
+#' For both formats, legislator characteristics include: BioGuide ID, full name, last name, party affiliation, and state. Bill characteristics
+#'     include: bill ID, introduction date, title, policy area, status, sponsor's party, and number of co-sponsors from each party.
+#'
 #' @references
-#' @references {Neal, Z. P. 2022. incidentally: An R package to generate incidence matrices and bipartite graphs. *OSF Preprints* \doi{10.31219/osf.io/ectms}}
+#' @references Tutorial: {Neal, Z. P. 2022. Constructing legislative networks in R using incidentally and backbone. *Connections, 42*. \doi{10.2478/connections-2019.026}}
+#' @references Package: {Neal, Z. P. 2022. incidentally: An R package to generate incidence matrices and bipartite graphs. *OSF Preprints* \doi{10.31219/osf.io/ectms}}
 #'
 #' @export
 #'
 #' @examples
 #' \dontrun{
 #' D <- incidence.from.congress(session = 116, types = "s", format = "data")
-#' D <- incidence.from.congress(session = 116, types = "s", format = "data", areas = "Animals")
+#' D <- incidence.from.congress(session = 116, types = "s", format = "data", areas = "animals")
 #' G <- incidence.from.congress(session = 115, types = c("hr", "hres"), format = "igraph")
 #' }
-incidence.from.congress <- function(session = NULL, types = NULL, areas = "All", nonvoting = FALSE, weighted = FALSE, format = "data", narrative = FALSE){
+incidence.from.congress <- function(session = NULL, types = NULL, areas = "all", nonvoting = FALSE, weighted = FALSE, format = "data", narrative = FALSE){
 
   #Parameter check
   if (!is.numeric(session)) {stop("session must be an integer")}
   if (session%%1!=0) {stop("session must be an integer")}
   if (!(all(types %in% c("s", "sres", "sjres", "sconres"))) & !(all(types %in% c("hr", "hres", "hjres", "hconres")))) {stop("types must be a combination of c(\"s\", \"sres\", \"sjres\", \"sconres\") OR a combination of c(\"hr\", \"hres\", \"hjres\", \"hconres\")")}
   if (!(format %in% c("data", "igraph"))) {stop("format must be one of c(\"data\", \"igraph\")")}
+  areas <- tolower(areas)
 
-  #Initialize data
-  dat <- data.frame(id = NULL, name = NULL, last = NULL, party = NULL, state = NULL, bill = NULL, introduced = NULL, title = NULL, area = NULL, status = NULL, weight = NULL)
+  #Initialize data as an empty list, to which rows will be appended
+  dat <- list()
 
   #Begin bill type loop
   for (type in types) {
@@ -78,11 +83,17 @@ incidence.from.congress <- function(session = NULL, types = NULL, areas = "All",
       bill <- xml2::read_xml(unz(temp, files[file]))
 
       #Check area, add bill if relevant
-      area <- xml2::xml_text(xml2::xml_find_first(bill, ".//policyArea"))
-      if (areas=="All" | area %in% areas) {
+      area <- tolower(xml2::xml_text(xml2::xml_find_first(bill, ".//policyArea")))
+      if (areas=="all" | area %in% areas) {
 
       #Bill characteristics
-      number <- paste0(xml2::xml_text(xml2::xml_find_first(bill, ".//billType")),xml2::xml_text(xml2::xml_find_first(bill, ".//billNumber")))
+      
+        #Old XML tags (https://github.com/usgpo/bill-status/issues/200)
+        number <- paste0(xml2::xml_text(xml2::xml_find_first(bill, ".//billType")),xml2::xml_text(xml2::xml_find_first(bill, ".//billNumber")))
+        
+        #If it doesn't work, use new XML tags (https://github.com/usgpo/bill-status/issues/200)
+        if (number == "NANA") {number <- paste0(xml2::xml_text(xml2::xml_find_first(bill, ".//type")),xml2::xml_text(xml2::xml_find_first(bill, ".//number")))}
+
       introduced <- xml2::xml_text(xml2::xml_find_first(bill, ".//introducedDate"))
       title <- xml2::xml_text(xml2::xml_find_first(bill, ".//title"))
       status <- "Introduced"
@@ -98,7 +109,7 @@ incidence.from.congress <- function(session = NULL, types = NULL, areas = "All",
       s.name <- xml2::xml_text(xml2::xml_find_first(sponsor, ".//fullName"))
       s.last <- xml2::xml_text(xml2::xml_find_first(sponsor, ".//lastName"))
       s.last <- tools::toTitleCase(tolower(s.last))  #Correcting capitalization
-      s.party <- xml2::xml_text(xml2::xml_find_first(sponsor, ".//party"))
+      s.party <- xml2::xml_text(xml2::xml_find_first(sponsor, ".//party"))[1]  #When multiple, use first sponsor's party
       s.state <- xml2::xml_text(xml2::xml_find_first(sponsor, ".//state"))
 
       #Co-sponsors
@@ -111,9 +122,19 @@ incidence.from.congress <- function(session = NULL, types = NULL, areas = "All",
       cs.party <- xml2::xml_text(xml2::xml_find_first(cosponsor, ".//party"))
       cs.state <- xml2::xml_text(xml2::xml_find_first(cosponsor, ".//state"))
 
-      #Add to data
-      if (length(s.id)>0) {dat <- rbind(dat, data.frame(id = s.id, name = s.name, last = s.last, party = s.party, state = s.state, bill = number, introduced = introduced, title = title, area = area, sponsor.party = s.party, status = status, weight = 2))}
-      if (length(cs.id)>0) {dat <- rbind(dat, data.frame(id = cs.id, name = cs.name, last = cs.last, party = cs.party, state = cs.state, bill = number, introduced = introduced, title = title, area = area, sponsor.party = s.party, status = status, weight = 1))}
+      #Count cosponsors' parties
+      Rnum <- 0
+      Dnum <- 0
+      Inum <- 0
+      if (length(cs.party)>0) {
+        Rnum <- sum(cs.party=="R")
+        Dnum <- sum(cs.party=="D")
+        Inum <- sum(cs.party!="R" & cs.party!="D")
+      }
+
+      #Add to data, each bill sponsor and each bill co-sponsor set becomes a new row in a growing list
+      if (length(s.id)>0) {dat[[length(dat)+1]] <- data.frame(id = s.id, name = s.name, last = s.last, party = s.party, state = s.state, bill = number, introduced = introduced, title = title, area = area, sponsor.party = s.party, cosponsors.r = Rnum, cosponsors.d = Dnum, cosponsors.i = Inum, status = status, weight = 2)}
+      if (length(cs.id)>0) {dat[[length(dat)+1]] <- data.frame(id = cs.id, name = cs.name, last = cs.last, party = cs.party, state = cs.state, bill = number, introduced = introduced, title = title, area = area, sponsor.party = s.party, cosponsors.r = Rnum, cosponsors.d = Dnum, cosponsors.i = Inum, status = status, weight = 1)}
       }
 
       utils::setTxtProgressBar(pb, file)
@@ -122,25 +143,27 @@ incidence.from.congress <- function(session = NULL, types = NULL, areas = "All",
   } #End type loop
 
   #Prep sponsorship data and codebooks
+  dat <- do.call(rbind,dat)  #Convert data stored as list into data frame
+  dat <- unique(dat)  #Remove duplicate rows, in rare cases when a sponsor or co-sponsor was listed twice
   if (!nonvoting) {dat <- dat[which(dat$state!="AS" & dat$state!="DC" & dat$state!="GU" & dat$state!="MP" & dat$state!="PR" & dat$state!="VI"),]}
   if (weighted) {sponsorship <- dat[c("name", "bill", "weight")]} else {sponsorship <- dat[c("name", "bill")]}
   legislator <- unique(dat[c("id", "name", "last", "party", "state")])
-  bills <- unique(dat[c("bill", "introduced", "title", "area", "sponsor.party", "status")])
+  bills <- unique(dat[c("bill", "introduced", "title", "area", "sponsor.party", "cosponsors.r", "cosponsors.d", "cosponsors.i", "status")])
 
   #Display narrative if requested
   if (narrative) {
     version <- utils::packageVersion("incidentally")
     if (all(types %in% c("s", "sres", "sjres", "sconres"))) {who <- "Senators'"}
     if (all(types %in% c("hr", "hres", "hjres", "hconres"))) {who <- "Representatives'"}
-    if (format == "igraph" & areas == "All") {text <- paste0("We used the incidentally package for R (v", version, "; Neal, 2022) to generate a bipartite graph recording ", who, " bill sponsorships during the ", session, " session of the US Congress.")}
-    if (format == "igraph" & areas != "All") {text <- paste0("We used the incidentally package for R (v", version, "; Neal, 2022) to generate a bipartite graph recording ", who, " bill sponsorships during the ", session, " session of the US Congress. We restricted our focus to bills in the following policy areas: ", paste(areas, collapse=', '), ".")}
-    if (format == "data" & areas == "All") {text <- paste0("We used the incidentally package for R (v", version, "; Neal, 2022) to generate an incidence matrix recording ", who, " bill sponsorships during the ", session, " session of the US Congress.")}
-    if (format == "data" & areas != "All") {text <- paste0("We used the incidentally package for R (v", version, "; Neal, 2022) to generate an incidence matrix recording ", who, " bill sponsorships during the ", session, " session of the US Congress. We restricted our focus to bills in the following policy areas: ", paste(areas, collapse=', '), ".")}
+    if (format == "igraph" & areas == "all") {text <- paste0("We used the incidentally package for R (v", version, "; Neal, 2022) to generate a bipartite graph recording ", who, " bill sponsorships during the ", session, " session of the US Congress.")}
+    if (format == "igraph" & areas != "all") {text <- paste0("We used the incidentally package for R (v", version, "; Neal, 2022) to generate a bipartite graph recording ", who, " bill sponsorships during the ", session, " session of the US Congress. We restricted our focus to bills in the following policy areas: ", paste(areas, collapse=', '), ".")}
+    if (format == "data" & areas == "all") {text <- paste0("We used the incidentally package for R (v", version, "; Neal, 2022) to generate an incidence matrix recording ", who, " bill sponsorships during the ", session, " session of the US Congress.")}
+    if (format == "data" & areas != "all") {text <- paste0("We used the incidentally package for R (v", version, "; Neal, 2022) to generate an incidence matrix recording ", who, " bill sponsorships during the ", session, " session of the US Congress. We restricted our focus to bills in the following policy areas: ", paste(areas, collapse=', '), ".")}
     message("")
     message("=== Suggested manuscript text and citations ===")
     message(text)
     message("")
-    message("Neal, Z. P. (2022). incidentally: An R package to generate incidence matrices and bipartite graphs. OSF Preprints. https://doi.org/10.31219/osf.io/ectms")
+    message("Neal, Z. P. 2022. Constructing legislative networks in R using incidentally and backbone. Connections, 42. https://doi.org/10.2478/connections-2019.026")
   }
 
   #Construct incidence matrix and codebooks
@@ -161,7 +184,10 @@ incidence.from.congress <- function(session = NULL, types = NULL, areas = "All",
     suppressWarnings(igraph::V(G)[which(igraph::V(G)$type==T)]$introduced <- bills$introduced)
     suppressWarnings(igraph::V(G)[which(igraph::V(G)$type==T)]$title <- bills$title)
     suppressWarnings(igraph::V(G)[which(igraph::V(G)$type==T)]$area <- bills$area)
-    suppressWarnings(igraph::V(G)[which(igraph::V(G)$type==T)]$party <- bills$sponsor.party)
+    suppressWarnings(igraph::V(G)[which(igraph::V(G)$type==T)]$sponsor.party <- bills$sponsor.party)
+    suppressWarnings(igraph::V(G)[which(igraph::V(G)$type==T)]$cosponsors.r <- bills$cosponsors.r)
+    suppressWarnings(igraph::V(G)[which(igraph::V(G)$type==T)]$cosponsors.d <- bills$cosponsors.d)
+    suppressWarnings(igraph::V(G)[which(igraph::V(G)$type==T)]$cosponsors.i <- bills$cosponsors.i)
     suppressWarnings(igraph::V(G)[which(igraph::V(G)$type==T)]$status <- bills$status)
     return(G)
   }

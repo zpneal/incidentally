@@ -7,7 +7,7 @@
 incidence.from.congress(
   session = NULL,
   types = NULL,
-  areas = "All",
+  areas = "all",
   nonvoting = FALSE,
   weighted = FALSE,
   format = "data",
@@ -33,6 +33,9 @@ incidence.from.congress(
 If \code{format = "data"}, a list containing an incidence matrix, a dataframe of legislator characteristics, and a dataframe of bill characteristics.
 
 If \code{format = "igraph"}, a bipartite igraph object composed of legislator vertices and bill vertices, each with vertex attributes.
+
+For both formats, legislator characteristics include: BioGuide ID, full name, last name, party affiliation, and state. Bill characteristics
+include: bill ID, introduction date, title, policy area, status, sponsor's party, and number of co-sponsors from each party.
 }
 \description{
 \code{incidence.from.congress()} uses data from \href{https://www.congress.gov/}{https://www.congress.gov/} to construct an incidence
@@ -50,7 +53,7 @@ The bill is discussed, revised, and possibly voted on in the chamber. If it pass
 chamber for further discussion, revision, and possibly a vote. If it passed both chambers, it is sent to the President. If
 the President signs the bill, it becomes law.
 
-In the House of Representatives, legislators can introduce four types of bills: a House Bill (hb), a House Joint Resolution (hjres),
+In the House of Representatives, legislators can introduce four types of bills: a House Bill (hr), a House Joint Resolution (hjres),
 a House Concurrent Resolution (hconres), and a House Simple Resolution (hres). Similarly, in the Senate, legislators can introduce
 four types of bills: a Senate Bill (s), a Senate Joint Resolution (sjres), a Senate Concurrent Resolution (sconres), and a Senate
 Simple Resolution (sres). In both chambers, concurrent and simple resolutions are used for minor procedural matters and do not
@@ -58,18 +61,20 @@ have the force of law. Only bills and joint resolutions require the President's 
 
 Each bill is assigned a policy area by the Congressional Research Service. By default, bills from all policy areas are included,
 however the \code{areas} parameter can be used to include only bills addressing certain policy areas. The \code{areas} takes a vector of
-strings listing the desired policy areas (e.g., \code{areas = c("Congress", "Animals")}). Policy area names are \strong{case-sensitive}. A
-complete list of policy areas and brief descriptions is available at \href{https://www.congress.gov/help/field-values/policy-area}{https://www.congress.gov/help/field-values/policy-area}.
+strings listing the desired policy areas (e.g., \code{areas = c("Congress", "Animals")}). A complete list of policy areas and brief
+descriptions is available at \href{https://www.congress.gov/help/field-values/policy-area}{https://www.congress.gov/help/field-values/policy-area}.
 }
 \examples{
 \dontrun{
 D <- incidence.from.congress(session = 116, types = "s", format = "data")
-D <- incidence.from.congress(session = 116, types = "s", format = "data", areas = "Animals")
+D <- incidence.from.congress(session = 116, types = "s", format = "data", areas = "animals")
 G <- incidence.from.congress(session = 115, types = c("hr", "hres"), format = "igraph")
 }
 }
 \references{
 
 
-{Neal, Z. P. 2022. incidentally: An R package to generate incidence matrices and bipartite graphs. \emph{OSF Preprints} \doi{10.31219/osf.io/ectms}}
+Tutorial: {Neal, Z. P. 2022. Constructing legislative networks in R using incidentally and backbone. \emph{Connections, 42}. \doi{10.2478/connections-2019.026}}
+
+Package: {Neal, Z. P. 2022. incidentally: An R package to generate incidence matrices and bipartite graphs. \emph{OSF Preprints} \doi{10.31219/osf.io/ectms}}
 }

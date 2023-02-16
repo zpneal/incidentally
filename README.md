@@ -16,6 +16,14 @@ The `incidentally` package can be cited as:
 
 **Neal, Z. P. (2022). incidentally: An R package for generating incidence matrices and bipartite graphs. *OSF Preprints*. [https://doi.org/10.31219/osf.io/ectms](https://doi.org/10.31219/osf.io/ectms)**
 
+Two extended functions in the `incidentally` package have their own citations. The `incidence.from.congress()` function can be cited as:
+
+**Neal, Z. P. (2022). Constructing legislative networks in R using incidentally and backbone. *Connections, 42*, 1-9. [https://doi.org/10.2478/connections-2019.026](https://doi.org/10.2478/connections-2019.026)**
+
+The `incidence.from.adjacency()` function can be cited as:
+
+**Neal, Z. P. (In press). The duality of networks and groups: Models to generate two-mode networks from one-mode networks. *Network Science*.**
+
 ## Installation
 The /release branch contains the current CRAN release of the incidentally package. You can install it from [CRAN](https://CRAN.R-project.org) with:
 ``` r

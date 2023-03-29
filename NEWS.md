@@ -3,6 +3,11 @@ title: "NEWS"
 output: html_document
 ---
 
+## incidentally 1.0.3
+
+* fixed bug in `incidence.from.congress()` when specifying policy areas, h/t Kevin Reuning 
+* fixed links in vignettes, h/t Kevin Reuning 
+
 ## incidentally 1.0.2
 
 * added reference to Neal (2022) for incidence.from.congress()

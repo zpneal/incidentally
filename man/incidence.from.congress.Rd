@@ -19,7 +19,7 @@ incidence.from.congress(
 
 \item{types}{vector: types of bills to include. May be any combination of c("s", "sres", "sjres", "sconres") OR any combination of c("hr", "hres", "hjres", "hconres").}
 
-\item{areas}{string: policy areas of bills to include (see details)}
+\item{areas}{vector: policy areas of bills to include (see details)}
 
 \item{nonvoting}{boolean: should non-voting members be included}
 
@@ -67,7 +67,8 @@ descriptions is available at \href{https://www.congress.gov/help/field-values/po
 \examples{
 \dontrun{
 D <- incidence.from.congress(session = 116, types = "s", format = "data")
-D <- incidence.from.congress(session = 116, types = "s", format = "data", areas = "animals")
+D <- incidence.from.congress(session = 116, types = "s", format = "data",
+     areas = c("animals", "health"))
 G <- incidence.from.congress(session = 115, types = c("hr", "hres"), format = "igraph")
 }
 }

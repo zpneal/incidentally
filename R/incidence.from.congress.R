@@ -5,7 +5,7 @@
 #'
 #' @param session numeric: the session of congress
 #' @param types vector: types of bills to include. May be any combination of c("s", "sres", "sjres", "sconres") OR any combination of c("hr", "hres", "hjres", "hconres").
-#' @param areas string: policy areas of bills to include (see details)
+#' @param areas vector: policy areas of bills to include (see details)
 #' @param nonvoting boolean: should non-voting members be included
 #' @param weighted boolean: should sponsor-bill edges have a weight of 2, but cosponsor-bill edges have a weight of 1
 #' @param format string: format of output, one of c("data", "igraph")
@@ -84,13 +84,13 @@ incidence.from.congress <- function(session = NULL, types = NULL, areas = "all",
 
       #Check area, add bill if relevant
       area <- tolower(xml2::xml_text(xml2::xml_find_first(bill, ".//policyArea")))
-      if (areas=="all" | area %in% areas) {
+      if (area %in% c(areas, "all")) {
 
       #Bill characteristics
-      
+
         #Old XML tags (https://github.com/usgpo/bill-status/issues/200)
         number <- paste0(xml2::xml_text(xml2::xml_find_first(bill, ".//billType")),xml2::xml_text(xml2::xml_find_first(bill, ".//billNumber")))
-        
+
         #If it doesn't work, use new XML tags (https://github.com/usgpo/bill-status/issues/200)
         if (number == "NANA") {number <- paste0(xml2::xml_text(xml2::xml_find_first(bill, ".//type")),xml2::xml_text(xml2::xml_find_first(bill, ".//number")))}
 
@@ -152,13 +152,14 @@ incidence.from.congress <- function(session = NULL, types = NULL, areas = "all",
 
   #Display narrative if requested
   if (narrative) {
+
     version <- utils::packageVersion("incidentally")
     if (all(types %in% c("s", "sres", "sjres", "sconres"))) {who <- "Senators'"}
     if (all(types %in% c("hr", "hres", "hjres", "hconres"))) {who <- "Representatives'"}
-    if (format == "igraph" & areas == "all") {text <- paste0("We used the incidentally package for R (v", version, "; Neal, 2022) to generate a bipartite graph recording ", who, " bill sponsorships during the ", session, " session of the US Congress.")}
-    if (format == "igraph" & areas != "all") {text <- paste0("We used the incidentally package for R (v", version, "; Neal, 2022) to generate a bipartite graph recording ", who, " bill sponsorships during the ", session, " session of the US Congress. We restricted our focus to bills in the following policy areas: ", paste(areas, collapse=', '), ".")}
-    if (format == "data" & areas == "all") {text <- paste0("We used the incidentally package for R (v", version, "; Neal, 2022) to generate an incidence matrix recording ", who, " bill sponsorships during the ", session, " session of the US Congress.")}
-    if (format == "data" & areas != "all") {text <- paste0("We used the incidentally package for R (v", version, "; Neal, 2022) to generate an incidence matrix recording ", who, " bill sponsorships during the ", session, " session of the US Congress. We restricted our focus to bills in the following policy areas: ", paste(areas, collapse=', '), ".")}
+    if (format == "igraph" & "all" %in% areas) {text <- paste0("We used the incidentally package for R (v", version, "; Neal, 2022) to generate a bipartite graph recording ", who, " bill sponsorships during the ", session, " session of the US Congress.")}
+    if (format == "igraph" & !("all" %in% areas)) {text <- paste0("We used the incidentally package for R (v", version, "; Neal, 2022) to generate a bipartite graph recording ", who, " bill sponsorships during the ", session, " session of the US Congress. We restricted our focus to bills in the following policy areas: ", paste(areas, collapse=', '), ".")}
+    if (format == "data" & "all" %in% areas) {text <- paste0("We used the incidentally package for R (v", version, "; Neal, 2022) to generate an incidence matrix recording ", who, " bill sponsorships during the ", session, " session of the US Congress.")}
+    if (format == "data" & !("all" %in% areas)) {text <- paste0("We used the incidentally package for R (v", version, "; Neal, 2022) to generate an incidence matrix recording ", who, " bill sponsorships during the ", session, " session of the US Congress. We restricted our focus to bills in the following policy areas: ", paste(areas, collapse=', '), ".")}
     message("")
     message("=== Suggested manuscript text and citations ===")
     message(text)

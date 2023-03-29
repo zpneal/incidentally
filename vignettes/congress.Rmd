@@ -26,7 +26,7 @@ par(mar = c(0, 0, 1, 0))
 
 # Table of Contents {#toc}
 
-[<img src='../man/figures/logo.png' align="right" height="250" />](https://www.zacharyneal.com/backbone)
+[<img src='../man/figures/logo.png' align="right" height="250" />](https://www.zacharyneal.com/incidentally)
 
 1. [Introduction](#introduction)
     a. [Welcome](#welcome)
@@ -46,7 +46,7 @@ For a more general introduction to the `incidentally` package, see [the main vig
 
 **Neal, Z. P. (2022). incidentally: An R package to generate incidence matrices and bipartite graphs. *OSF Preprints*. [https://doi.org/10.31219/osf.io/ectms](https://doi.org/10.31219/osf.io/ectms)**
 
-If you have questions about the incidentally package or would like an incidentally hex sticker, please contact the maintainer Zachary Neal by email ([zpneal\@msu.edu](mailto:zpneal@msu.edu)) or via Mastodon ([\@zpneal@mastodon.social](https://mastodon.social/@zpneal)). Please report bugs in the backbone package at [https://github.com/zpneal/incidentally/issues](https://github.com/zpneal/backbone/issues).
+If you have questions about the incidentally package or would like an incidentally hex sticker, please contact the maintainer Zachary Neal by email ([zpneal\@msu.edu](mailto:zpneal@msu.edu)) or via Mastodon ([\@zpneal@mastodon.social](https://mastodon.social/@zpneal)). Please report bugs in the incidentally package at [https://github.com/zpneal/incidentally/issues](https://github.com/zpneal/incidentally/issues).
 
 ## The US legislative process {#process}
 In the US Congress, bills may become laws through a multi-step legislative process:

@@ -51,7 +51,8 @@
 #' @examples
 #' \dontrun{
 #' D <- incidence.from.congress(session = 116, types = "s", format = "data")
-#' D <- incidence.from.congress(session = 116, types = "s", format = "data", areas = c("animals", "health"))
+#' D <- incidence.from.congress(session = 116, types = "s", format = "data",
+#'      areas = c("animals", "health"))
 #' G <- incidence.from.congress(session = 115, types = c("hr", "hres"), format = "igraph")
 #' }
 incidence.from.congress <- function(session = NULL, types = NULL, areas = "all", nonvoting = FALSE, weighted = FALSE, format = "data", narrative = FALSE){

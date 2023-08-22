@@ -17,5 +17,6 @@
 #'    }
 #'
 #' @docType package
+#' @aliases incidentally-package
 #' @name incidentally
 NULL

@@ -3,6 +3,7 @@
 \docType{package}
 \name{incidentally}
 \alias{incidentally}
+\alias{incidentally-package}
 \title{incidentally: Generates incidence matrices and bipartite graphs}
 \description{
 Functions to generate incidence matrices and bipartite graphs that have

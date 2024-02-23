@@ -43,7 +43,8 @@ par(mar = c(0, 0, 1, 0))
     c. [Organizations model](#org)
 4. [Utilities](#util)
     a. [Randomization](#random)
-    b. [Block models](#block)
+    b. [State space](#space)
+    c. [Block models](#block)
 
 # Introduction {#introduction}
 
@@ -242,6 +243,18 @@ For example, given a $3 \times 3$ matrix with row marginals $R = \{2,1,1\}$ and 
 I <- matrix(c(1,0,0,0,1,0,1,0,1),3,3)
 I
 curveball(I)
+```
+
+[back to Table of Contents](#toc)
+
+## State space {#space}
+The `space()` function examines the complete space of all incidence matrices with fixed marginals (i.e. all bipartite graphs with fixed degree sequences). Given a vector of row marginals and a vector of column marginals, it *attempts* to ennumerate all matrices in the space (however, a complete ennumeration is not currently guaranteed). Additionally, it computes the perturbation between each pair of matrices in this space, where perturbation is defined as the fraction of cells whose values differ. 
+
+For example, given the row marginals $R = \{2,1,1\}$ and column marginals $C = \{1,1,2\}$, we can see that there are five possible matrices, and that they vary in how much they differ from one another:
+```{r}
+space <- space(R = c(2,1,1), C = c(1,1,2))
+space$matrices
+space$perturbations
 ```
 
 [back to Table of Contents](#toc)

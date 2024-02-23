@@ -7,6 +7,7 @@ output: html_document
 
 * fixed bug in `incidence.from.congress()` when specifying policy areas, h/t Kevin Reuning 
 * fixed links in vignettes, h/t Kevin Reuning 
+* added `space()` to examine the space of binary matrices with fixed marginals
 
 ## incidentally 1.0.2
 

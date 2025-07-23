@@ -14,7 +14,7 @@ Welcome to the `incidentally` package\! The incidentally package implements meth
 
 The `incidentally` package can be cited as:
 
-**Neal, Z. P. (2022). incidentally: An R package for generating incidence matrices and bipartite graphs. *OSF Preprints*. [https://doi.org/10.31219/osf.io/ectms](https://doi.org/10.31219/osf.io/ectms)**
+**Neal, Z. P. (2022). incidentally: An R package for generating incidence matrices and bipartite graphs. *CRAN*. [https://doi.org/10.32614/CRAN.package.incidentally](https://doi.org/10.32614/CRAN.package.incidentally)**
 
 Two extended functions in the `incidentally` package have their own citations, which provide extended tutorials. The `incidence.from.congress()` function can be cited as:
 

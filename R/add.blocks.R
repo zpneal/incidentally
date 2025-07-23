@@ -2,7 +2,7 @@
 #'
 #' `add.blocks` shuffles an incidence matrix to have a block structure or planted partition while preserving the row and column sums
 #'
-#' @param I An incidence matrix or {\link{igraph}} bipartite graph
+#' @param I An incidence matrix or \link[igraph]{igraph} bipartite graph
 #' @param rowblock numeric: vector indicating each row node's block membership
 #' @param colblock numeric: vector indicating each column node's block membership
 #' @param density numeric: desired within-block density
@@ -17,10 +17,10 @@
 #'    randomly assigned to two groups.
 #'
 #' @return
-#' An incidence matrix or {\link{igraph}} bipartite graph with a block structure
+#' An incidence matrix or \link[igraph]{igraph} bipartite graph with a block structure
 #'
 #' @references {Neal, Z. P., Domagalski, R., and Sagan, B. 2021. Comparing alternatives to the fixed degree sequence model for extracting the backbone of bipartite projections. *Scientific Reports, 11*, 23929. \doi{10.1038/s41598-021-03238-3}}
-#' @references {Neal, Z. P. 2022. incidentally: An R package to generate incidence matrices and bipartite graphs. *OSF Preprints* \doi{10.31219/osf.io/ectms}}
+#' @references {Neal, Z. P. 2022. incidentally: An R package to generate incidence matrices and bipartite graphs. *CRAN* \doi{10.32614/CRAN.package.incidentally}}
 #'
 #' @export
 #'

@@ -42,8 +42,8 @@
 #' For both formats, legislator characteristics include: BioGuide ID, full name, last name, party affiliation, and state. Bill characteristics
 #'     include: bill ID, introduction date, title, policy area, status, sponsor's party, and number of co-sponsors from each party.
 #'
-#' @references Tutorial: {Neal, Z. P. 2022. Constructing legislative networks in R using incidentally and backbone. *Connections, 42*. \doi{10.2478/connections-2019.026}}
-#' @references Package: {Neal, Z. P. 2022. incidentally: An R package to generate incidence matrices and bipartite graphs. *OSF Preprints* \doi{10.31219/osf.io/ectms}}
+#' @references {Neal, Z. P. 2022. Constructing legislative networks in R using incidentally and backbone. *Connections, 42*. \doi{10.2478/connections-2019.026}}
+#' @references {Neal, Z. P. 2022. incidentally: An R package to generate incidence matrices and bipartite graphs. *CRAN* \doi{10.32614/CRAN.package.incidentally}}
 #'
 #' @export
 #'
@@ -182,9 +182,9 @@ incidence.from.congress <- function(session = NULL, types = NULL, areas = "all",
     suppressWarnings(igraph::V(G)[which(igraph::V(G)$type==F)]$state <- legislator$state)
     suppressWarnings(igraph::V(G)[which(igraph::V(G)$type==F)]$last <- legislator$last)
     suppressWarnings(igraph::V(G)[which(igraph::V(G)$type==F)]$id <- legislator$id)
-    suppressWarnings(igraph::V(G)[which(igraph::V(G)$type==F)]$color <- rgb(0,0,1))
-    suppressWarnings(igraph::V(G)[which(igraph::V(G)$type==F & igraph::V(G)$party=="R")]$color <- rgb(1,0,0))
-    suppressWarnings(igraph::V(G)[which(igraph::V(G)$type==F & igraph::V(G)$party=="I")]$color <- rgb(0,1,0))
+    suppressWarnings(igraph::V(G)[which(igraph::V(G)$type==F)]$color <- grDevices::rgb(0,0,1))
+    suppressWarnings(igraph::V(G)[which(igraph::V(G)$type==F & igraph::V(G)$party=="R")]$color <- grDevices::rgb(1,0,0))
+    suppressWarnings(igraph::V(G)[which(igraph::V(G)$type==F & igraph::V(G)$party=="I")]$color <- grDevices::rgb(0,1,0))
     suppressWarnings(igraph::V(G)[which(igraph::V(G)$type==T)]$introduced <- bills$introduced)
     suppressWarnings(igraph::V(G)[which(igraph::V(G)$type==T)]$title <- bills$title)
     suppressWarnings(igraph::V(G)[which(igraph::V(G)$type==T)]$area <- bills$area)

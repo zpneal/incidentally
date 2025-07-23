@@ -27,7 +27,7 @@ incidence.from.probability(
 \item{narrative}{boolean: TRUE if suggested text & citations should be displayed.}
 }
 \value{
-An incidence matrix of class \code{matrix} or \code{Matrix}, or a bipartite graph of class {\link{igraph}}.
+An incidence matrix of class \code{matrix} or \code{Matrix}, or a bipartite graph of class \link[igraph]{igraph}.
 }
 \description{
 \code{incidence.from.probability} generates a random incidence matrix in which each cell is filled
@@ -42,5 +42,5 @@ I <- incidence.from.probability(R = 10, C = 10, P = .5,
 \references{
 {Neal, Z. P., Domagalski, R., and Sagan, B. 2021. Comparing alternatives to the fixed degree sequence model for extracting the backbone of bipartite projections. \emph{Scientific Reports, 11}, 23929. \doi{10.1038/s41598-021-03238-3}}
 
-{Neal, Z. P. 2022. incidentally: An R package to generate incidence matrices and bipartite graphs. \emph{OSF Preprints} \doi{10.31219/osf.io/ectms}}
+{Neal, Z. P. 2022. incidentally: An R package to generate incidence matrices and bipartite graphs. \emph{CRAN} \doi{10.32614/CRAN.package.incidentally}}
 }

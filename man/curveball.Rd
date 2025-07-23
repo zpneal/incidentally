@@ -7,14 +7,14 @@
 curveball(M, trades = 5 * nrow(M), class = NULL)
 }
 \arguments{
-\item{M}{a binary matrix of class \code{matrix} or \code{Matrix}, or a bipartite graph of class {\link{igraph}}.}
+\item{M}{a binary matrix of class \code{matrix} or \code{Matrix}, or a bipartite graph of class \link[igraph]{igraph}.}
 
 \item{trades}{integer: number of trades; the default is 5 * nrow(M) (approx. mixing time)}
 
 \item{class}{string: Return object as \code{matrix}, \code{Matrix}, \code{igraph}. If \code{NULL}, object is returned in the same class as \code{M}.}
 }
 \value{
-An incidence matrix of class \code{matrix} or \code{Matrix}, or a bipartite graph of class {\link{igraph}}.
+An incidence matrix of class \code{matrix} or \code{Matrix}, or a bipartite graph of class \link[igraph]{igraph}.
 }
 \description{
 \code{curveball} randomizes an incidence matrix or bipartite graph, preserving the row and column sums
@@ -32,7 +32,7 @@ all.equal(colSums(M), colSums(curveball(M)))
 \references{
 {Strona, Giovanni, Domenico Nappo, Francesco Boccacci, Simone Fattorini, and Jesus San-Miguel-Ayanz. 2014. A Fast and Unbiased Procedure to Randomize Ecological Binary Matrices with Fixed Row and Column Totals. \emph{Nature Communications, 5}, 4114. \doi{10.1038/ncomms5114}}
 
-{Godard, Karl and Neal, Zachary P. 2022. fastball: A fast algorithm to sample bipartite graphs with fixed degree sequences. \href{https://arxiv.org/abs/2112.04017}{\emph{arXiv:2112.04017}}}
+{Godard, Karl and Neal, Zachary P. 2022. fastball: A fast algorithm to sample bipartite graphs with fixed degree sequences. \emph{Journal of Complex Networks, 10}, cnac049. \doi{10.1093/comnet/cnac049}}
 
-{Neal, Z. P. 2022. incidentally: An R package to generate incidence matrices and bipartite graphs. \emph{OSF Preprints} \doi{10.31219/osf.io/ectms}}
+{Neal, Z. P. 2022. incidentally: An R package to generate incidence matrices and bipartite graphs. \emph{CRAN} \doi{10.32614/CRAN.package.incidentally}}
 }

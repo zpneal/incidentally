@@ -22,7 +22,7 @@ Two extended functions in the `incidentally` package have their own citations, w
 
 The `incidence.from.adjacency()` function can be cited as:
 
-**Neal, Z. P. (In press). The duality of networks and groups: Models to generate two-mode networks from one-mode networks. *Network Science*.**
+**Neal, Z. P. (2023). The duality of networks and groups: Models to generate two-mode networks from one-mode networks. *Network Science, 11*, 397-410. [https://doi.org/10.1017/nws.2023.3](https://doi.org/10.1017/nws.2023.3).**
 
 ## Installation
 The /release branch contains the current CRAN release of the incidentally package. You can install it from [CRAN](https://CRAN.R-project.org) with:

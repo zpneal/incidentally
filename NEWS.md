@@ -8,6 +8,7 @@ output: html_document
 * fixed bug in `incidence.from.congress()` when specifying policy areas, h/t Kevin Reuning 
 * fixed links in vignettes, h/t Kevin Reuning 
 * added `space()` to examine the space of binary matrices with fixed marginals
+* `incidence_from_congress()` adds a node color attribute to legislator nodes corresponding to party affiliation
 * corrected usage of \link{} in documentation
 
 ## incidentally 1.0.2

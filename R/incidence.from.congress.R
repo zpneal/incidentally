@@ -84,58 +84,43 @@ incidence.from.congress <- function(session = NULL, types = NULL, areas = "all",
       bill <- xml2::read_xml(unz(temp, files[file]))
 
       #Check area, add bill if relevant
-      area <- tolower(xml2::xml_text(xml2::xml_find_first(bill, ".//policyArea")))
+      area <- tolower(xml2::xml_text(xml2::xml_find_all(bill, "bill/policyArea/name")))
+      if (length(area) == 0) {area <- NA}  #Some bills don't have an area (e.g. private legislation)
       if (areas[1]=="all" | area %in% areas) {
 
       #Bill characteristics
 
-        #Old XML tags (https://github.com/usgpo/bill-status/issues/200)
-        number <- paste0(xml2::xml_text(xml2::xml_find_first(bill, ".//billType")),xml2::xml_text(xml2::xml_find_first(bill, ".//billNumber")))
+      #Old XML tags (https://github.com/usgpo/bill-status/issues/200)
+      number <- paste0(xml2::xml_text(xml2::xml_find_all(bill, "bill/billType")), xml2::xml_text(xml2::xml_find_all(bill, "bill/billNumber")))
+      if (length(number) == 0) {number <- paste0(xml2::xml_text(xml2::xml_find_all(bill, "bill/type")), xml2::xml_text(xml2::xml_find_all(bill, "bill/number")))}
 
-        #If it doesn't work, use new XML tags (https://github.com/usgpo/bill-status/issues/200)
-        if (number == "NANA") {number <- paste0(xml2::xml_text(xml2::xml_find_first(bill, ".//type")),xml2::xml_text(xml2::xml_find_first(bill, ".//number")))}
+      introduced <- tolower(xml2::xml_text(xml2::xml_find_all(bill, "bill/introducedDate")))
+      title <- xml2::xml_text(xml2::xml_find_all(bill, "bill/title"))
+      status <- xml2::xml_text(xml2::xml_find_all(bill, "bill/latestAction/text"))
 
-      introduced <- xml2::xml_text(xml2::xml_find_first(bill, ".//introducedDate"))
-      title <- xml2::xml_text(xml2::xml_find_first(bill, ".//title"))
-      status <- "Introduced"
-      if (grepl("Became Public Law", xml2::xml_text(bill))) {status <- "Became law"}
-      if (grepl("Passed/agreed to in Senate", xml2::xml_text(bill)) & grepl("Passed/agreed to in House", xml2::xml_text(bill)) & !(grepl("Became Public Law", xml2::xml_text(bill)))) {status <- "Sent to president"}
-      if (grepl("Passed/agreed to in Senate", xml2::xml_text(bill)) & !(grepl("Passed/agreed to in House", xml2::xml_text(bill)))) {status <- "Passed senate"}
-      if (grepl("Passed/agreed to in House", xml2::xml_text(bill)) & !(grepl("Passed/agreed to in Senate", xml2::xml_text(bill)))) {status <- "Passed house"}
+      #Sponsors
+      s.id <- xml2::xml_text(xml2::xml_find_all(bill, "bill/sponsors/item/bioguideId"))
+      s.name <- xml2::xml_text(xml2::xml_find_all(bill, "bill/sponsors/item/fullName"))
+      s.last <- xml2::xml_text(xml2::xml_find_all(bill, "bill/sponsors/item/lastName"))
+      s.last <- paste(toupper(substr(s.last, 1, 1)), substr(s.last, 2, nchar(s.last)), sep="")
+      s.party <- xml2::xml_text(xml2::xml_find_all(bill, "bill/sponsors/item/party"))
+      s.state <- xml2::xml_text(xml2::xml_find_all(bill, "bill/sponsors/item/state"))
 
-      #Sponsor
-      sponsor <- xml2::xml_find_first(bill, ".//sponsors")
-      sponsor <- xml2::xml_find_all(sponsor, ".//item")
-      s.id <- xml2::xml_text(xml2::xml_find_first(sponsor, ".//bioguideId"))
-      s.name <- xml2::xml_text(xml2::xml_find_first(sponsor, ".//fullName"))
-      s.last <- xml2::xml_text(xml2::xml_find_first(sponsor, ".//lastName"))
-      s.last <- tools::toTitleCase(tolower(s.last))  #Correcting capitalization
-      s.party <- xml2::xml_text(xml2::xml_find_first(sponsor, ".//party"))[1]  #When multiple, use first sponsor's party
-      s.state <- xml2::xml_text(xml2::xml_find_first(sponsor, ".//state"))
+      #Coponsors
+      c.id <- xml2::xml_text(xml2::xml_find_all(bill, "bill/cosponsors/item/bioguideId"))
+      c.name <- xml2::xml_text(xml2::xml_find_all(bill, "bill/cosponsors/item/fullName"))
+      c.last <- xml2::xml_text(xml2::xml_find_all(bill, "bill/cosponsors/item/lastName"))
+      c.last <- paste(toupper(substr(c.last, 1, 1)), substr(c.last, 2, nchar(c.last)), sep="")
+      c.party <- xml2::xml_text(xml2::xml_find_all(bill, "bill/cosponsors/item/party"))
+      c.state <- xml2::xml_text(xml2::xml_find_all(bill, "bill/cosponsors/item/state"))
 
-      #Co-sponsors
-      cosponsor <- xml2::xml_find_first(bill, ".//cosponsors")
-      cosponsor <- xml2::xml_find_all(cosponsor, ".//item")
-      cs.id <- xml2::xml_text(xml2::xml_find_first(cosponsor, ".//bioguideId"))
-      cs.name <- xml2::xml_text(xml2::xml_find_first(cosponsor, ".//fullName"))
-      cs.last <- xml2::xml_text(xml2::xml_find_first(cosponsor, ".//lastName"))
-      cs.last <- tools::toTitleCase(tolower(cs.last))  #Correcting capitalization
-      cs.party <- xml2::xml_text(xml2::xml_find_first(cosponsor, ".//party"))
-      cs.state <- xml2::xml_text(xml2::xml_find_first(cosponsor, ".//state"))
-
-      #Count cosponsors' parties
-      Rnum <- 0
-      Dnum <- 0
-      Inum <- 0
-      if (length(cs.party)>0) {
-        Rnum <- sum(cs.party=="R")
-        Dnum <- sum(cs.party=="D")
-        Inum <- sum(cs.party!="R" & cs.party!="D")
-      }
+      #Compute partisanship
+      partisan <- NA
+      if (length(c.party)>0) {partisan <- sum(c.party == s.party[1]) / length(c.party)}
 
       #Add to data, each bill sponsor and each bill co-sponsor set becomes a new row in a growing list
-      if (length(s.id)>0) {dat[[length(dat)+1]] <- data.frame(id = s.id, name = s.name, last = s.last, party = s.party, state = s.state, bill = number, introduced = introduced, title = title, area = area, sponsor.party = s.party, cosponsors.r = Rnum, cosponsors.d = Dnum, cosponsors.i = Inum, status = status, weight = 2)}
-      if (length(cs.id)>0) {dat[[length(dat)+1]] <- data.frame(id = cs.id, name = cs.name, last = cs.last, party = cs.party, state = cs.state, bill = number, introduced = introduced, title = title, area = area, sponsor.party = s.party, cosponsors.r = Rnum, cosponsors.d = Dnum, cosponsors.i = Inum, status = status, weight = 1)}
+      if (length(s.id)>0) {dat[[length(dat)+1]] <- data.frame(id = s.id, name = s.name, last = s.last, party = s.party, state = s.state, bill = number, introduced = introduced, title = title, area = area, sponsor.party = s.party[1], partisan = partisan, status = status, weight = 2)}
+      if (length(c.id)>0) {dat[[length(dat)+1]] <- data.frame(id = c.id, name = c.name, last = c.last, party = c.party, state = c.state, bill = number, introduced = introduced, title = title, area = area, sponsor.party = s.party[1], partisan = partisan, status = status, weight = 1)}
       }
 
       utils::setTxtProgressBar(pb, file)
@@ -156,7 +141,7 @@ incidence.from.congress <- function(session = NULL, types = NULL, areas = "all",
   #Prep sponsorship data and codebooks
   if (weighted) {sponsorship <- dat[c("name", "bill", "weight")]} else {sponsorship <- dat[c("name", "bill")]}
   legislator <- unique(dat[c("id", "name", "last", "party", "state")])
-  bills <- unique(dat[c("bill", "introduced", "title", "area", "sponsor.party", "cosponsors.r", "cosponsors.d", "cosponsors.i", "status")])
+  bills <- unique(dat[c("bill", "introduced", "title", "area", "sponsor.party", "partisan", "status")])
 
   #Display narrative if requested
   if (narrative) {
@@ -196,9 +181,10 @@ incidence.from.congress <- function(session = NULL, types = NULL, areas = "all",
     suppressWarnings(igraph::V(G)[which(igraph::V(G)$type==T)]$title <- bills$title)
     suppressWarnings(igraph::V(G)[which(igraph::V(G)$type==T)]$area <- bills$area)
     suppressWarnings(igraph::V(G)[which(igraph::V(G)$type==T)]$sponsor.party <- bills$sponsor.party)
-    suppressWarnings(igraph::V(G)[which(igraph::V(G)$type==T)]$cosponsors.r <- bills$cosponsors.r)
-    suppressWarnings(igraph::V(G)[which(igraph::V(G)$type==T)]$cosponsors.d <- bills$cosponsors.d)
-    suppressWarnings(igraph::V(G)[which(igraph::V(G)$type==T)]$cosponsors.i <- bills$cosponsors.i)
+    suppressWarnings(igraph::V(G)[which(igraph::V(G)$type==T)]$color <- grDevices::rgb(0,0,1))
+    suppressWarnings(igraph::V(G)[which(igraph::V(G)$type==T & igraph::V(G)$sponsor.party=="R")]$color <- grDevices::rgb(1,0,0))
+    suppressWarnings(igraph::V(G)[which(igraph::V(G)$type==T & igraph::V(G)$sponsor.party=="I")]$color <- grDevices::rgb(0,1,0))
+    suppressWarnings(igraph::V(G)[which(igraph::V(G)$type==T)]$partisan <- bills$partisan)
     suppressWarnings(igraph::V(G)[which(igraph::V(G)$type==T)]$status <- bills$status)
     return(G)
   }

@@ -143,10 +143,17 @@ incidence.from.congress <- function(session = NULL, types = NULL, areas = "all",
     close(pb)
   } #End type loop
 
-  #Prep sponsorship data and codebooks
+  #Clean up data
   dat <- do.call(rbind,dat)  #Convert data stored as list into data frame
   dat <- unique(dat)  #Remove duplicate rows, in rare cases when a sponsor or co-sponsor was listed twice
   if (!nonvoting) {dat <- dat[which(dat$state!="AS" & dat$state!="DC" & dat$state!="GU" & dat$state!="MP" & dat$state!="PR" & dat$state!="VI"),]}
+
+  legislator <- dat[c("id", "name", "last", "party", "state")]  #Get preliminary legislator data
+  legislator <- legislator[!duplicated(legislator$id), ]  #Keep only one record per Bioguide ID (necessary if legislator changed parties or name spelling)
+  dat <- dat[, -match(c("name", "last", "party", "state"), names(dat))]  #Remove old legislator data from raw dat
+  dat <- merge(dat, legislator, by = "id")  #Insert new legislator data
+
+  #Prep sponsorship data and codebooks
   if (weighted) {sponsorship <- dat[c("name", "bill", "weight")]} else {sponsorship <- dat[c("name", "bill")]}
   legislator <- unique(dat[c("id", "name", "last", "party", "state")])
   bills <- unique(dat[c("bill", "introduced", "title", "area", "sponsor.party", "cosponsors.r", "cosponsors.d", "cosponsors.i", "status")])

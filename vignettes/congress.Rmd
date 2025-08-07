@@ -26,7 +26,7 @@ par(mar = c(0, 0, 1, 0))
 
 # Table of Contents {#toc}
 
-[<img src='../man/figures/logo.png' align="right" height="250" />](https://www.zacharyneal.com/backbone)
+[<img src='../man/figures/logo.png' align="right" height="250" />](https://www.zacharyneal.com/incidentally)
 
 1. [Introduction](#introduction)
     a. [Welcome](#welcome)
@@ -46,7 +46,7 @@ For a more general introduction to the `incidentally` package, see [the main vig
 
 **Neal, Z. P. (2022). incidentally: An R package to generate incidence matrices and bipartite graphs. *OSF Preprints*. [https://doi.org/10.31219/osf.io/ectms](https://doi.org/10.31219/osf.io/ectms)**
 
-If you have questions about the incidentally package or would like an incidentally hex sticker, please contact the maintainer Zachary Neal by email ([zpneal\@msu.edu](mailto:zpneal@msu.edu)) or via Mastodon ([\@zpneal@mastodon.social](https://mastodon.social/@zpneal)). Please report bugs in the backbone package at [https://github.com/zpneal/incidentally/issues](https://github.com/zpneal/backbone/issues).
+If you have questions about the incidentally package or would like an incidentally hex sticker, please contact the maintainer Zachary Neal by email ([zpneal\@msu.edu](mailto:zpneal@msu.edu)). Please report bugs in the incidentally package at [https://github.com/zpneal/incidentally/issues](https://github.com/zpneal/incidentally/issues).
 
 ## The US legislative process {#process}
 In the US Congress, bills may become laws through a multi-step legislative process:
@@ -120,10 +120,7 @@ The *stochastic degree sequence model* (SDSM) connects two legislators if they (
 
 We can use the `igraph` package to plot this network, coloring each node by political party:
 ```{r}
-V(network)$color <- rgb(1,0,0,.5)  #Define the color of Republicans
-V(network)$color[which(V(network)$party=="D")] <- rgb(0,0,1,.5)  #...of Democrats
-V(network)$color[which(V(network)$party=="I")] <- rgb(0,1,0,.5)  #...of Independents
-plot(network, vertex.label = NA, vertex.color = V(network)$color, vertex.frame.color = NA, vertex.size = 10)
+plot(network, vertex.label = NA, vertex.frame.color = NA, vertex.size = 10)
 ```
 
 This network clearly shows the partisan structure of the US Senate: Democrats (blue) mostly work with other Democrats, and Republicans (red) mostly work with other Republicans.
@@ -136,13 +133,10 @@ where Senators that sponsor significantly *many* bills are connected by a positi
 
 Again, using the `igraph` package to plot this network:
 ```{r}
-V(signed)$color <- rgb(1,0,0,.5)  #Define the color of Republicans
-V(signed)$color[which(V(signed)$party=="D")] <- rgb(0,0,1,.5)  #...of Democrats
-V(signed)$color[which(V(signed)$party=="I")] <- rgb(0,1,0,.5)  #...of Independents
 E(signed)$color <- rgb(0,1,0,1)  #Define color of positive edges
-E(signed)$color[which(E(signed)$weight==-1)] <- rgb(1,0,0,.01)  #Define color of negative edges
-layout <- layout_nicely(delete_edges(signed, which(E(signed)$weight==-1)))  #Get layout based on positive edges
-plot(signed, vertex.label = NA, vertex.color = V(signed)$color, vertex.frame.color = NA, vertex.size = 10, layout = layout)
+E(signed)$color[which(E(signed)$sign==-1)] <- rgb(1,0,0,.05)  #Define color of negative edges
+layout <- layout_nicely(delete_edges(signed, which(E(signed)$sign==-1)))  #Get layout based on positive edges
+plot(signed, vertex.label = NA, vertex.frame.color = NA, vertex.size = 10, layout = layout)
 ```
 
 This network still shows the partisan structure of the US Senate, but illustrates that there are positive ties within-party and negative ties between-party.

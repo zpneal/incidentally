@@ -26,7 +26,7 @@ par(mar = c(0, 0, 1, 0))
 
 # Table of Contents {#toc}
 
-[<img src='../man/figures/logo.png' align="right" height="250" />](https://www.zacharyneal.com/backbone)
+[<img src='../man/figures/logo.png' align="right" height="250" />](https://www.zacharyneal.com/incidentally)
 
 1. [Introduction](#introduction)
     a. [Welcome](#welcome)
@@ -43,7 +43,8 @@ par(mar = c(0, 0, 1, 0))
     c. [Organizations model](#org)
 4. [Utilities](#util)
     a. [Randomization](#random)
-    b. [Block models](#block)
+    b. [State space](#space)
+    c. [Block models](#block)
 
 # Introduction {#introduction}
 
@@ -54,7 +55,7 @@ The `incidentally` package can be cited as:
 
 **Neal, Z. P. (2022). incidentally: An R package to generate incidence matrices and bipartite graphs. *OSF Preprints*. [https://doi.org/10.31219/osf.io/ectms](https://doi.org/10.31219/osf.io/ectms)**
 
-For additional resources on the incidentally package, please see [https://www.rbackbone.net/](https://www.zacharyneal.com/backbone). If you have questions about the incidentally package or would like an incidentally hex sticker, please contact the maintainer Zachary Neal by email ([zpneal\@msu.edu](mailto:zpneal@msu.edu)) or via Mastodon ([\@zpneal@mastodon.social](https://mastodon.social/@zpneal)). Please report bugs in the backbone package at [https://github.com/zpneal/incidentally/issues](https://github.com/zpneal/backbone/issues).
+For additional resources on the incidentally package, please see [https://www.zacharyneal.com/incidentally](https://www.zacharyneal.com/incidentally). If you have questions about the incidentally package or would like an incidentally hex sticker, please contact the maintainer Zachary Neal by email ([zpneal\@msu.edu](mailto:zpneal@msu.edu)). Please report bugs in the incidentally package at [https://github.com/zpneal/incidentally/issues](https://github.com/zpneal/incidentally/issues).
 
 ## What are incidence matrices? {#what}
 An *incidence* matrix is a binary $r \times c$ matrix **I** that records associations between $r$ objects represented by rows and $c$ objects represented by columns. In this matrix, $I_{ij} = 1$ if the i<sup>th</sup> row object is associated with the j<sup>th</sup> column object, and otherwise $I_{ij} = 0$. An incidence matrix can be used to represent a *bipartite*, *two-mode*, or *affiliation* network/graph, in which the rows represent one type of node, and the columns represent another type of node (e.g., people who author papers, species living in habitats) [@latapy2008]. An incidence matrix can also represent a *hypergraph*, in which each column represents a hyperedge and identifies the nodes that it connects.
@@ -92,7 +93,7 @@ The incidentally package offers multiple incidence matrix-generating functions t
 
 * [`curveball()`](#random) randomizes an incidence matrix or bipartite graph while preserving in marginal/degree sequence, and [`add.blocks()`](#block) adds a block structure or planted partition to an existing incidence matrix or bipartite graph.
 
-* `incidence.from.congress()` constructs an incidence matrix or bipartite graph representing US Congress legislators' sponsorship of bills. For a detailed description of this function, and its use with the `backbone` package to generate political networks, see this [companion vignette](congress.html).
+* `incidence.from.congress()` constructs an incidence matrix or bipartite graph representing US Congress legislators' sponsorship of bills. For a detailed description of this function, and how to use it together with functions in the `backbone` package to generate political networks, see this [companion vignette](congress.html).
 
 [back to Table of Contents](#toc)
 
@@ -242,6 +243,18 @@ For example, given a $3 \times 3$ matrix with row marginals $R = \{2,1,1\}$ and 
 I <- matrix(c(1,0,0,0,1,0,1,0,1),3,3)
 I
 curveball(I)
+```
+
+[back to Table of Contents](#toc)
+
+## State space {#space}
+The `space()` function examines the complete space of all incidence matrices with fixed marginals (i.e. all bipartite graphs with fixed degree sequences). Given a vector of row marginals and a vector of column marginals, it *attempts* to ennumerate all matrices in the space (however, a complete ennumeration is not currently guaranteed). Additionally, it computes the perturbation between each pair of matrices in this space, where perturbation is defined as the fraction of cells whose values differ. 
+
+For example, given the row marginals $R = \{2,1,1\}$ and column marginals $C = \{1,1,2\}$, we can see that there are five possible matrices, and that they vary in how much they differ from one another:
+```{r}
+space <- space(R = c(2,1,1), C = c(1,1,2))
+space$matrices
+space$perturbations
 ```
 
 [back to Table of Contents](#toc)

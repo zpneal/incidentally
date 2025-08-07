@@ -3,6 +3,7 @@
 \docType{package}
 \name{incidentally}
 \alias{incidentally}
+\alias{incidentally-package}
 \title{incidentally: Generates incidence matrices and bipartite graphs}
 \description{
 Functions to generate incidence matrices and bipartite graphs that have
@@ -20,4 +21,17 @@ Incidence matrices can be generated:
 \item ...with a block structure or planted partition: \code{\link[=add.blocks]{add.blocks()}}.
 \item ...from US Congress bill sponsorships: \code{\link[=incidence.from.congress]{incidence.from.congress()}}.
 }
+}
+\seealso{
+Useful links:
+\itemize{
+  \item \url{https://www.zacharyneal.com/backbone}
+  \item \url{https://github.com/zpneal/incidentally}
+  \item Report bugs at \url{https://github.com/zpneal/incidentally/issues}
+}
+
+}
+\author{
+\strong{Maintainer}: Zachary Neal \email{zpneal@msu.edu} (\href{https://orcid.org/0000-0003-3076-4995}{ORCID})
+
 }

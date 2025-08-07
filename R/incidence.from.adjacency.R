@@ -5,7 +5,7 @@
 #'    a given generative model
 #'
 #' @param G A symmetric, binary adjacency matrix of class `matrix` or `Matrix`,
-#'    or an undirected, unweighted unipartite graph of class {\link{igraph}}.
+#'    or an undirected, unweighted unipartite graph of class \link[igraph]{igraph}.
 #' @param k integer: Number of artifacts to generate
 #' @param p numeric: Tuning parameter for artifacts, 0 <= p <= 1
 #' @param maximal boolean: Should teams/clubs models be seeded with *maximal* cliques?
@@ -14,7 +14,7 @@
 #' @param class string: Return object as `matrix`, `Matrix`, or `igraph`. If `NULL`, object is returned in the same class as `G`.
 #' @param narrative boolean: TRUE if suggested text & citations should be displayed.
 #'
-#' @return An incidence matrix of class `matrix` or `Matrix`, or a bipartite graph of class {\link{igraph}}.
+#' @return An incidence matrix of class `matrix` or `Matrix`, or a bipartite graph of class \link[igraph]{igraph}.
 #'
 #' @details
 #' Given a unipartite network composed of *i agents* (i.e. nodes) that can be represented by an *i x i* adjacency
@@ -36,7 +36,8 @@
 #'     distribution that describes niche sizes. The default is a two-dimensional blau space, with organization niche
 #'     sizes that are strongly positively skewed (i.e., many specialist organizations, few generalists).
 #'
-#' @references {Neal, Z. P. 2023. The duality of networks and groups: Models to generate two-mode networks from one-mode networks. *Network Science*.}
+#' @references {Neal, Z. P. 2023. The duality of networks and groups: Models to generate two-mode networks from one-mode networks. *Network Science, 11*, 397-410. \doi{10.1017/nws.2023.3}}
+#' @references {Neal, Z. P. 2022. incidentally: An R package to generate incidence matrices and bipartite graphs. *CRAN* \doi{10.32614/CRAN.package.incidentally}}
 #'
 #' @export
 #'

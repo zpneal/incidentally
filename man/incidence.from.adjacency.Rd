@@ -17,7 +17,7 @@ incidence.from.adjacency(
 }
 \arguments{
 \item{G}{A symmetric, binary adjacency matrix of class \code{matrix} or \code{Matrix},
-or an undirected, unweighted unipartite graph of class {\link{igraph}}.}
+or an undirected, unweighted unipartite graph of class \link[igraph]{igraph}.}
 
 \item{k}{integer: Number of artifacts to generate}
 
@@ -34,7 +34,7 @@ or an undirected, unweighted unipartite graph of class {\link{igraph}}.}
 \item{narrative}{boolean: TRUE if suggested text & citations should be displayed.}
 }
 \value{
-An incidence matrix of class \code{matrix} or \code{Matrix}, or a bipartite graph of class {\link{igraph}}.
+An incidence matrix of class \code{matrix} or \code{Matrix}, or a bipartite graph of class \link[igraph]{igraph}.
 }
 \description{
 \code{incidence.from.adjacency} generates an incidence matrix from an adjacency matrix or network using
@@ -66,5 +66,7 @@ I <- incidence.from.adjacency(G, k = 1000, p = .95,
                               model = "team", narrative = TRUE)
 }
 \references{
-{Neal, Z. P. 2023. The duality of networks and groups: Models to generate two-mode networks from one-mode networks. \emph{Network Science}.}
+{Neal, Z. P. 2023. The duality of networks and groups: Models to generate two-mode networks from one-mode networks. \emph{Network Science, 11}, 397-410. \doi{10.1017/nws.2023.3}}
+
+{Neal, Z. P. 2022. incidentally: An R package to generate incidence matrices and bipartite graphs. \emph{CRAN} \doi{10.32614/CRAN.package.incidentally}}
 }

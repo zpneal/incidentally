@@ -3,6 +3,15 @@ title: "NEWS"
 output: html_document
 ---
 
+## incidentally 1.0.3
+
+* fixed bug in `incidence.from.congress()` when specifying policy areas, h/t Kevin Reuning 
+* fixed links in vignettes, h/t Kevin Reuning 
+* added `space()` to examine the space of binary matrices with fixed marginals
+* `incidence_from_congress()` adds a node color attribute to legislator nodes corresponding to party affiliation
+* fixed XML parsing errors in `incidence_from_congress()`
+* corrected usage of \link{} in documentation
+
 ## incidentally 1.0.2
 
 * added reference to Neal (2022) for incidence.from.congress()

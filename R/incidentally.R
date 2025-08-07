@@ -16,6 +16,7 @@
 #'    \item ...from US Congress bill sponsorships: [incidence.from.congress()].
 #'    }
 #'
-#' @docType package
+#' @aliases incidentally-package
 #' @name incidentally
+"_PACKAGE"
 NULL

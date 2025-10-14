@@ -3,6 +3,10 @@ title: "NEWS"
 output: html_document
 ---
 
+## incidentally 1.0.5
+
+*
+
 ## incidentally 1.0.4
 
 * fixed a minor breaking change caused by `igraph 2.2.0`

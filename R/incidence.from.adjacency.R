@@ -180,7 +180,7 @@ incidence.from.adjacency <- function(G, k = 1, p = 1, blau.param = c(2,1,10), ma
     rownames(I) <- names  #Insert row names
     colnames(I) <- c(paste0("k", 1:ncol(I)))  #Insert column names
   }
-  if (class == "igraph") {I <- igraph::graph_from_incidence_matrix(I)}
+  if (class == "igraph") {I <- igraph::graph_from_biadjacency_matrix(as.matrix(I))}
   if (class == "Matrix"){I <- Matrix::Matrix(I)}
 
   #Display narrative if requested

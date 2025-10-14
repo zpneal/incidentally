@@ -163,7 +163,7 @@ incidence.from.congress <- function(session = NULL, types = NULL, areas = "all",
   if (format == "data") {
     G <- igraph::graph_from_data_frame(sponsorship, directed = F)
     igraph::V(G)$type <- igraph::V(G)$name %in% sponsorship[,2] #second column of edges is TRUE type
-    if (weighted) {I <- igraph::as_incidence_matrix(G, attr = "weight", sparse = FALSE)} else {I <- igraph::as_incidence_matrix(G, sparse = FALSE)}
+    if (weighted) {I <- igraph::as_biadjacency_matrix(G, attr = "weight", sparse = FALSE)} else {I <- igraph::as_biadjacency_matrix(G, sparse = FALSE)}
     return(list(matrix = I, legislator = legislator, bills = bills))
   }
 

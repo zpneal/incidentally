@@ -3,6 +3,10 @@ title: "NEWS"
 output: html_document
 ---
 
+## incidentally 1.0.4
+
+* fixed a minor breaking change caused by `igraph 2.2.0`
+
 ## incidentally 1.0.3
 
 * fixed bug in `incidence.from.congress()` when specifying policy areas, h/t Kevin Reuning 
